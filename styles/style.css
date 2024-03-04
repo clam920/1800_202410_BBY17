@@ -1,3 +1,27 @@
+:root {
+  --bcit-blue: #003c71;
+  --bcit-yellow: #fff400;
+  --accent-purple: #602aa9;
+  --accent-turquoise: #00a69d;
+  --rollover-blue: #0055ce;
+  --link-blue: #0069ff;
+}
+
+.navbar-brand {
+  color: var(--bcit-yellow);
+}
+.navbar-toggler-icon {
+  color: white !important;
+}
+
 .bg-primary {
-  background-color: #003c71 !important;
+  background-color: var(--bcit-blue) !important;
+}
+
+.btn{
+  background-color: var(--bcit-blue);
+}
+
+.btn :hover{
+  background-color: var(--rollover-blue)
 }
