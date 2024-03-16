@@ -1,0 +1,1 @@
+$('#mapArea').load('./images/map/SVG/VectorTrace.svg');
