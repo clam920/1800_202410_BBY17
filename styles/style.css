@@ -32,3 +32,11 @@
 .btn :hover{
   background-color: var(--rollover-blue)
 }
+
+.cls-1 {
+  fill: none;
+  stroke: var(--bcit-yellow);
+}
+#mapArea {
+  background-color: var(--accent-turquoise);
+}
