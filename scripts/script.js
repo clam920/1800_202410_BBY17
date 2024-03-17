@@ -1,11 +1,12 @@
-//------------------------------------------------
-// Call this function when the "logout" button is clicked
-//-------------------------------------------------
+/**
+ * Call this when the "logout" button is clicked.
+ * Will log the user out and set the logout button to be invisible.
+ */
 function logout() {
-    firebase.auth().signOut().then(() => {
-        // Sign-out successful.
-        console.log("logging out user");
-      }).catch((error) => {
-        // An error happened.
-      });
+  app.auth().signOut().then(() => {
+    // Sign-out successful.
+    console.log("logging out user");
+  }).catch((error) => {
+    // An error happened.
+  })
 }
