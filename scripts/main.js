@@ -1,4 +1,6 @@
-var mapData;
+// navigator.geolocation.watchPosition(position => {
+//   console.log(position);
+// });
 
 $('#mapArea').load('./images/map/SVG/VectorTrace.svg', function () {
   document.getElementById('Layer_2').childNodes.forEach(child => {
@@ -8,27 +10,49 @@ $('#mapArea').load('./images/map/SVG/VectorTrace.svg', function () {
   })
 });
 
-db.collection("classrooms").onSnapshot(
+var mapData = db.collection("classrooms");
+mapData.onSnapshot(
   snapshot => { mapData = snapshot},
   error => { console.log(`Encountered FS error: ${error}`)}
 );
 
-navigator.geolocation.watchPosition(position => {
-  console.log(position);
-});
-
 /**
- * 
- * @param {String} term 
+ * Searches the database for any names matching the given string.
+ * @param {String} searchTerm 
+ * @returns {Array<QueryDocumentSnapshot>} 
  */
-function search(term){
-    if (isNaN(Number(term))) {
-      //We search by building or room name/type
-  } else {
-      //We search by room number.
+async function search(searchTerm) {
+  try {
+    let locationArray = [];
+    const currentMapData = await mapData.get();
+    currentMapData.forEach(item => {
+        let name = item.data().name;
+        if (name.includes(searchTerm)) {
+          locationArray.push(item);
+        }
+      });
+      return locationArray;
+  } catch (error) {
+    console.error(`Encountered error reading mapData ${error}`);
+    return [];
   }
-  mapData
 }
+
+async function displayFoundItems(){
+  try {
+    const results = await search("31");
+    const displayArea = document.getElementById("displayRoomName");
+    let newHtml = "";
+    results.forEach(item => {
+      newHtml += `<p>${item.data().name}</p>`; 
+    });
+    displayArea.innerHTML = newHtml;
+  } catch (error) {
+    console.log(`Caught error when displaying found items: ${error}`);
+  }
+}
+displayFoundItems();
+
 
 // // write SE12 classrooms into firebase.
 // function writeSE12Class() {
