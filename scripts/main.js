@@ -1,6 +1,6 @@
-$('#mapArea').load('./images/map/SVG/VectorTrace.svg', function(){
+$('#mapArea').load('./images/map/SVG/VectorTrace.svg', function () {
   document.getElementById('Layer_2').childNodes.forEach(child => {
-    if (child.nodeName == 'defs'){
+    if (child.nodeName == 'defs') {
       child.remove();
     }    
   })
