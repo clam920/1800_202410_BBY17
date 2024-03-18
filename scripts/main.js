@@ -1,3 +1,5 @@
+var mapData;
+
 $('#mapArea').load('./images/map/SVG/VectorTrace.svg', function () {
   document.getElementById('Layer_2').childNodes.forEach(child => {
     if (child.nodeName == 'defs') {
@@ -5,6 +7,11 @@ $('#mapArea').load('./images/map/SVG/VectorTrace.svg', function () {
     }    
   })
 });
+
+db.collection("classrooms").onSnapshot(
+  snapshot => { mapData = snapshot},
+  error => { console.log(`Encountered FS error: ${error}`)}
+);
 
 navigator.geolocation.watchPosition(position => {
   console.log(position);
@@ -20,6 +27,7 @@ function search(term){
   } else {
       //We search by room number.
   }
+  mapData
 }
 
 // // write SE12 classrooms into firebase.
