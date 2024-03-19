@@ -53,6 +53,101 @@ async function displayFoundItems(){
 }
 displayFoundItems();
 
+// // write SE12 washrooms into firebase.
+// function writeSE12WC() {
+//   var washroomsRef = db.collection("washrooms");
+
+//   washroomsRef.add({
+//     code: "SE12_100A",
+//     name: "SE12 100A",
+//     building: "SE12",
+//     level: "1",
+//     details: "Male Washroom",
+//     lat: 0.00,
+//     lng: 0.00,  
+//   });
+//   washroomsRef.add({
+//     code: "SE12_100C",
+//     name: "SE12 100C",
+//     building: "SE12",
+//     level: "1",
+//     details: "Female Washroom",
+//     lat: 0.00,
+//     lng: 0.00,  
+//   });
+//   washroomsRef.add({
+//     code: "SE12_201R",
+//     name: "SE12 201R",
+//     building: "SE12",
+//     level: "2",
+//     details: "Male Washroom",
+//     lat: 0.00,
+//     lng: 0.00,  
+//   });
+//   washroomsRef.add({
+//     code: "SE12_201Q",
+//     name: "SE12 201Q",
+//     building: "SE12",
+//     level: "2",
+//     details: "Female Washroom",
+//     lat: 0.00,
+//     lng: 0.00,  
+//   });
+//   washroomsRef.add({
+//     code: "SE12_211",
+//     name: "SE12 211",
+//     building: "SE12",
+//     level: "2",
+//     details: "Female Washroom",
+//     lat: 0.00,
+//     lng: 0.00,  
+//   });
+//   washroomsRef.add({
+//     code: "SE12_212",
+//     name: "SE12 212",
+//     building: "SE12",
+//     level: "2",
+//     details: "Male Washroom",
+//     lat: 0.00,
+//     lng: 0.00,  
+//   });
+//   washroomsRef.add({
+//     code: "SE12_315",
+//     name: "SE12 315",
+//     building: "SE12",
+//     level: "3",
+//     details: "Male Washroom",
+//     lat: 0.00,
+//     lng: 0.00,  
+//   });
+//   washroomsRef.add({
+//     code: "SE12_314",
+//     name: "SE12 314",
+//     building: "SE12",
+//     level: "3",
+//     details: "Female Washroom",
+//     lat: 0.00,
+//     lng: 0.00,  
+//   });
+//   washroomsRef.add({
+//     code: "SE12_411",
+//     name: "SE12 411",
+//     building: "SE12",
+//     level: "4",
+//     details: "Male Washroom",
+//     lat: 0.00,
+//     lng: 0.00,  
+//   });
+//   washroomsRef.add({
+//     code: "SE12_408",
+//     name: "SE12 408",
+//     building: "SE12",
+//     level: "4",
+//     details: "Female Washroom",
+//     lat: 0.00,
+//     lng: 0.00,  
+//   });
+// }
 
 // // write SE12 classrooms into firebase.
 // function writeSE12Class() {
