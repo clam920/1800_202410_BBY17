@@ -1,8 +1,8 @@
 function onClickHome(){
   if (app.auth().currentUser == null) {
-    location.pathname = '/index.html';
+    location.href = 'index.html';
   } else {
-    location.pathname = '/main.html';
+    location.href = 'main.html';
   }
 }
 
