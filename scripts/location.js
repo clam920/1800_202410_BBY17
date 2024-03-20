@@ -13,6 +13,8 @@ function getLocation() {
       //logs current position to the console
       userPosition = position;
       convertWorldToPercent(position);
+    }, null, PositionOptions={
+      enableHighAccuracy: true
     });
   });
 }
@@ -35,11 +37,10 @@ function convertWorldToPercent(userPos) {
     && userPos.coords.longitude < maxX
     && userPos.coords.longitude > minX) {
     console.log("USer is inside campus");
+    let userLongPercent = Math.abs((userLong - maxX) / (minX - maxX)) * 100;
+    let userLatPercent = Math.abs((userLat - maxY) / (minY - maxY)) * 100;
+    console.log(userLongPercent, userLatPercent);
   }
-
-  let userLongPercent = Math.abs((userLong - maxX) / (minX - maxX)) * 100;
-  let userLatPercent = Math.abs((userLat - maxY) / (minY - maxY)) * 100;
-  console.log(userLongPercent, userLatPercent);
 };
 /*
   Top-left corner(Intersection of Willingdom and Canada Way)
