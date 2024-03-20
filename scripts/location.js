@@ -37,8 +37,8 @@ function convertWorldToPercent(userPos) {
     console.log("USer is inside campus");
   }
 
-  let userLongPercent = Math.abs((userLong - minX)/(minX - maxX)) * 100;
-  let userLatPercent = Math.abs((userLat - maxY)/(minY - maxY)) * 100;
+  let userLongPercent = Math.abs((userLong - minX) / (minX - maxX)) * 100;
+  let userLatPercent = Math.abs((userLat - maxY) / (minY - maxY)) * 100;
   console.log(userLongPercent, userLatPercent);
 };
 /*
@@ -47,15 +47,3 @@ function convertWorldToPercent(userPos) {
   Bottom-right corner(Intersection of wayburne Drive and Deer Lake Parkway)
   https://www.google.com/maps/@49.2425018,-122.998416,17.52z?entry=ttu
 */
-// //Get width/height of the area we're working in
-// let minX = -123.0068186;
-// let maxX = -122.998416;
-// let minY = 49.2425018;
-// let maxY = 49.2545877;
-
-// let diffX = maxX - minX;
-// let diffY = maxY - minY;
-
-// console.log(userPosition);
-
-// //Convert the width and height of the area to 
