@@ -1,11 +1,30 @@
 {
-  "folders":[
+  "folders": [
     {
       "path": "./*"
     }
   ],
+  "recommendations": [
+    "cschlosser.doxdocgen",
+    "figma.figma-vscode-extension",
+    "toba.vsfire",
+    "bradgashler.htmltagwrap",
+    "xabikos.javascriptsnippets",
+    "ms-vscode.js-debug-nightly",
+    "ritwickdey.liveserver",
+    "pdconsec.vscode-print",
+    "visualstudioexptteam.vscodeintellicode",
+    "visualstudioexptteam.intellicode-api-usage-examples"
+  ],
+  "files.autoSave": "afterDelay",
   "editor.detectIndentation": false,
   "editor.insertSpaces": true,
   "editor.tabSize": 2,
-
+  "editor.wordWrap": "on",
+  "editor.autoClosingBrackets": "always",
+  "editor.autoClosingComments": "always",
+  "editor.autoClosingOvertype": "auto",
+  "editor.autoClosingQuotes": "always",
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true
 }
