@@ -12,7 +12,7 @@ function getLocation() {
       console.log(position);
       //logs current position to the console
       userPosition = position;
-      testUserVsWorld(position);
+      convertWorldToPercent(position);
     });
   });
 }
@@ -37,7 +37,7 @@ function convertWorldToPercent(userPos) {
     console.log("USer is inside campus");
   }
 
-  let userLongPercent = Math.abs((userLong - minX) / (minX - maxX)) * 100;
+  let userLongPercent = Math.abs((userLong - maxX) / (minX - maxX)) * 100;
   let userLatPercent = Math.abs((userLat - maxY) / (minY - maxY)) * 100;
   console.log(userLongPercent, userLatPercent);
 };
