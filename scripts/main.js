@@ -3,18 +3,19 @@
 // });
 
 var mapArea = $('#mapArea');
-mapArea.load('./images/map/SVG/VectorTrace.svg', function () {
-  document.getElementById('Layer_2').childNodes.forEach(child => {
-    if (child.nodeName == 'defs') {
-      child.remove();
-    }    
-  })
-}).on("pointerdown", function(e){
+mapArea.load('./images/map/SVG/BCITMap.svg', cleanMapData).on("pointerdown", function(e){
   console.log(e);
 }).on("pointerup", function(e){
   console.log(e);
 });
 
+function cleanMapData(){
+  document.getElementById('Layer_2').childNodes.forEach(child => {
+    if (child.nodeName == 'defs') {
+      child.remove();
+    }    
+  })
+}
 
 var mapData = db.collection("classrooms");
 mapData.onSnapshot(
