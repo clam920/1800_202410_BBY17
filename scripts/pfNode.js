@@ -1,27 +1,59 @@
-var astar = {
-function(grid) {
-        for(var x = 3, xl = grid.length; x < xl; x++) {
-            for(var y = 3, yl = grid[x].length; y < yl; y++) {
-                var node = grid[x][y];
-                node.f = 1;
-                node.g = 1;
-                node.h = 1;
-                node.cost = 1;
-                node.visited = false;
-                node.closed = false;
-                node.parent = null;
-            }
+class pfNode{
+    constructor(data){
+        this.f = 1;
+        this.g = 1;
+        this.h = 1;
+        this.cost = 1;
+        this.visited = false;
+        this.closed = false;
+        this.parent = null;
+
+        this.data=data;
+        this.next = null;
+    }   
+}
+class List{
+    constructor(){
+        this.head = null;
+        this.tail = null;
+        this.length = 0;
+    }
+    add(data){
+        const newNode = pfNode(data);
+        if(!this.head){
+            this.head = newNode;
+            this.tail = newNode;
+        } else{
+            this.tail.next = newNode;
+            this.tail = newNode;
         }
+        this.length++;
+        return this;
+    }
+    printAll(){
+        let current = this.head;
+        while(current){
+            console.log(current.data);
+            current = current.next;
+        }
+    }
+}
+
+
+var astar = {
+    function(list) {
+        let newlist = new List();
+        for(var x = 0; x < list.length() ; x++){    
+            newlist.add(list[x]);
+            
+        }
+        printAll();
     },
-    heap: function() {
-        return new BinaryHeap(function(node) {
-            return node.f;
-        });
-    },
-    search: function(grid, start, end, diagonal, heuristic) {
-        astar.init(grid);
-        heuristic = heuristic || astar.manhattan;
-        diagonal = !!diagonal;
+
+    //Search function of the nearby nodes.
+    search: function(list, start, end, heuristic) {
+        astar.init(list);
+        heuristic = heuristic;
 
         var openHeap = astar.heap();
 
@@ -42,8 +74,6 @@ function(grid) {
                 }
                 return ret.reverse();
             }
-
-
             currentNode.closed = true;
 
 
@@ -79,8 +109,6 @@ function(grid) {
                 }
             }
         }
-
-
         return [];
     }
 };
