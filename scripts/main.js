@@ -15,7 +15,6 @@ mapArea.load('./images/map/SVG/BCITMap.svg', cleanMapData).on("pointerdown point
 
 function toggleMoveMapEventListener(e){
   if (pointerDown) {
-    console.log(e);
     let startPos = getPointerPosition(e);
     mapArea.on("pointermove", function(e){
       let currentPos = getPointerPosition(e)
@@ -23,9 +22,17 @@ function toggleMoveMapEventListener(e){
         currentPos.x - startPos.x,
         currentPos.y - startPos.y
         );
-      map.style.top = offset.y + "px";
-      map.style.left = offset.x + "px";
-      console.log(offset);
+        /*
+        Apparently transforms are stored in 2/3d array.
+        https://zellwk.com/blog/css-translate-values-in-javascript/ was a huge help in figuring this out.
+        */
+        let currentTransform = window.getComputedStyle(map)['transform'].match(/[-\d]+/gm);
+        currentTransform = convertTransformStyleToInt(currentTransform);
+        map.setAttribute('transform', `translate(${currentTransform[4] + offset.x}, ${currentTransform[5] + offset.y})`)
+      // map.style.top = offset.y + "px";
+      // map.style.left = offset.x + "px";
+      //console.log(offset);
+      startPos = currentPos;
     });
   } else {
     mapArea.off("pointermove");
@@ -42,6 +49,19 @@ function getPointerPosition(e){
   return new ScreenPixelPosition(e.originalEvent.screenX, e.originalEvent.screenY);
 }
 
+/**
+ * Converts the array of a Transform Style, and converts it to an array of Ints.
+ * @param {Array<String>} arr 
+ * @returns {Array<Number>} The given string array, converted to ints.
+ */
+function convertTransformStyleToInt(arr){
+  let retArr = []
+  arr.forEach(value => {
+    retArr.push(parseInt(value));
+  })
+  return retArr;
+}
+
 function cleanMapData(){
   map = document.getElementById('Layer_2');
   map.childNodes.forEach(child => {
@@ -49,6 +69,7 @@ function cleanMapData(){
       child.remove();
     }    
   })
+  map.setAttribute('transform', 'translate(0, 0)');
 }
 
 mapData.onSnapshot(
