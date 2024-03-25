@@ -1,4 +1,7 @@
 // write SE12 washrooms into firebase.
+
+
+
 function writeSE12WC() {
   var washroomsRef = db.collection("washrooms");
 
@@ -453,3 +456,58 @@ function writeSE12Class() {
   });
 }
 
+function writeSW05Classrooms() {
+  var classroomsRef = db.collection("classrooms");
+
+  classroomsRef.add({
+    code: "SW05_1840",
+    name: "SW05 1840",
+    building: "SW05",
+    level: "1",
+    details: "Lecture Theater",
+    lat: 0.00,
+    lng: 0.00,  
+    last_updated: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  classroomsRef.add({
+    code: "SW05_1850",
+    name: "SW05 1850",
+    building: "SW05",
+    level: "1",
+    details: "Lecture Theater",
+    lat: 0.00,
+    lng: 0.00,  
+    last_updated: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  classroomsRef.add({
+    code: "SW05_2895",
+    name: "SW05 2895",
+    building: "SW05",
+    level: "2",
+    details: "Class",
+    lat: 0.00,
+    lng: 0.00,  
+    last_updated: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  classroomsRef.add({
+    code: "SW05_2875",
+    name: "SW05 2875",
+    building: "SW05",
+    level: "2",
+    details: "Class",
+    lat: 0.00,
+    lng: 0.00,  
+    last_updated: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  classroomsRef.add({
+    code: "SW05_2825",
+    name: "SW05 2825",
+    building: "SW05",
+    level: "2",
+    details: "Class",
+    lat: 0.00,
+    lng: 0.00, 
+    last_updated: firebase.firestore.FieldValue.serverTimestamp() 
+  });
+
+}
