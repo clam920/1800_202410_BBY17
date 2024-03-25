@@ -6,6 +6,11 @@
   --rollover-blue: #0055ce;
   --link-blue: #0069ff;
 }
+
+ul {
+  list-style-type: none;
+}
+
 /* #region header */
 
 /* #region navbar */
@@ -78,7 +83,14 @@
 }
 
 .suggestionBox {
+  width: auto;
+  display: none;
+  padding: 10px 12px;
   background-color: #FFF;
+  font-size: 16px;
+  border-radius: 24px;
+  flex: 1; 
+  z-index: 9;
 }
 
 /* #endregion searchbar*/
