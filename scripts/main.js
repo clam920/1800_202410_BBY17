@@ -2,7 +2,7 @@ var mapArea = $('#mapArea');
 var map;
 var mapData = db.collection("classrooms");
 
-let pointerDown = true;
+let pointerDown = false;
 
 function ScreenPixelPosition(x, y) {
   this.x = x;
@@ -23,9 +23,17 @@ $.get('./images/map/SVG/BCITMap.svg').done(function (data) {
   console.log(mapText);
 });
 
-mapArea.load('./images/map/SVG/BCITMap.svg', cleanMapData).on("pointerdown pointerup", toggleMoveMapEventListener);
+mapArea.load('./images/map/SVG/BCITMap.svg', initialMapSetup)
+  .on("pointerdown pointerup", toggleMoveMapEventListener)
+  .on("pointerleave", function(){
+    console.log("Pointer has left map area.");
+    if (pointerDown){
+      mapArea.off("pointermove");
+    }
+  });
 
 function toggleMoveMapEventListener(e) {
+  pointerDown = !pointerDown;
   if (pointerDown) {
     let startPos = getPointerPosition(e);
     mapArea.on("pointermove", function (e) {
@@ -39,21 +47,39 @@ function toggleMoveMapEventListener(e) {
       https://zellwk.com/blog/css-translate-values-in-javascript/ was a huge help in figuring this out.
       */
       let viewBox = map.getAttributeNS(null, "viewBox").split(" ");
+      //center will be used for zooming later.
       let center = new ScreenPixelPosition(
         parseFloat(viewBox[2]) / 2,
         parseFloat(viewBox[3]) / 2
       );
-      newMatrix = panMatrix(offset.x, offset.y);
+      newMatrix = panMap(offset.x, offset.y);
       map.setAttributeNS(null, "transform", newMatrix);
       startPos = currentPos;
     });
+    // .on("pointerleave", function(e) {
+    //   mapArea.off("pointermove");
+    //   pointerDown = !pointerDown;
+    // })
   } else {
     mapArea.off("pointermove");
   }
-  pointerDown = !pointerDown;
 }
 
-function panMatrix(dx, dy){
+/**
+ * Updates the maps transform when a PointerEvent happens
+ * @param {PointerEvent} e Should have the startPos included inside the data. 
+ */
+function updateMapTransform(e) {
+
+}
+
+/**
+ * Creates a new array, as if you had panned the map.
+ * @param {Number} dx the amount we are panning in the X
+ * @param {Number} dy the amount we are panning the in Y
+ * @returns {Array<Number>} The new map array
+ */
+function panMap(dx, dy) {
   mapMatrix[4] += dx;
   mapMatrix[5] += dy;
 
@@ -82,13 +108,14 @@ function convertTransformStyleToInt(arr) {
   return retArr;
 }
 
-function cleanMapData() {
+function initialMapSetup() {
   map = document.getElementById('Layer_2');
   map.childNodes.forEach(child => {
     if (child.nodeName == 'defs') {
       child.remove();
     }
-  })
+  });
+
   map.setAttribute('x', '0');
   map.setAttribute('y', '0');
   map.setAttribute('transform', 'translate(0, 0)');
@@ -99,46 +126,3 @@ mapData.onSnapshot(
   error => { console.log(`Encountered FS error: ${error}`) }
 );
 
-/**
- * Searches the database for any names matching the given string.
- * @param {String} searchTerm 
- * @returns {Array<QueryDocumentSnapshot>} 
- */
-async function search(searchTerm) {
-  try {
-    let locationArray = [];
-    const currentMapData = await mapData.get();
-    currentMapData.forEach(item => {
-      let name = item.data().name;
-      if (name.includes(searchTerm)) {
-        locationArray.push(item);
-      }
-    });
-    return locationArray;
-  } catch (error) {
-    console.error(`Encountered error reading mapData ${error}`);
-    return [];
-  }
-};
-
-// /**
-//  * Displays each of the found items in the array.
-//  * Currently just a placeholder, but feel free to modify it as need be.
-//  * @param {Array<QueryDocumentSnapshot>} foundItemArray An array from Firebase of all things that match the string we searched for.
-//  */
-// async function displayFoundItems(foundItemArray){
-//   try {
-//     //Use the below line if you want to test the code and see what it outputs.
-//     foundItemArray = await search("31");
-
-//     //Currently just a div slapped onto the main page. The room names all pop up on the bottom of the screen.
-//     const displayArea = document.getElementById("displayRoomName");
-//     let newHtml = "";
-//     foundItemArray.forEach(item => {
-//       newHtml += `<p>${item.data().name}</p>`; 
-//     });
-//     displayArea.innerHTML = newHtml;
-//   } catch (error) {
-//     console.log(`Caught error when displaying found items: ${error}`);
-//   }
-// };

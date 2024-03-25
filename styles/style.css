@@ -6,6 +6,7 @@
   --rollover-blue: #0055ce;
   --link-blue: #0069ff;
 }
+
 /* #region header */
 
 /* #region navbar */
@@ -37,6 +38,7 @@
   background-color: var(--rollover-blue)
 }
 /* #endregion buttons */
+
 /* #region searchBar */
 .search-bar {
   display: flex; 
