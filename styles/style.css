@@ -6,7 +6,9 @@
   --rollover-blue: #0055ce;
   --link-blue: #0069ff;
 }
+/* #region header */
 
+/* #region navbar */
 .navbar-brand {
   color: var(--bcit-yellow);
 }
@@ -20,7 +22,9 @@
     "data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255,1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E"
   );
 }
+/* #endregion navbar*/
 
+/* #region buttons */
 .bg-primary {
   background-color: var(--bcit-blue) !important;
 }
@@ -32,15 +36,8 @@
 .btn :hover{
   background-color: var(--rollover-blue)
 }
-
-.cls-1 {
-  fill: none;
-  stroke: var(--bcit-yellow);
-}
-#mapArea {
-  background-color: var(--accent-turquoise);
-}
-
+/* #endregion buttons */
+/* #region searchBar */
 .search-bar {
   display: flex; 
   align-items: center; 
@@ -79,3 +76,22 @@
 .search-button:hover {
   background-color: transparent; 
 }
+
+/* #endregion searchbar*/
+/* #endregion header*/
+
+/* #region map */
+#mapArea {
+  background-color: var(--accent-turquoise);
+}
+
+#roadsAndPaths {
+  stroke: var(--bcit-yellow);
+  fill: none;
+}
+
+#buildings {
+  fill: var(--accent-purple);
+  stroke: var(--bcit-yellow);
+}
+/* #endregion map*/

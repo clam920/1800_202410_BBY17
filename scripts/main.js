@@ -1,16 +1,77 @@
-// navigator.geolocation.watchPosition(position => {
-//   console.log(position);
-// });
+var mapArea = $('#mapArea');
+var map;
+var mapData = db.collection("classrooms");
 
-$('#mapArea').load('./images/map/SVG/VectorTrace.svg', function () {
-  document.getElementById('Layer_2').childNodes.forEach(child => {
+let pointerDown = true;
+
+function ScreenPixelPosition(x, y){
+  this.x = x;
+  this.y = y;
+}
+
+let offset = new ScreenPixelPosition(0, 0);
+
+mapArea.load('./images/map/SVG/BCITMap.svg', cleanMapData).on("pointerdown pointerup", toggleMoveMapEventListener);
+
+function toggleMoveMapEventListener(e){
+  if (pointerDown) {
+    let startPos = getPointerPosition(e);
+    mapArea.on("pointermove", function(e){
+      let currentPos = getPointerPosition(e)
+      let offset = new ScreenPixelPosition(
+        currentPos.x - startPos.x,
+        currentPos.y - startPos.y
+        );
+        /*
+        Apparently transforms are stored in 2/3d array.
+        https://zellwk.com/blog/css-translate-values-in-javascript/ was a huge help in figuring this out.
+        */
+        let currentTransform = window.getComputedStyle(map)['transform'].match(/[-\d]+/gm);
+        currentTransform = convertTransformStyleToInt(currentTransform);
+        map.setAttribute('transform', `translate(${currentTransform[4] + offset.x}, ${currentTransform[5] + offset.y})`)
+      // map.style.top = offset.y + "px";
+      // map.style.left = offset.x + "px";
+      //console.log(offset);
+      startPos = currentPos;
+    });
+  } else {
+    mapArea.off("pointermove");
+  }
+  pointerDown = !pointerDown;
+}
+
+/**
+ * 
+ * @param {PointerEvent} e a Pointer Event 
+ * @returns {ScreenPixelPosition}
+ */
+function getPointerPosition(e){
+  return new ScreenPixelPosition(e.originalEvent.screenX, e.originalEvent.screenY);
+}
+
+/**
+ * Converts the array of a Transform Style, and converts it to an array of Ints.
+ * @param {Array<String>} arr 
+ * @returns {Array<Number>} The given string array, converted to ints.
+ */
+function convertTransformStyleToInt(arr){
+  let retArr = []
+  arr.forEach(value => {
+    retArr.push(parseInt(value));
+  })
+  return retArr;
+}
+
+function cleanMapData(){
+  map = document.getElementById('Layer_2');
+  map.childNodes.forEach(child => {
     if (child.nodeName == 'defs') {
       child.remove();
     }    
   })
-});
+  map.setAttribute('transform', 'translate(0, 0)');
+}
 
-var mapData = db.collection("classrooms");
 mapData.onSnapshot(
   snapshot => { mapData = snapshot},
   error => { console.log(`Encountered FS error: ${error}`)}
@@ -36,475 +97,26 @@ async function search(searchTerm) {
     console.error(`Encountered error reading mapData ${error}`);
     return [];
   }
-}
+};
 
-async function displayFoundItems(){
-  try {
-    const results = await search("31");
-    const displayArea = document.getElementById("displayRoomName");
-    let newHtml = "";
-    results.forEach(item => {
-      newHtml += `<p>${item.data().name}</p>`; 
-    });
-    displayArea.innerHTML = newHtml;
-  } catch (error) {
-    console.log(`Caught error when displaying found items: ${error}`);
-  }
-}
-displayFoundItems();
+// /**
+//  * Displays each of the found items in the array.
+//  * Currently just a placeholder, but feel free to modify it as need be.
+//  * @param {Array<QueryDocumentSnapshot>} foundItemArray An array from Firebase of all things that match the string we searched for.
+//  */
+// async function displayFoundItems(foundItemArray){
+//   try {
+//     //Use the below line if you want to test the code and see what it outputs.
+//     foundItemArray = await search("31");
 
-// // write SE12 washrooms into firebase.
-// function writeSE12WC() {
-//   var washroomsRef = db.collection("washrooms");
-
-//   washroomsRef.add({
-//     code: "SE12_100A",
-//     name: "SE12 100A",
-//     building: "SE12",
-//     level: "1",
-//     details: "Male Washroom",
-//     lat: 0.00,
-//     lng: 0.00,  
-//   });
-//   washroomsRef.add({
-//     code: "SE12_100C",
-//     name: "SE12 100C",
-//     building: "SE12",
-//     level: "1",
-//     details: "Female Washroom",
-//     lat: 0.00,
-//     lng: 0.00,  
-//   });
-//   washroomsRef.add({
-//     code: "SE12_201R",
-//     name: "SE12 201R",
-//     building: "SE12",
-//     level: "2",
-//     details: "Male Washroom",
-//     lat: 0.00,
-//     lng: 0.00,  
-//   });
-//   washroomsRef.add({
-//     code: "SE12_201Q",
-//     name: "SE12 201Q",
-//     building: "SE12",
-//     level: "2",
-//     details: "Female Washroom",
-//     lat: 0.00,
-//     lng: 0.00,  
-//   });
-//   washroomsRef.add({
-//     code: "SE12_211",
-//     name: "SE12 211",
-//     building: "SE12",
-//     level: "2",
-//     details: "Female Washroom",
-//     lat: 0.00,
-//     lng: 0.00,  
-//   });
-//   washroomsRef.add({
-//     code: "SE12_212",
-//     name: "SE12 212",
-//     building: "SE12",
-//     level: "2",
-//     details: "Male Washroom",
-//     lat: 0.00,
-//     lng: 0.00,  
-//   });
-//   washroomsRef.add({
-//     code: "SE12_315",
-//     name: "SE12 315",
-//     building: "SE12",
-//     level: "3",
-//     details: "Male Washroom",
-//     lat: 0.00,
-//     lng: 0.00,  
-//   });
-//   washroomsRef.add({
-//     code: "SE12_314",
-//     name: "SE12 314",
-//     building: "SE12",
-//     level: "3",
-//     details: "Female Washroom",
-//     lat: 0.00,
-//     lng: 0.00,  
-//   });
-//   washroomsRef.add({
-//     code: "SE12_411",
-//     name: "SE12 411",
-//     building: "SE12",
-//     level: "4",
-//     details: "Male Washroom",
-//     lat: 0.00,
-//     lng: 0.00,  
-//   });
-//   washroomsRef.add({
-//     code: "SE12_408",
-//     name: "SE12 408",
-//     building: "SE12",
-//     level: "4",
-//     details: "Female Washroom",
-//     lat: 0.00,
-//     lng: 0.00,  
-//   });
-// }
-
-// // write SE12 classrooms into firebase.
-// function writeSE12Class() {
-
-//   var classroomsRef = db.collection("classrooms");
-
-//   // classroomsRef.add({
-//   //   code: "SE12_101Q",
-//   //   name: "SE12 101",
-//   //   building: "SE12",
-//   //   level: "1",
-//   //   details: "Class",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_103",
-//   //   name: "SE12 103",
-//   //   building: "SE12",
-//   //   level: "1",
-//   //   details: "Lab-Media",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_301",
-//   //   name: "SE12 301",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Class",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_302",
-//   //   name: "SE12 302",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Class",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_303",
-//   //   name: "SE12 303",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Lab-Computer",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_306",
-//   //   name: "SE12 306",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Lab-Computer",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_307",
-//   //   name: "SE12 307",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Class",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_308",
-//   //   name: "SE12 308",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Lab-Computer",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_309",
-//   //   name: "SE12 309",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Class",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_310",
-//   //   name: "SE12 310",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Lab-Computer",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_311",
-//   //   name: "SE12 311",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Lab-Computer",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_312",
-//   //   name: "SE12 312",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Class",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_313",
-//   //   name: "SE12 313",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Class",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_318",
-//   //   name: "SE12 318",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Lab-Computer",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_319",
-//   //   name: "SE12 319",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Lab-Computer",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_320",
-//   //   name: "SE12 320",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Lab-Computer",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_321",
-//   //   name: "SE12 321",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Lab-Computer",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-
-//   // classroomsRef.add({
-//   //   code: "SE12_322",
-//   //   name: "SE12 322",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Lab-Computer",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_323",
-//   //   name: "SE12 323",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Lab-Computer",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_324",
-//   //   name: "SE12 324",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Lab-Computer",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_325",
-//   //   name: "SE12 325",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Lab-Computer",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_326",
-//   //   name: "SE12 326",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Lab-Computer",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   // classroomsRef.add({
-//   //   code: "SE12_327",
-//   //   name: "SE12 327",
-//   //   building: "SE12",
-//   //   level: "3",
-//   //   details: "Lab-Computer",
-//   //   lat: 0.00,
-//   //   lng: 0.00,
-//   //   last_updated: firebase.firestore.Timestamp.fromDate(new Date("March 17, 2024"))
-//   // });
-//   classroomsRef.add({
-//     code: "SE12_401",
-//     name: "SE12 401",
-//     building: "SE12",
-//     level: "4",
-//     details: "Lab-Life Science",
-//     lat: 0.00,
-//     lng: 0.00,
-//     last_updated: firebase.firestore.FieldValue.serverTimestamp()
-//   });
-
-//   classroomsRef.add({
-//     code: "SE12_402",
-//     name: "SE12 402",
-//     building: "SE12",
-//     level: "4",
-//     details: "Lab-Life Science",
-//     lat: 0.00,
-//     lng: 0.00,
-//     last_updated: firebase.firestore.FieldValue.serverTimestamp()
-//   });
-//   classroomsRef.add({
-//     code: "SE12_403",
-//     name: "SE12 403",
-//     building: "SE12",
-//     level: "4",
-//     details: "Lab-Life Science",
-//     lat: 0.00,
-//     lng: 0.00,
-//     last_updated: firebase.firestore.FieldValue.serverTimestamp()
-//   });
-//   classroomsRef.add({
-//     code: "SE12_404",
-//     name: "SE12 404",
-//     building: "SE12",
-//     level: "4",
-//     details: "Lab-Life Science",
-//     lat: 0.00,
-//     lng: 0.00,
-//     last_updated: firebase.firestore.FieldValue.serverTimestamp()
-//   });
-//   classroomsRef.add({
-//     code: "SE12_406",
-//     name: "SE12 406",
-//     building: "SE12",
-//     level: "4",
-//     details: "Lab-Life Science",
-//     lat: 0.00,
-//     lng: 0.00,
-//     last_updated: firebase.firestore.FieldValue.serverTimestamp()
-//   });
-//   classroomsRef.add({
-//     code: "SE12_407",
-//     name: "SE12 407",
-//     building: "SE12",
-//     level: "4",
-//     details: "Lab-Life Science",
-//     lat: 0.00,
-//     lng: 0.00,
-//     last_updated: firebase.firestore.FieldValue.serverTimestamp()
-//   });
-//   classroomsRef.add({
-//     code: "SE12_412",
-//     name: "SE12 412",
-//     building: "SE12",
-//     level: "4",
-//     details: "Lab-Life Science",
-//     lat: 0.00,
-//     lng: 0.00,
-//     last_updated: firebase.firestore.FieldValue.serverTimestamp()
-//   });
-//   classroomsRef.add({
-//     code: "SE12_413",
-//     name: "SE12 413",
-//     building: "SE12",
-//     level: "4",
-//     details: "Lab-Life Science",
-//     lat: 0.00,
-//     lng: 0.00,
-//     last_updated: firebase.firestore.FieldValue.serverTimestamp()
-//   });
-//   classroomsRef.add({
-//     code: "SE12_414",
-//     name: "SE12 414",
-//     building: "SE12",
-//     level: "4",
-//     details: "Lab-Life Science",
-//     lat: 0.00,
-//     lng: 0.00,
-//     last_updated: firebase.firestore.FieldValue.serverTimestamp()
-//   });
-//   classroomsRef.add({
-//     code: "SE12_415",
-//     name: "SE12 415",
-//     building: "SE12",
-//     level: "4",
-//     details: "Lab-Life Science",
-//     lat: 0.00,
-//     lng: 0.00,
-//     last_updated: firebase.firestore.FieldValue.serverTimestamp()
-//   });
-//   classroomsRef.add({
-//     code: "SE12_416",
-//     name: "SE12 416",
-//     building: "SE12",
-//     level: "4",
-//     details: "Lab-Life Science",
-//     lat: 0.00,
-//     lng: 0.00,
-//     last_updated: firebase.firestore.FieldValue.serverTimestamp()
-//   });
-//   classroomsRef.add({
-//     code: "SE12_417",
-//     name: "SE12 417",
-//     building: "SE12",
-//     level: "4",
-//     details: "Lab-Life Science",
-//     lat: 0.00,
-//     lng: 0.00,
-//     last_updated: firebase.firestore.FieldValue.serverTimestamp()
-//   });
-// }
-
+//     //Currently just a div slapped onto the main page. The room names all pop up on the bottom of the screen.
+//     const displayArea = document.getElementById("displayRoomName");
+//     let newHtml = "";
+//     foundItemArray.forEach(item => {
+//       newHtml += `<p>${item.data().name}</p>`; 
+//     });
+//     displayArea.innerHTML = newHtml;
+//   } catch (error) {
+//     console.log(`Caught error when displaying found items: ${error}`);
+//   }
+// };
