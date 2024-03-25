@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const suggestionsList = document.getElementById('suggestionsList');
         suggestionsList.innerHTML = ''; // Clear previous suggestions
   
-        if (searchTerm.length === 0) {
+        if (searchTerm.length == 0) {
           suggestionsList.style.display = 'none'; // Hide suggestions if search term is empty
           return; // No suggestions for empty input
         }
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                          .orderBy('name')
                                          .limit(5)
                                          .get();
-          if (querySnapshot.size === 0) {
+          if (querySnapshot.size == 0) {
             suggestionsList.style.display = 'none'; // Hide suggestions if no results found
             return;
           }
@@ -35,8 +35,13 @@ document.addEventListener('DOMContentLoaded', function() {
           suggestionsList.style.left = `${inputRect.left}px`;
   
           // Populate the suggestions list with the retrieved suggestions
+          console.log("Snapshot is " + querySnapshot.size);
           querySnapshot.forEach((doc) => {
+            console.log(doc.data());
             const suggestion = doc.data().name;
+            if (suggestionsList.innerHTML.includes(suggestion)){
+              return;
+            }
             const suggestionItem = document.createElement('li');
             suggestionItem.textContent = suggestion;
             suggestionItem.addEventListener('click', () => {
@@ -46,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             suggestionsList.appendChild(suggestionItem);
           });
+          console.log(suggestionsList.innerHTML);
   
           // Display the suggestions list
           suggestionsList.style.display = 'block';

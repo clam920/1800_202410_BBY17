@@ -77,6 +77,10 @@
   background-color: transparent; 
 }
 
+.suggestionBox {
+  background-color: #FFF;
+}
+
 /* #endregion searchbar*/
 /* #endregion header*/
 
