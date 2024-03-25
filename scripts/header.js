@@ -41,28 +41,13 @@ setupLogoutButton();
 
 function addCallbackToSearchBar() {
 
-  document.addEventListener('DOMContentLoaded', function () {
-    console.log("Im here!");
-    document.querySelector('#inputclick').addEventListener("click", function(){
-      console.log("Clicked"); 
-      // Retrieve the search input element
-      const searchInput = document.querySelector('.search-input');
-
-      // Check if the search input element exists
-      if (searchInput) {
-        loadSearchBar(searchInput);
-      } else {
-        console.warn("Waiting for search bar");
-        document.removeEventListener('DOMContentLoaded', function(){});
-        addCallbackToSearchBar();
-      }
-    });
-  });
+  console.log("Im here!");
+  document.querySelector('#inputclick').addEventListener("click", loadSearchBar);
 }
 
-function loadSearchBar(elem) {
+function loadSearchBar() {
   console.log("Loading search bar");
-  const searchInput = elem;
+  const searchInput = document.querySelector('.search-input');;
   // Add an event listener to the search input element
   searchInput.addEventListener('input', async (event) => {
 
