@@ -1,23 +1,56 @@
-// navigator.geolocation.watchPosition(position => {
-//   console.log(position);
-// });
-
 var mapArea = $('#mapArea');
-mapArea.load('./images/map/SVG/BCITMap.svg', cleanMapData).on("pointerdown", function(e){
-  console.log(e);
-}).on("pointerup", function(e){
-  console.log(e);
-});
+var map;
+var mapData = db.collection("classrooms");
+
+let pointerDown = true;
+
+function ScreenPixelPosition(x, y){
+  this.x = x;
+  this.y = y;
+}
+
+let offset = new ScreenPixelPosition(0, 0);
+
+mapArea.load('./images/map/SVG/BCITMap.svg', cleanMapData).on("pointerdown pointerup", toggleMoveMapEventListener);
+
+function toggleMoveMapEventListener(e){
+  if (pointerDown) {
+    console.log(e);
+    let startPos = getPointerPosition(e);
+    mapArea.on("pointermove", function(e){
+      let currentPos = getPointerPosition(e)
+      let offset = new ScreenPixelPosition(
+        currentPos.x - startPos.x,
+        currentPos.y - startPos.y
+        );
+      map.style.top = offset.y + "px";
+      map.style.left = offset.x + "px";
+      console.log(offset);
+    });
+  } else {
+    mapArea.off("pointermove");
+  }
+  pointerDown = !pointerDown;
+}
+
+/**
+ * 
+ * @param {PointerEvent} e a Pointer Event 
+ * @returns {ScreenPixelPosition}
+ */
+function getPointerPosition(e){
+  return new ScreenPixelPosition(e.originalEvent.screenX, e.originalEvent.screenY);
+}
 
 function cleanMapData(){
-  document.getElementById('Layer_2').childNodes.forEach(child => {
+  map = document.getElementById('Layer_2');
+  map.childNodes.forEach(child => {
     if (child.nodeName == 'defs') {
       child.remove();
     }    
   })
 }
 
-var mapData = db.collection("classrooms");
 mapData.onSnapshot(
   snapshot => { mapData = snapshot},
   error => { console.log(`Encountered FS error: ${error}`)}
