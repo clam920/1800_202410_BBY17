@@ -121,24 +121,24 @@ async function search(searchTerm) {
   }
 };
 
-/**
- * Displays each of the found items in the array.
- * Currently just a placeholder, but feel free to modify it as need be.
- * @param {Array<QueryDocumentSnapshot>} foundItemArray An array from Firebase of all things that match the string we searched for.
- */
-async function displayFoundItems(foundItemArray) {
-  try {
-    //Use the below line if you want to test the code and see what it outputs.
-    //foundItemArray = await search("31");
+// /**
+//  * Displays each of the found items in the array.
+//  * Currently just a placeholder, but feel free to modify it as need be.
+//  * @param {Array<QueryDocumentSnapshot>} foundItemArray An array from Firebase of all things that match the string we searched for.
+//  */
+// async function displayFoundItems(foundItemArray){
+//   try {
+//     //Use the below line if you want to test the code and see what it outputs.
+//     foundItemArray = await search("31");
 
-    //Currently just a div slapped onto the main page. The room names all pop up on the bottom of the screen.
-    const displayArea = document.getElementById("displayRoomName");
-    let newHtml = "";
-    foundItemArray.forEach(item => {
-      newHtml += `<p>${item.data().name}</p>`;
-    });
-    displayArea.innerHTML = newHtml;
-  } catch (error) {
-    console.log(`Caught error when displaying found items: ${error}`);
-  }
-};
+//     //Currently just a div slapped onto the main page. The room names all pop up on the bottom of the screen.
+//     const displayArea = document.getElementById("displayRoomName");
+//     let newHtml = "";
+//     foundItemArray.forEach(item => {
+//       newHtml += `<p>${item.data().name}</p>`; 
+//     });
+//     displayArea.innerHTML = newHtml;
+//   } catch (error) {
+//     console.log(`Caught error when displaying found items: ${error}`);
+//   }
+// };
