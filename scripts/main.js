@@ -21,14 +21,14 @@ function toggleMoveMapEventListener(e){
       let offset = new ScreenPixelPosition(
         currentPos.x - startPos.x,
         currentPos.y - startPos.y
-        );
-        /*
-        Apparently transforms are stored in 2/3d array.
-        https://zellwk.com/blog/css-translate-values-in-javascript/ was a huge help in figuring this out.
-        */
-        let currentTransform = window.getComputedStyle(map)['transform'].match(/[-\d]+/gm);
-        currentTransform = convertTransformStyleToInt(currentTransform);
-        map.setAttribute('transform', `translate(${currentTransform[4] + offset.x}, ${currentTransform[5] + offset.y})`)
+      );
+      /*
+      Apparently transforms are stored in 2/3d array.
+      https://zellwk.com/blog/css-translate-values-in-javascript/ was a huge help in figuring this out.
+      */
+      let currentTransform = window.getComputedStyle(map)['transform'].match(/[-\d]+/gm);
+      currentTransform = convertTransformStyleToInt(currentTransform);
+      map.setAttribute('transform', `translate(${currentTransform[4] + offset.x}, ${currentTransform[5] + offset.y})`)
       // map.style.top = offset.y + "px";
       // map.style.left = offset.x + "px";
       //console.log(offset);
