@@ -1,8 +1,8 @@
-import {ScreenPixelPosition, initialMapSetup} from "./modules/map.js";
+import {ScreenPixelPosition, setupMap} from "./modules/map.js";
 import {userPosition, setupLocation, convertWorldToPercent} from "./modules/location.js";
 
 function setupMainPage(){
-  initialMapSetup();
+  setupMap();
   setupLocation();
 }
 

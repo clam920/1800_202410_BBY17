@@ -82,7 +82,7 @@ function convertTransformStyleToInt(arr) {
 /**
  * Loads the map and enables the panning/zooming.
  */
-async function initialMapSetup() {
+async function setupMap() {
   await mapArea.load('./images/map/SVG/BCITMap.svg', cleanMapData)
   .on("pointerdown", toggleMoveMap);
 };
@@ -122,4 +122,4 @@ function toggleMoveMap(e) {
   }
 };
 
-export { ScreenPixelPosition, mapSVG, mapArea, mapText, initialMapSetup };
+export { ScreenPixelPosition, mapSVG, mapArea, mapText, setupMap };
