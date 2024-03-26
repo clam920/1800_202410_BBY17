@@ -24,53 +24,45 @@ $.get('./images/map/SVG/BCITMap.svg').done(function (data) {
 });
 
 mapArea.load('./images/map/SVG/BCITMap.svg', initialMapSetup)
-  .on("pointerdown pointerup", toggleMoveMapEventListener)
-  .on("pointerleave", function(){
-    console.log("Pointer has left map area.");
-    if (pointerDown){
-      mapArea.off("pointermove");
-    }
-  });
+  .on("pointerdown", toggleMoveMap);
 
-function toggleMoveMapEventListener(e) {
+function toggleMoveMap(e) {
   pointerDown = !pointerDown;
   if (pointerDown) {
-    let startPos = getPointerPosition(e);
-    mapArea.on("pointermove", function (e) {
-      let currentPos = getPointerPosition(e)
-      let offset = new ScreenPixelPosition(
-        currentPos.x - startPos.x,
-        currentPos.y - startPos.y
-      );
-      /*
-      Apparently transforms are stored in 2/3d array.
-      https://zellwk.com/blog/css-translate-values-in-javascript/ was a huge help in figuring this out.
-      */
-      let viewBox = map.getAttributeNS(null, "viewBox").split(" ");
-      //center will be used for zooming later.
-      let center = new ScreenPixelPosition(
-        parseFloat(viewBox[2]) / 2,
-        parseFloat(viewBox[3]) / 2
-      );
-      newMatrix = panMap(offset.x, offset.y);
-      map.setAttributeNS(null, "transform", newMatrix);
-      startPos = currentPos;
-    });
-    // .on("pointerleave", function(e) {
-    //   mapArea.off("pointermove");
-    //   pointerDown = !pointerDown;
-    // })
+    enablePointerTracking(e);
   } else {
-    mapArea.off("pointermove");
+    disablePointerTracking();
   }
 }
 
-/**
- * Updates the maps transform when a PointerEvent happens
- * @param {PointerEvent} e Should have the startPos included inside the data. 
- */
-function updateMapTransform(e) {
+function enablePointerTracking(e){
+  let startPos = getPointerPosition(e);
+  mapArea.on("pointermove", function (e) {
+    let currentPos = getPointerPosition(e)
+    let offset = new ScreenPixelPosition(
+      currentPos.x - startPos.x,
+      currentPos.y - startPos.y
+    )
+    /*
+    Apparently transforms are stored in 2/3d array.
+    https://zellwk.com/blog/css-translate-values-in-javascript/ was a huge help in figuring this out.
+    */
+    let viewBox = map.getAttributeNS(null, "viewBox").split(" ");
+    //center will be used for zooming later.
+    let center = new ScreenPixelPosition(
+      parseFloat(viewBox[2]) / 2,
+      parseFloat(viewBox[3]) / 2
+    );
+    newMatrix = panMap(offset.x, offset.y);
+    map.setAttributeNS(null, "transform", newMatrix);
+    startPos = currentPos;
+  })
+  .on("pointerup pointerleave", disablePointerTracking);
+}
 
+function disablePointerTracking(){
+  mapArea.off("pointermove pointerleave pointerup");
+  pointerDown = false;
 }
 
 /**
