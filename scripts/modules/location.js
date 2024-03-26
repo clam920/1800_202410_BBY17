@@ -17,11 +17,10 @@ function setupLocation() {
   //uses navigator to get the geolocation
   //Watch position does it constantly instead of just once
   navigator.geolocation.watchPosition(position => {
-    console.log(position);
     //logs current position to the console
+    //console.log(position);
     userPosition = position;
-    convertWorldToPercent(position);
-  }, null, PositionOptions);
+  }, null, positionOptions);
 }
 
 /**
