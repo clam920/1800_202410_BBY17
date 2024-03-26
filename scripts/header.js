@@ -33,4 +33,3 @@ function setupHeader(){
 };
 
 setupHeader();
-console.warn(app.auth().currentUser);
