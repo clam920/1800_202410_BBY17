@@ -60,6 +60,4 @@ function setupSearchBar() {
   });
 }
 
-searchBar.addEventListener("click", setupSearchBar);
-
 export {searchBar, setupSearchBar};
