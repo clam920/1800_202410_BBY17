@@ -2,6 +2,7 @@ const searchBar = document.querySelector('#inputclick');
 
 function setupSearchBar() {
   const searchInput = document.querySelector('.search-input');;
+  const searchButton = document.querySelector('.search-button');;
   // Add an event listener to the search input element
   searchInput.addEventListener('input', async (event) => {
 
@@ -28,9 +29,12 @@ function setupSearchBar() {
 
       // Position the suggestions list under the search input field
       const inputRect = searchInput.getBoundingClientRect();
+      const inputGroupWidth = searchInput.offsetWidth + searchButton.offsetWidth;
       suggestionsList.style.position = 'absolute';
       suggestionsList.style.top = `${inputRect.bottom}px`;
       suggestionsList.style.left = `${inputRect.left}px`;
+      suggestionsList.style.width = `${inputGroupWidth}px`;
+
 
       // Populate the suggestions list with the retrieved suggestions
       // console.log("Snapshot is " + querySnapshot.size);
