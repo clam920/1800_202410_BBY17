@@ -42,6 +42,7 @@ ul {
   background-color: var(--rollover-blue)
 }
 /* #endregion buttons */
+
 /* #region searchBar */
 .search-bar {
   display: flex; 
