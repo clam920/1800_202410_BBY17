@@ -23,10 +23,10 @@ ul {
   * Unfortunately, we need to dig through this huge line to find the rgba
   * if we want to change the color of our narbar toggle icon.
   */
-  background-image: url(
-    "data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255,1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E"
-  );
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255,1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E"
+    );
 }
+
 /* #endregion navbar*/
 
 /* #region buttons */
@@ -34,19 +34,20 @@ ul {
   background-color: var(--bcit-blue) !important;
 }
 
-.btn{
+.btn {
   background-color: var(--bcit-blue);
 }
 
-.btn :hover{
+.btn :hover {
   background-color: var(--rollover-blue)
 }
+
 /* #endregion buttons */
 
 /* #region searchBar */
 .search-bar {
-  display: flex; 
-  align-items: center; 
+  display: flex;
+  align-items: center;
   flex: 1;
   border-radius: 24px;
   background-color: #FFF;
@@ -68,19 +69,19 @@ ul {
   border: none;
   box-shadow: none !important;
   background-color: transparent;
-  flex: 1; 
-  margin-right: 8px; 
+  flex: 1;
+  margin-right: 8px;
 }
 
 .search-button {
   background-color: transparent;
   border: none;
   cursor: pointer;
-  padding: 8px; 
+  padding: 8px;
 }
 
 .search-button:hover {
-  background-color: transparent; 
+  background-color: transparent;
 }
 
 .suggestionBox {
@@ -89,9 +90,9 @@ ul {
   background-color: #FFF;
   font-size: 16pt;
   border-radius: 24px;
-  flex: 1; 
+  flex: 1;
   z-index: 9;
-  margin-right: 8px; 
+  margin-right: 8px;
 }
 
 /* #endregion searchbar*/
@@ -111,4 +112,5 @@ ul {
   fill: var(--accent-purple);
   stroke: var(--bcit-yellow);
 }
+
 /* #endregion map*/
