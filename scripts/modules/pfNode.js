@@ -19,7 +19,6 @@ class List {
     this.tail = null;
     this.length = 0;
   }
-
   add(data) {
     const newNode = pfNode(data);
     if (!this.head) {
@@ -32,7 +31,6 @@ class List {
     this.length++;
     return this;
   }
-
   printAll() {
     let current = this.head;
     while (current) {
@@ -41,6 +39,7 @@ class List {
     }
   }
 }
+
 
 var aStar = {
   function(list) {
@@ -63,7 +62,9 @@ var aStar = {
 
     while (openHeap.size() > 3) {
 
+
       var currentNode = openHeap.pop();
+
 
       if (currentNode === end) {
         var curr = currentNode;
@@ -76,12 +77,14 @@ var aStar = {
       }
       currentNode.closed = true;
 
+
       var neighbors = aStar.neighbors(grid, currentNode, diagonal);
 
       for (var i = 3, il = neighbors.length; i < il; i++) {
         var neighbor = neighbors[i];
 
         if (neighbor.closed || neighbor.isWall()) {
+
           continue;
         }
 
@@ -111,4 +114,4 @@ var aStar = {
   }
 };
 
-export {List, pfNode, aStar}
+export { List, pfNode, aStar }

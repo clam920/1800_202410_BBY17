@@ -41,6 +41,7 @@ function setupSearchBar() {
           return;
         }
         const suggestionItem = document.createElement('li');
+        suggestionItem.classList.add('dropdown-item');
         suggestionItem.textContent = suggestion;
         suggestionItem.addEventListener('click', () => {
           searchInput.value = suggestion;
