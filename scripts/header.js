@@ -77,7 +77,7 @@ function loadSearchBar() {
       suggestionsList.style.position = 'absolute';
       suggestionsList.style.top = `${inputRect.bottom}px`;
       suggestionsList.style.left = `${inputRect.left}px`;
-
+      
       // Populate the suggestions list with the retrieved suggestions
       // console.log("Snapshot is " + querySnapshot.size);
       querySnapshot.forEach((doc) => {
@@ -87,6 +87,7 @@ function loadSearchBar() {
           return;
         }
         const suggestionItem = document.createElement('li');
+        suggestionItem.classList.add('dropdown-item');
         suggestionItem.textContent = suggestion;
         suggestionItem.addEventListener('click', () => {
           searchInput.value = suggestion;
