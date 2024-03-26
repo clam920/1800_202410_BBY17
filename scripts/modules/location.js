@@ -11,20 +11,17 @@ const positionOptions = {
 }
 //Function to get the current location using geo location
 function setupLocation() {
-  //Checks if the content is loaded first before giving location
-  document.addEventListener("DOMContentLoaded", function () {
-    //CB: Useful information on how Geolocation works:
-    //https://w3c.github.io/geolocation-api/#dom-geolocationposition
+  //CB: Useful information on how Geolocation works:
+  //https://w3c.github.io/geolocation-api/#dom-geolocationposition
 
-    //uses navigator to get the geolocation
-    //Watch position does it constantly instead of just once
-    navigator.geolocation.watchPosition(position => {
-      console.log(position);
-      //logs current position to the console
-      userPosition = position;
-      convertWorldToPercent(position);
-    }, null, PositionOptions);
-  });
+  //uses navigator to get the geolocation
+  //Watch position does it constantly instead of just once
+  navigator.geolocation.watchPosition(position => {
+    console.log(position);
+    //logs current position to the console
+    userPosition = position;
+    convertWorldToPercent(position);
+  }, null, PositionOptions);
 }
 
 /**
