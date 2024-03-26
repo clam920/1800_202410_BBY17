@@ -8,28 +8,29 @@ function onClickHome(){
   }
 }
 
-function setupLogoutButton(){
+function setupLogoutButton(user){
   //Logs the user out and sends them to the index when they click 'logout'.
   logoutButton.addEventListener('click', function(e) {
     logout();
     location.pathname = '/index.html';
   });
-
-  firebase.auth().onAuthStateChanged(user => {
-    if (user) {
-      logoutButton.style.visibility = 'visible';
-    } else {
-      console.log("No user detected.")
-      logoutButton.style.visibility = 'hidden';
-    }
-  });
+  if (user) {
+    logoutButton.style.visibility = 'visible';
+  } else {
+    // console.log("No user detected.")
+    logoutButton.style.visibility = 'hidden';
+  }
 }
 
 function setupHeader(){
-  setupLogoutButton();
-  setupSearchBar();
-  document.getElementById("homeButton").addEventListener('click', onClickHome);
-}
+  firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+      setupSearchBar();
+    }
+    setupLogoutButton(user);
+    document.getElementById("homeButton").addEventListener('click', onClickHome);
+  })
+};
 
 setupHeader();
 console.warn(app.auth().currentUser);
