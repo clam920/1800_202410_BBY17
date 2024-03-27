@@ -1,13 +1,13 @@
-var mapArea = $('#mapArea');
+var mapArea;
 var mapSVG;
 var mapText;
-let mapMatrix = [1, 0, 0, 1, 0, 0];
-let pointerDown = false;
+var mapMatrix = [1, 0, 0, 1, 0, 0];
+var startPos;
 
 /**
  * Represents the position of an item on the screen.
- * @param {The x-coordinate of the item} x 
- * @param {the y-coordinate of the item} y 
+ * @param {Number} x The x-coordinate of the item
+ * @param {Number} y the y-coordinate of the item
  */
 class ScreenPixelPosition {
   constructor(x, y) {
@@ -15,50 +15,51 @@ class ScreenPixelPosition {
     this.y = y;
   }
 };
-function toggleMoveMap(e) {
-  pointerDown = !pointerDown;
-  if (pointerDown) {
-    enablePointerTracking(e);
-  } else {
-    disablePointerTracking();
-  }
-};
 
 /**
- * 
+ * Enables the tracking of where the pointer is on screen.
  * @param {PointerEvent} e 
  */
 function enablePointerTracking(e) {
-  let startPos = getPointerPosition(e);
-  mapArea.on("pointermove", function (e) {
-    let currentPos = getPointerPosition(e)
-    let offset = new ScreenPixelPosition(
-      currentPos.x - startPos.x,
-      currentPos.y - startPos.y
-    )
-    /*
-    Apparently transforms are stored in 2/3d array.
-    https://zellwk.com/blog/css-translate-values-in-javascript/ was a huge help in figuring this out.
-    */
-    let viewBox = mapSVG.getAttributeNS(null, "viewBox").split(" ");
-    //center will be used for zooming later.
-    let center = new ScreenPixelPosition(
-      parseFloat(viewBox[2]) / 2,
-      parseFloat(viewBox[3]) / 2
-    );
-    panMap(offset.x, offset.y);
-    startPos = currentPos;
-  })
-    .on("pointerup pointerleave", disablePointerTracking);
-};
+  // console.log(e);
+  //Reset the start position
+  startPos = getPointerPosition(e);
 
-function disablePointerTracking() {
-  mapArea.off("pointermove pointerleave pointerup");
-  pointerDown = false;
+  //add the event listener for updating the maps position
+  mapArea.addEventListener("pointermove", calculatePointerMovement);
+
+  //Add the event listeners for stopping the map updates.
+  ["pointerup", "pointerleave"].forEach(e => mapArea.addEventListener(e, disablePointerTracking));
 };
 
 /**
- * Creates a new array and pans the map.
+ * Calculates how much the pointer has moved since we last checked.
+ * @param {PointerEvent} e 
+ */
+function calculatePointerMovement(e) {
+  let currentPos = getPointerPosition(e)
+  let offset = new ScreenPixelPosition(
+    currentPos.x - startPos.x,
+    currentPos.y - startPos.y
+  );
+  /*
+  Apparently transforms are stored in 2/3d array.
+  https://zellwk.com/blog/css-translate-values-in-javascript/ was a huge help in figuring this out.
+  */
+  panMap(offset.x, offset.y);
+  startPos = currentPos;
+};
+
+/**
+ * Disables pointer tracking and map panning.
+ */
+function disablePointerTracking() {
+  ["pointermove", "pointerleave", "pointerup"].forEach(e =>
+    mapArea.removeEventListener(e, calculatePointerMovement));
+};
+
+/**
+ * Pans the map by the given number of pixels.
  * @param {Number} dx the amount we are panning in the X
  * @param {Number} dy the amount we are panning the in Y
  */
@@ -75,11 +76,12 @@ function panMap(dx, dy) {
  * @returns {ScreenPixelPosition}
  */
 function getPointerPosition(e) {
-  return new ScreenPixelPosition(e.originalEvent.screenX, e.originalEvent.screenY);
+  return new ScreenPixelPosition(e.screenX, e.screenY);
 };
 
 /**
  * Converts the array of a Transform Style, and converts it to an array of Ints.
+ * When we get the array from an SVG, its held in strings, so this is useful :)
  * @param {Array<String>} arr 
  * @returns {Array<Number>} The given string array, converted to ints.
  */
@@ -93,36 +95,53 @@ function convertTransformStyleToInt(arr) {
 
 /**
  * Loads the map and enables the panning/zooming.
+ * Should be run in the main.js, or before you intend to display/use the map.
  */
-function setupMap() {
-  mapArea.load('./images/map/SVG/BCITMap.svg', cleanMapData)
-    .on("pointerdown", toggleMoveMap);
+async function setupMap() {
+  mapArea = document.getElementById("mapArea");
+  const file = await fetch("./images/map/SVG/BCITMap.svg");
+  const parser = new DOMParser();
+  let data = await file.text();
+  data = parser.parseFromString(data, "text/html").body;
+  data = cleanMapSVG(data);
+  mapArea.innerHTML = data.innerHTML;
+  setupMapSVG();
+
+  mapArea.addEventListener("pointerdown", enablePointerTracking);
+  //Testing zoom functionality for later.
+  // mapArea.setAttribute("viewBox", [0, 0, visualViewport.width, visualViewport.height]);
+  // console.log(mapArea.getAttribute("viewBox"));
+  //mapArea.addEventListener("wheel", (e) => { console.log(e) });
+  // let viewBox = mapSVG.getAttributeNS(null, "viewBox").split(" ");
+  // //center will be used for zooming later.
+  // let center = new ScreenPixelPosition(
+  //   parseFloat(viewBox[2]) / 2,
+  //   parseFloat(viewBox[3]) / 2
+  // );
 };
 
-function setupMapSVG() {
-  mapSVG = document.getElementById('Layer_2');
-  mapSVG.childNodes.forEach(child => {
+/**
+ * Removes the defs from the svg, so we can control it.
+ * @param {HTMLElement} mapData 
+ */
+function cleanMapSVG(mapData) {
+  mapData.childNodes.forEach(child => {
     if (child.nodeName == 'defs') {
       child.remove();
     }
   });
+  return mapData;
+}
 
+/**
+ * Sets the initial matrix for the mapSVG, 
+ * and sets up the reference to the map DOM
+ */
+function setupMapSVG() {
+  mapSVG = document.getElementById('Layer_2');
   mapSVG.setAttribute('x', '0');
   mapSVG.setAttribute('y', '0');
   mapSVG.setAttribute('transform', 'translate(0, 0)');
-}
-
-function cleanMapData() {
-  $.get('./images/map/SVG/BCITMap.svg').done(async function (data) {
-    data = data.firstChild;
-    await data.childNodes.forEach(child => {
-      if (child.nodeName == 'defs') {
-        data.removeChild(child);
-      }
-    });
-    mapText = await $(data).children()[0];
-  });
-  setupMapSVG();
 }
 
 export { ScreenPixelPosition, mapSVG, mapArea, mapText, setupMap };
