@@ -45,6 +45,11 @@ ul {
 #logoutButton {
   visibility: hidden;
 }
+
+.signIn {
+  visibility: visible;
+}
+
 /* #endregion buttons */
 
 /* #region searchBar */
@@ -57,7 +62,7 @@ ul {
 }
 
 .input-group {
-  display: flex;
+  display: none;
   align-items: center;
   flex: 1;
 }
