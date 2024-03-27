@@ -42,6 +42,9 @@ ul {
   background-color: var(--rollover-blue)
 }
 
+#logoutButton {
+  visibility: hidden;
+}
 /* #endregion buttons */
 
 /* #region searchBar */
@@ -86,6 +89,7 @@ ul {
 
 .suggestionBox {
   display: none;
+  width: 100%;
   padding: 10px 12px;
   background-color: #FFF;
   font-size: 16pt;
@@ -93,6 +97,10 @@ ul {
   flex: 1;
   z-index: 9;
   margin-right: 8px;
+}
+
+.dropdown-item:hover {
+  background-color: #f6f6f6;
 }
 
 /* #endregion searchbar*/
