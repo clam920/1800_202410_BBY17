@@ -17,18 +17,24 @@ function setupLogoutButton() {
   logoutButton.style.visibility = 'visible';
 }
 
+function hideLoginButton() {
+  const loginButton = document.querySelector('.signIn');
+  loginButton.style.display = 'none';
+}
+
 function setupHeader() {
   firebase.auth().onAuthStateChanged(user => {
     const inputGroup = document.querySelector('.input-group');
     if (user) {
       inputGroup.style.display = 'flex';
-      setupSearchBar();    
+      hideLoginButton();
+      setupSearchBar();
       setupLogoutButton(user);
       document.getElementById("homeButton").addEventListener('click', onClickHome);
-    }  else {
+    } else {
       inputGroup.style.display = 'none';
     }
-      
+
   })
 };
 
