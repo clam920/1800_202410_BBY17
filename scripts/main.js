@@ -8,4 +8,5 @@ function setupMainPage(){
 
 document.addEventListener("DOMContentLoaded", setupMainPage);
 
+//we need to have an export to use an import, so this satisfies that requirement
 export {};

@@ -10,13 +10,25 @@ let pointerDown = false;
  * @param {the y-coordinate of the item} y 
  */
 class ScreenPixelPosition {
-  constructor(x, y){
+  constructor(x, y) {
     this.x = x;
     this.y = y;
   }
 };
+function toggleMoveMap(e) {
+  pointerDown = !pointerDown;
+  if (pointerDown) {
+    enablePointerTracking(e);
+  } else {
+    disablePointerTracking();
+  }
+};
 
-function enablePointerTracking(e){
+/**
+ * 
+ * @param {PointerEvent} e 
+ */
+function enablePointerTracking(e) {
   let startPos = getPointerPosition(e);
   mapArea.on("pointermove", function (e) {
     let currentPos = getPointerPosition(e)
@@ -37,16 +49,16 @@ function enablePointerTracking(e){
     panMap(offset.x, offset.y);
     startPos = currentPos;
   })
-  .on("pointerup pointerleave", disablePointerTracking);
+    .on("pointerup pointerleave", disablePointerTracking);
 };
 
-function disablePointerTracking(){
+function disablePointerTracking() {
   mapArea.off("pointermove pointerleave pointerup");
   pointerDown = false;
 };
 
 /**
- * Creates a new array, as if you had panned the map.
+ * Creates a new array and pans the map.
  * @param {Number} dx the amount we are panning in the X
  * @param {Number} dy the amount we are panning the in Y
  */
@@ -82,12 +94,12 @@ function convertTransformStyleToInt(arr) {
 /**
  * Loads the map and enables the panning/zooming.
  */
-async function setupMap() {
-  await mapArea.load('./images/map/SVG/BCITMap.svg', cleanMapData)
-  .on("pointerdown", toggleMoveMap);
+function setupMap() {
+  mapArea.load('./images/map/SVG/BCITMap.svg', cleanMapData)
+    .on("pointerdown", toggleMoveMap);
 };
 
-async function setupMapSVG(){
+function setupMapSVG() {
   mapSVG = document.getElementById('Layer_2');
   mapSVG.childNodes.forEach(child => {
     if (child.nodeName == 'defs') {
@@ -100,7 +112,7 @@ async function setupMapSVG(){
   mapSVG.setAttribute('transform', 'translate(0, 0)');
 }
 
-function cleanMapData(){
+function cleanMapData() {
   $.get('./images/map/SVG/BCITMap.svg').done(async function (data) {
     data = data.firstChild;
     await data.childNodes.forEach(child => {
@@ -112,14 +124,5 @@ function cleanMapData(){
   });
   setupMapSVG();
 }
-
-function toggleMoveMap(e) {
-  pointerDown = !pointerDown;
-  if (pointerDown) {
-    enablePointerTracking(e);
-  } else {
-    disablePointerTracking();
-  }
-};
 
 export { ScreenPixelPosition, mapSVG, mapArea, mapText, setupMap };
