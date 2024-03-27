@@ -45,6 +45,11 @@ ul {
 #logoutButton {
   visibility: hidden;
 }
+
+.signIn {
+  visibility: visible;
+}
+
 /* #endregion buttons */
 
 /* #region searchBar */
