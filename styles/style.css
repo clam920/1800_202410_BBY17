@@ -57,7 +57,7 @@ ul {
 }
 
 .input-group {
-  display: flex;
+  display: none;
   align-items: center;
   flex: 1;
 }
