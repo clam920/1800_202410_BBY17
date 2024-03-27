@@ -1,6 +1,6 @@
-import {setupSearchBar} from "./modules/search.js";
+import { setupSearchBar } from "./modules/search.js";
 
-function onClickHome(){
+function onClickHome() {
   if (app.auth().currentUser == null) {
     location.href = 'index.html';
   } else {
@@ -8,27 +8,27 @@ function onClickHome(){
   }
 }
 
-function setupLogoutButton(user){
+function setupLogoutButton() {
   //Logs the user out and sends them to the index when they click 'logout'.
-  logoutButton.addEventListener('click', function(e) {
+  logoutButton.addEventListener('click', function (e) {
     logout();
     location.pathname = '/index.html';
   });
-  if (user) {
-    logoutButton.style.visibility = 'visible';
-  } else {
-    // console.log("No user detected.")
-    logoutButton.style.visibility = 'hidden';
-  }
+  logoutButton.style.visibility = 'visible';
 }
 
-function setupHeader(){
+function setupHeader() {
   firebase.auth().onAuthStateChanged(user => {
+    const inputGroup = document.querySelector('.input-group');
     if (user) {
-      setupSearchBar();
+      inputGroup.style.display = 'flex';
+      setupSearchBar();    
+      setupLogoutButton(user);
+      document.getElementById("homeButton").addEventListener('click', onClickHome);
+    }  else {
+      inputGroup.style.display = 'none';
     }
-    setupLogoutButton(user);
-    document.getElementById("homeButton").addEventListener('click', onClickHome);
+      
   })
 };
 
