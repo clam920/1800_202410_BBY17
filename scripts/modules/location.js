@@ -5,7 +5,7 @@
   https://www.google.com/maps/@49.2425018,-122.998416,17.52z?entry=ttu
 */
 
-import { ScreenPixelPosition } from "./map";
+import { ScreenPixelPosition } from "./map.js";
 
 /**
  * Currently not used; will update later with more useful attributes for tracking user location.

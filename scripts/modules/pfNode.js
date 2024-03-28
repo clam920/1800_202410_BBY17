@@ -52,12 +52,12 @@ var astar = {
       for (var i = 0; i < grid[i].length; i++) {
         grid[x][i] = (
           new pfNode(
-            data = list[counter][0],
-            f = list[counter][1],
-            g = list[counter][2],
-            h = list[counter][3],
-            x = list[counter][4][0],
-            y = list[counter][4][1]
+            list[counter][0],
+            list[counter][1],
+            list[counter][2],
+            list[counter][3],
+            list[counter][4][0],
+            list[counter][4][1]
           )
         );
         counter++;
@@ -188,7 +188,6 @@ var astar = {
 
   },
   showNode: function (x, y) {
-
 
   }
 };
