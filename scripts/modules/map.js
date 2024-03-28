@@ -107,6 +107,7 @@ async function setupMap() {
   let data = await file.text();
   data = parser.parseFromString(data, "text/html").body;
   data = cleanMapSVG(data);
+  
   mapArea.innerHTML = data.innerHTML;
   setupMapSVG();
 
@@ -126,13 +127,25 @@ async function setupMap() {
 /**
  * Removes the defs from the svg, so we can control it.
  * @param {HTMLElement} mapData 
+ * @return {SVGElement}
  */
 function cleanMapSVG(mapData) {
   mapData.childNodes.forEach(child => {
+    //console.log(child);
     if (child.nodeName == 'defs') {
       child.remove();
     }
   });
+  //Create new parent to hold the SVG elements
+  let svgChild = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+  //add Layer_2 as an ID of svgChild
+
+  //Extra everything under Layer_2 of Data
+
+  //insert as children as svgChild
+
+  //return svgChild
   return mapData;
 }
 
