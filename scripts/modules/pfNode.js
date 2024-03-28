@@ -5,7 +5,6 @@ class pfNode {
     this.g = g;
     this.h;
     this.visited = false;
-    this.closed = false;
     this.parent = null;
 
     this.pos = [x, y]
@@ -17,9 +16,10 @@ class pfNode {
 }
 var astar = {
   init: function (list) {
-    let grid = [[1, 2],
-    [3, 4],
-    [5, 6]];
+    let grid = [
+      [1, 2],
+      [3, 4],
+      [5, 6]];
     let counter = 0;
     for (var x = 0; x < grid.length; x++) {
       for (var i = 0; i < grid[i].length; i++) {
@@ -80,18 +80,15 @@ var astar = {
 
       for (var i = 0; i < neighbors.length; i++) {
         var neighbor = neighbors[i];
-        var gScore = currentNode.g + 1;
+        var fScore = currentNode.f;
         var gScoreIsBest = false;
-        if (gScore <= neighbor.g) {
+        if (fScore <= neighbor.f) {
           gScoreIsBest = true;
         }
 
 
-        if (gScoreIsBest) {
+        if (gScoreIsBest && neighbor.visited == false) {
           neighbor.parent = currentNode;
-          neighbor.g = gScore;
-          neighbor.f = neighbor.g + neighbor.h;
-          neighbor.debug = "F: " + neighbor.f + "<br />G: " + neighbor.g + "<br />H: " + neighbor.h;
         }
       }
     }
@@ -146,6 +143,7 @@ var astar = {
   removeGraphNode: function (currentNode, openList) {
     for (let i = 0; i < openList.length; i++) {
       if (openList[i] == currentNode) {
+        currentNode.visited = true;
         openList.splice(i, 1);
         break;
       }
