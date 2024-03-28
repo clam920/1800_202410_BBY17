@@ -5,6 +5,8 @@
   https://www.google.com/maps/@49.2425018,-122.998416,17.52z?entry=ttu
 */
 
+import { ScreenPixelPosition } from "./map.js";
+
 /**
  * Currently not used; will update later with more useful attributes for tracking user location.
  * All constructor overloads will calculate the other types of user positions (approximate geolocation, Screen position, screen percent) given one type.
@@ -15,15 +17,47 @@ class UserPosition {
    * The users current geoposition.
    * @type {GeolocationPosition}
    */
-  geolocation
+  geolocation;
 
   /**
-   * Constructs based on the given Geolocation 
-   * @param {GeolocationPosition} location Can also be a ScreenPixelPosition, or an array where the first 2 indexes are the x and Y positions.
+   * The users location on screen in pixels.
+   * @type {ScreenPixelPosition}
+   */
+  pixelLocation;
+
+  /**
+   * Constructs based on the given information.
+   * If given an array with 2 numbers, it will assign those to x and y for pixelLocation. 
+   * @param {GeolocationPosition | ScreenPixelPosition | Array<Number>} location the users current location.
    */
   constructor(location) {
-    this.geolocation = geolocation;
+    let type = typeof location;
+    if (type == GeolocationPosition) {
+      this.geolocation = location;
+      this.#calculatePixel();
+    } else if (type == ScreenPixelPosition) {
+      this.pixelLocation = location;
+    } else if (type == Array) {
+      if (location.length < 2) {
+        this.pixelLocation = new ScreenPixelPosition(location[0], location[1]);
+      } else {
+        console.warn("Given location array was shorter than 2!" + location);
+        this.pixelLocation = new ScreenPixelPosition(0, 0);
+      }
+    }
   };
+
+  /**
+   * Private function to calculate the pixel position when the geoposition us updated.
+   */
+  #calculatePixel() {
+    let percents = convertWorldToPercent(this.geolocation);
+    //TODO: Change this to SVG height and width.
+    this.pixelLocation = new ScreenPixelPosition(
+      screen.width / percents.x,
+      screen.height / percents.y
+    );
+  }
 }
 
 /**@type {GeolocationPosition} */

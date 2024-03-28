@@ -1,17 +1,43 @@
 class pfNode {
+
+  /**
+   *
+   * @param {*} data 
+   * @param {Number} f 
+   * @param {Number} g 
+   * @param {Number} h 
+   * @param {Number} x 
+   * @param {Number} y 
+   */
   constructor(data, f, g, h, x, y) {
+
     this.data = data;
+    /**@type {Number} */
     this.f = f;
+
+    /**@type {Number} */
     this.g = g;
+
+    /**@type {Number} */
     this.h;
+
+    /**@type {Boolean} */
     this.visited = false;
+
+    /**@type {Boolean} */
+    this.closed = false;
+
+    /**@type {Boolean} */
+    this.right = null;
+
+    /**@type {Boolean} */
+    this.left = null;
+
+    /**@type {pfNode} */
     this.parent = null;
 
+    /**@type {Array<Number>} */
     this.pos = [x, y]
-
-
-    this.right = null;
-    this.left = null;
   }
 }
 var astar = {
@@ -19,11 +45,21 @@ var astar = {
     let grid = [
       [1, 2],
       [3, 4],
-      [5, 6]];
+      [5, 6]
+    ];
     let counter = 0;
     for (var x = 0; x < grid.length; x++) {
       for (var i = 0; i < grid[i].length; i++) {
-        grid[x][i] = (new pfNode(list[counter][0], list[counter][1], list[counter][2], list[counter][3], list[counter][4][0], list[counter][4][1]));
+        grid[x][i] = (
+          new pfNode(
+            list[counter][0],
+            list[counter][1],
+            list[counter][2],
+            list[counter][3],
+            list[counter][4][0],
+            list[counter][4][1]
+          )
+        );
         counter++;
       }
     }
@@ -47,7 +83,6 @@ var astar = {
     }
     var test;
 
-
     while (openList != null) {
 
       // Grab the lowest f(x) to process next
@@ -58,7 +93,6 @@ var astar = {
         }
       }
       var currentNode = openList[lowInd];
-
 
       // result has been found, return the traced path
       if (currentNode == end) {
@@ -152,7 +186,6 @@ var astar = {
 
   },
   showNode: function (x, y) {
-
 
   }
 };
