@@ -10,6 +10,7 @@ function onClickHome() {
 
 function setupLogoutButton() {
   //Logs the user out and sends them to the index when they click 'logout'.
+  const logoutButton = document.querySelector('#logoutButton');
   logoutButton.addEventListener('click', function (e) {
     logout();
     location.pathname = '/index.html';
@@ -18,8 +19,12 @@ function setupLogoutButton() {
 }
 
 function hideLoginButton() {
-  const loginButton = document.querySelector('.signIn');
-  loginButton.style.display = 'none';
+  const loginButton = document.querySelector('.signInButton');
+  if (loginButton) {
+    loginButton.style.display = 'none';
+  } else {
+    return;
+  }
 }
 
 function setupHeader() {
