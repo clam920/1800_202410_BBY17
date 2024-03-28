@@ -1,3 +1,4 @@
+/**@type {Element} */
 const searchBar = document.querySelector('#inputclick');
 
 function setupSearchBar() {
@@ -64,4 +65,4 @@ function setupSearchBar() {
   });
 }
 
-export {searchBar, setupSearchBar};
+export { searchBar, setupSearchBar };
