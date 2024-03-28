@@ -1,8 +1,11 @@
+/**@type {HTMLElement} */
 var mapArea;
+/**@type {HTMLElement} */
 var mapSVG;
-var mapText;
-var mapMatrix = [1, 0, 0, 1, 0, 0];
+/**@type {ScreenPixelPosition} */
 var startPos;
+
+var mapMatrix = [1, 0, 0, 1, 0, 0];
 
 /**
  * Represents the position of an item on the screen.
@@ -17,7 +20,7 @@ class ScreenPixelPosition {
 };
 
 /**
- * Enables the tracking of where the pointer is on screen.
+ * Collects the pointers current position, and enables the listeners for pointer up, leave, and move.
  * @param {PointerEvent} e 
  */
 function enablePointerTracking(e) {
@@ -51,7 +54,7 @@ function calculatePointerMovement(e) {
 };
 
 /**
- * Disables pointer tracking and map panning.
+ * Removes the event listener for pointer move, leave and up.
  */
 function disablePointerTracking() {
   ["pointermove", "pointerleave", "pointerup"].forEach(e =>
@@ -59,7 +62,7 @@ function disablePointerTracking() {
 };
 
 /**
- * Pans the map by the given number of pixels.
+ * Adjusts the maps matrix by the given number of pixels.
  * @param {Number} dx the amount we are panning in the X
  * @param {Number} dy the amount we are panning the in Y
  */
@@ -144,4 +147,4 @@ function setupMapSVG() {
   mapSVG.setAttribute('transform', 'translate(0, 0)');
 }
 
-export { ScreenPixelPosition, mapSVG, mapArea, mapText, setupMap };
+export { ScreenPixelPosition, mapSVG, mapArea, setupMap };

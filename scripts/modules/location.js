@@ -5,11 +5,38 @@
   https://www.google.com/maps/@49.2425018,-122.998416,17.52z?entry=ttu
 */
 
+/**
+ * Currently not used; will update later with more useful attributes for tracking user location.
+ * All constructor overloads will calculate the other types of user positions (approximate geolocation, Screen position, screen percent) given one type.
+ */
+class UserPosition {
+
+  /**
+   * The users current geoposition.
+   * @type {GeolocationPosition}
+   */
+  geolocation
+
+  /**
+   * Constructs based on the given Geolocation 
+   * @param {GeolocationPosition} location Can also be a ScreenPixelPosition, or an array where the first 2 indexes are the x and Y positions.
+   */
+  constructor(location) {
+    this.geolocation = geolocation;
+  };
+}
+
+/**@type {GeolocationPosition} */
 var userPosition;
+
+/** @type {PositionOptions} */
 const positionOptions = {
   enableHighAccuracy: true
 }
-//Function to get the current location using geo location
+
+/**
+ * Starts tracking the user location, and sets a watcher for position updates.
+ */
 function setupLocation() {
   //CB: Useful information on how Geolocation works:
   //https://w3c.github.io/geolocation-api/#dom-geolocationposition
@@ -24,7 +51,7 @@ function setupLocation() {
 }
 
 /**
- * Converts from GeoLocation to a percent X/Y of the campus.
+ * Converts from GeoLocation to a percent X/Y of the screen.
  * This will let us position the user based on the percent of the map size.
  * @param {GeolocationPosition} position 
  * @returns {Array<Number, Number>}
@@ -47,9 +74,9 @@ function convertWorldToPercent(position) {
     console.log("USer is inside campus");
     let userLongPercent = Math.abs((userLong - maxX) / (minX - maxX)) * 100;
     let userLatPercent = Math.abs((userLat - maxY) / (minY - maxY)) * 100;
-    return {x: userLongPercent, y:userLatPercent};
+    return { x: userLongPercent, y: userLatPercent };
   }
-  return 
+  return
 };
 
-export {userPosition, setupLocation, convertWorldToPercent}
+export { userPosition, setupLocation, convertWorldToPercent }
