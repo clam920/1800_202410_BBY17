@@ -1,7 +1,10 @@
 /**@type {HTMLElement} */
 var mapArea;
-/**@type {HTMLElement} */
+/**@type {SVGElement} */
 var mapSVG;
+/**@type {Number} */
+var mapRatio
+
 /**@type {ScreenPixelPosition} */
 var startPos;
 
@@ -108,7 +111,7 @@ async function setupMap() {
   data = parser.parseFromString(data, "text/html").body;
   data = cleanMapSVG(data);
   
-  mapArea.innerHTML = data.innerHTML;
+  mapArea.innerHTML = data.outerHTML;
   setupMapSVG();
 
   mapArea.addEventListener("pointerdown", enablePointerTracking);
@@ -130,22 +133,32 @@ async function setupMap() {
  * @return {SVGElement}
  */
 function cleanMapSVG(mapData) {
-  mapData.childNodes.forEach(child => {
-    //console.log(child);
+  //get the SVG layer from the data
+  let svgLayer = mapData.children[0];
+
+  //Get rid of the defs
+  svgLayer.childNodes.forEach(child => {
     if (child.nodeName == 'defs') {
       child.remove();
     }
   });
+
+  //Get the original ratio
+  let viewbox = svgLayer.getAttribute("viewBox").split(" ");
+  mapRatio = viewbox[2] / viewbox[3];
+  
   //Create new parent to hold the SVG elements
-  let svgChild = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  // let svgChild = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  // //add Layer_2 as an ID of svgChild
+  // svgChild.id = "Layer_2";
+  // svgChild.setAttribute("xmlns", "http://www.w3.org/2000/svg");
 
-  //add Layer_2 as an ID of svgChild
+  // //Extract everything under Layer_2 of Data
+  // svgLayer.childNodes.forEach(child => {
+  //   //insert as children as svgChild
+  //   svgChild.append(child);
+  // });
 
-  //Extra everything under Layer_2 of Data
-
-  //insert as children as svgChild
-
-  //return svgChild
   return mapData;
 }
 
@@ -155,9 +168,6 @@ function cleanMapSVG(mapData) {
  */
 function setupMapSVG() {
   mapSVG = document.getElementById('Layer_2');
-  mapSVG.setAttribute('x', '0');
-  mapSVG.setAttribute('y', '0');
-  mapSVG.setAttribute('transform', 'translate(0, 0)');
 }
 
 export { ScreenPixelPosition, mapSVG, mapArea, setupMap };
