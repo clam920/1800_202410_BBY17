@@ -1,13 +1,13 @@
+
 /**@type {HTMLElement} */
 var mapArea;
-/**@type {SVGElement} */
+/**@type {SVGGraphicsElement} */
 var mapSVG;
-/**@type {Number} */
-var mapRatio
 
 /**@type {ScreenPixelPosition} */
 var startPos;
 
+/**@type {DOMMatrix} */
 var mapMatrix = [1, 0, 0, 1, 0, 0];
 
 /**
@@ -70,6 +70,7 @@ function disablePointerTracking() {
  * @param {Number} dy the amount we are panning the in Y
  */
 function panMap(dx, dy) {
+  console.log(mapSVG.getScreenCTM());
   mapMatrix[4] += dx;
   mapMatrix[5] += dy;
   var newMatrix = "matrix(" + mapMatrix.join(' ') + ")";
@@ -112,7 +113,7 @@ async function setupMap() {
   data = cleanMapSVG(data);
   
   mapArea.innerHTML = data.outerHTML;
-  setupMapSVG();
+  mapSVG = document.getElementById('Layer_2');
 
   mapArea.addEventListener("pointerdown", enablePointerTracking);
   //Testing zoom functionality for later.
@@ -130,7 +131,7 @@ async function setupMap() {
 /**
  * Removes the defs from the svg, so we can control it.
  * @param {HTMLElement} mapData 
- * @return {SVGElement}
+ * @return {SVGGraphicsElement}
  */
 function cleanMapSVG(mapData) {
   //get the SVG layer from the data
@@ -143,31 +144,7 @@ function cleanMapSVG(mapData) {
     }
   });
 
-  //Get the original ratio
-  let viewbox = svgLayer.getAttribute("viewBox").split(" ");
-  mapRatio = viewbox[2] / viewbox[3];
-  
-  //Create new parent to hold the SVG elements
-  // let svgChild = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  // //add Layer_2 as an ID of svgChild
-  // svgChild.id = "Layer_2";
-  // svgChild.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-
-  // //Extract everything under Layer_2 of Data
-  // svgLayer.childNodes.forEach(child => {
-  //   //insert as children as svgChild
-  //   svgChild.append(child);
-  // });
-
   return mapData;
-}
-
-/**
- * Sets the initial matrix for the mapSVG, 
- * and sets up the reference to the map DOM
- */
-function setupMapSVG() {
-  mapSVG = document.getElementById('Layer_2');
 }
 
 export { ScreenPixelPosition, mapSVG, mapArea, setupMap };
