@@ -5,8 +5,6 @@ var mapArea;
 var mapSVG;
 
 /**@type {ScreenPixelPosition} */
-var startPos;
-/**@type {ScreenPixelPosition} */
 var offset;
 /**@type {ScreenPixelPosition} */
 var center;
@@ -47,8 +45,6 @@ function startDrag(e) {
   e.preventDefault();
   setBoundaries();
 
-  //sets the start position
-  startPos = e.target;
   offset = getPointerPosition(e);
   // Apparently transforms are stored in 2/3d array.
   // https://zellwk.com/blog/css-translate-values-in-javascript/ was a huge help in figuring this out.
@@ -83,11 +79,19 @@ function stopDrag() {
     mapArea.removeEventListener(e, drag));
 };
 
-function zoom(scale){
+function zoom(e){
+  let scale;
+  if ( e.deltaY < 0 ) {
+    scale = 1.1
+  } else {
+    scale = 0.9
+  }
   for (var i = 0; i < 4; i++){
     mapMatrix[i] *= scale;
   }
 
+  //TODO: CB - The center changes based on the scale
+  // so I need to write some logic to check that.
   mapMatrix[4] += (1 - scale) * center.x;
   mapMatrix[5] += (1 - scale) * center.y;
   updateMatrix();
@@ -121,18 +125,15 @@ async function setupMap() {
   const file = await fetch("./images/map/SVG/BCITMap.svg");
   const parser = new DOMParser();
 
-  mapArea = document.getElementById("mapArea");
   let data = await file.text();
   data = parser.parseFromString(data, "text/html").body;
   data = cleanMapSVG(data);
-  mapArea.innerHTML = data.outerHTML;
 
+  mapArea = document.getElementById("mapArea");
+  mapArea.innerHTML = data.outerHTML;
+  mapArea.addEventListener("pointerdown", startDrag);
+  mapArea.addEventListener("wheel", zoom);
   mapSVG = document.getElementById('Layer_2');
-  mapSVG.addEventListener("pointerdown", startDrag);
-  mapSVG.addEventListener("wheel", function(e){
-    let delta = 1 + (-1* e.deltaY/1000);
-    zoom(delta)
-  });
 
   offset = new ScreenPixelPosition(0, 0);
   var viewbox = mapSVG.getAttributeNS(null, "viewBox").split(" ");
