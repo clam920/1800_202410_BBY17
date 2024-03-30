@@ -108,13 +108,17 @@ function updateMatrix(){
  * @returns {ScreenPixelPosition}
  */
 function getPointerPosition(e) {
+
+  return new ScreenPixelPosition(e.clientX, e.clientY);
+
+  // CB: Commented this code out because the CTM was causing the drag to be very slow.
   // It's not too important what these values represent.
   // In most cases all we need to know is that if an 
   // element has attributes of (x,y), then it will have coordinates on screen of (ax+e,dy+f)
-  let CTM = mapSVG.getScreenCTM();
-  return new ScreenPixelPosition(
-    (e.clientX - CTM.e) / CTM.a,
-    (e.clientY - CTM.f) / CTM.d);
+  // let CTM = mapSVG.getScreenCTM();
+  // return new ScreenPixelPosition(
+  //   (e.clientX - CTM.e) / CTM.a,
+  //   (e.clientY - CTM.f) / CTM.d);
 };
 
 /**
