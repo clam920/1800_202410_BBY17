@@ -19,6 +19,7 @@ function setupLogoutButton() {
 }
 
 function hideLoginButton() {
+  //hide Sign in button from index.html if user has already signed in.
   const loginButton = document.querySelector('.signInButton');
   if (loginButton) {
     loginButton.style.display = 'none';
@@ -28,6 +29,10 @@ function hideLoginButton() {
 }
 
 function setupHeader() {
+  // change the header after user signed in:
+  // 1) user can search for location
+  // 2) user can log out
+  // 3) user cannot sign in again
   firebase.auth().onAuthStateChanged(user => {
     const inputGroup = document.querySelector('.input-group');
     if (user) {

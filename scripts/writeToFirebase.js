@@ -1,7 +1,4 @@
 // write SE12 washrooms into firebase.
-
-
-
 function writeSE12WC() {
   var washroomsRef = db.collection("washrooms");
 
@@ -12,7 +9,7 @@ function writeSE12WC() {
     level: "1",
     details: "Male Washroom",
     lat: 0.00,
-    lng: 0.00,  
+    lng: 0.00,
   });
   washroomsRef.add({
     code: "SE12_100C",
@@ -21,7 +18,7 @@ function writeSE12WC() {
     level: "1",
     details: "Female Washroom",
     lat: 0.00,
-    lng: 0.00,  
+    lng: 0.00,
   });
   washroomsRef.add({
     code: "SE12_201R",
@@ -30,7 +27,7 @@ function writeSE12WC() {
     level: "2",
     details: "Male Washroom",
     lat: 0.00,
-    lng: 0.00,  
+    lng: 0.00,
   });
   washroomsRef.add({
     code: "SE12_201Q",
@@ -39,7 +36,7 @@ function writeSE12WC() {
     level: "2",
     details: "Female Washroom",
     lat: 0.00,
-    lng: 0.00,  
+    lng: 0.00,
   });
   washroomsRef.add({
     code: "SE12_211",
@@ -48,7 +45,7 @@ function writeSE12WC() {
     level: "2",
     details: "Female Washroom",
     lat: 0.00,
-    lng: 0.00,  
+    lng: 0.00,
   });
   washroomsRef.add({
     code: "SE12_212",
@@ -57,7 +54,7 @@ function writeSE12WC() {
     level: "2",
     details: "Male Washroom",
     lat: 0.00,
-    lng: 0.00,  
+    lng: 0.00,
   });
   washroomsRef.add({
     code: "SE12_315",
@@ -66,7 +63,7 @@ function writeSE12WC() {
     level: "3",
     details: "Male Washroom",
     lat: 0.00,
-    lng: 0.00,  
+    lng: 0.00,
   });
   washroomsRef.add({
     code: "SE12_314",
@@ -75,7 +72,7 @@ function writeSE12WC() {
     level: "3",
     details: "Female Washroom",
     lat: 0.00,
-    lng: 0.00,  
+    lng: 0.00,
   });
   washroomsRef.add({
     code: "SE12_411",
@@ -84,7 +81,7 @@ function writeSE12WC() {
     level: "4",
     details: "Male Washroom",
     lat: 0.00,
-    lng: 0.00,  
+    lng: 0.00,
   });
   washroomsRef.add({
     code: "SE12_408",
@@ -93,7 +90,7 @@ function writeSE12WC() {
     level: "4",
     details: "Female Washroom",
     lat: 0.00,
-    lng: 0.00,  
+    lng: 0.00,
   });
 }
 
@@ -456,6 +453,7 @@ function writeSE12Class() {
   });
 }
 
+// write SW05 Classrooms to dataabase.
 function writeSW05Classrooms() {
   var classroomsRef = db.collection("classrooms");
 
@@ -466,7 +464,7 @@ function writeSW05Classrooms() {
     level: "1",
     details: "Lecture Theater",
     lat: 0.00,
-    lng: 0.00,  
+    lng: 0.00,
     last_updated: firebase.firestore.FieldValue.serverTimestamp()
   });
   classroomsRef.add({
@@ -476,7 +474,7 @@ function writeSW05Classrooms() {
     level: "1",
     details: "Lecture Theater",
     lat: 0.00,
-    lng: 0.00,  
+    lng: 0.00,
     last_updated: firebase.firestore.FieldValue.serverTimestamp()
   });
   classroomsRef.add({
@@ -486,7 +484,7 @@ function writeSW05Classrooms() {
     level: "2",
     details: "Class",
     lat: 0.00,
-    lng: 0.00,  
+    lng: 0.00,
     last_updated: firebase.firestore.FieldValue.serverTimestamp()
   });
   classroomsRef.add({
@@ -496,7 +494,7 @@ function writeSW05Classrooms() {
     level: "2",
     details: "Class",
     lat: 0.00,
-    lng: 0.00,  
+    lng: 0.00,
     last_updated: firebase.firestore.FieldValue.serverTimestamp()
   });
   classroomsRef.add({
@@ -506,8 +504,8 @@ function writeSW05Classrooms() {
     level: "2",
     details: "Class",
     lat: 0.00,
-    lng: 0.00, 
-    last_updated: firebase.firestore.FieldValue.serverTimestamp() 
+    lng: 0.00,
+    last_updated: firebase.firestore.FieldValue.serverTimestamp()
   });
 
 }
