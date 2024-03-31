@@ -7,7 +7,15 @@ function setupSearchBar() {
   // Add an event listener to the search input element
   searchInput.addEventListener('input', async (event) => {
 
-    const searchTerm = event.target.value.trim();
+    // define user input as searchTerm.
+    let searchTerm = event.target.value.trim();
+
+    // Convert all lowercase letters to uppercase, in case user types lower case.
+    searchTerm = searchTerm.toUpperCase();
+
+    // Replace hyphens with spacesm, in case user put hypens between building and room number.
+    searchTerm = searchTerm.replace(/-/g, ' ');
+
     const suggestionsList = document.getElementById('suggestionsList');
     suggestionsList.innerHTML = ''; // Clear previous suggestions
 
@@ -34,6 +42,7 @@ function setupSearchBar() {
       suggestionsList.style.position = 'absolute';
       suggestionsList.style.top = `${inputRect.bottom}px`;
       suggestionsList.style.left = `${inputRect.left}px`;
+      // fix the suggestion box width to the wide of input box and search button.
       suggestionsList.style.width = `${inputGroupWidth}px`;
 
 
@@ -65,4 +74,27 @@ function setupSearchBar() {
   });
 }
 
-export { searchBar, setupSearchBar };
+// Function to log user search history into firestore
+function logSearchHistory(userId, searchTerm) {
+  try {
+    const userRef = db.collection('users').doc(userId);
+
+    // Update user document as an array with new search history
+    userRef.update({
+      search_history: firebase.firestore.FieldValue.arrayUnion({
+        term: searchTerm
+      })
+    });
+
+    console.log('Search history logged successfully.');
+  } catch (error) {
+    console.error('Error logging search history:', error);
+  }
+}
+
+// to use these function in other js
+export { searchBar, setupSearchBar, logSearchHistory };
+
+// export variable to other js to avoid duplication
+export const searchButton = document.querySelector('.search-button');
+export const searchInput = document.querySelector('.search-input');

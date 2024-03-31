@@ -1,4 +1,5 @@
-import { setupSearchBar } from "./modules/search.js";
+import { setupSearchBar, logSearchHistory } from "./modules/search.js";
+import { searchButton, searchInput } from "./modules/search.js";
 
 function onClickHome() {
   if (app.auth().currentUser == null) {
@@ -19,6 +20,7 @@ function setupLogoutButton() {
 }
 
 function hideLoginButton() {
+  //hide Sign in button from index.html if user has already signed in.
   const loginButton = document.querySelector('.signInButton');
   if (loginButton) {
     loginButton.style.display = 'none';
@@ -28,6 +30,10 @@ function hideLoginButton() {
 }
 
 function setupHeader() {
+  // change the header after user signed in:
+  // 1) user can search for location
+  // 2) user can log out
+  // 3) user cannot sign in again
   firebase.auth().onAuthStateChanged(user => {
     const inputGroup = document.querySelector('.input-group');
     if (user) {
@@ -42,5 +48,40 @@ function setupHeader() {
 
   })
 };
+
+//check if user has logged in
+firebase.auth().onAuthStateChanged(user => {
+  if (user) {
+    // User is signed in, get their user ID
+    const userId = user.uid;
+
+    // Function for searching item from db.
+    // currently only store user search.
+    function startSearch(userId) {
+      const searchInput = document.querySelector('.search-input');
+      const searchTerm = searchInput.value.trim();
+
+      // call logSearchHistory to save user search into database
+      if (userId && searchTerm.length > 0) {
+        logSearchHistory(userId, searchTerm);
+      }
+    }
+
+
+    // click the search button as an event to trigger search function.
+    searchButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      startSearch(userId);
+    });
+
+    //set up "Enter" key as another trigger to search function.
+    searchInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        startSearch(userId);
+      }
+    });
+
+  }
+});
 
 setupHeader();
