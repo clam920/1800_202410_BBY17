@@ -3,33 +3,55 @@ import { userPosition, setupLocation, convertGeoToMap } from "./modules/location
 import { astar } from "./modules/pfNode.js";
 
 var aStar;
-function setupMainPage() {
-  setupMap();
+async function setupMainPage() {
+  await setupMap();
   setupLocation();
   aStar = astar;
-  aStar.init;
+
   console.log(aStar.search(
     [
       [
-        "Classroom 1", 3, 0, 3, [0, 0]
+        "SE12 320", 4, 0, 4, { x: 49.249874, y: -123.0016506}//1
       ],
+
       [
-        "Outside1", 4, 1, 3, [0, 1]
+        "Stairs Top", 4, 1, 3, {x: 49.249811, y:-123.001768}//2
       ],
+
       [
-        "Outside2", 3, 1, 2, [0, 2]
+        "Bridge", 5, 2, 3, {x: 49.25005376612112, y:-123.00173465751207}//3
       ],
-      ["Outside3", 3, 2, 1, [1, 2]
-      ],
+
       [
-        "Outside4", 3, 2, 1, [2, 2]
+        "Stairs Bottom", 4, 2, 2, {x: 49.249811, y:-123.001768}//4
       ],
+
       [
-        "Outside5", 3, 3, 0, [3, 2]
+        "Stairs Top Inside", 5, 3, 2, {x: 49.250058580920445, y:-123.00255809566634}//5
+      ],
+
+      [
+        "OutsideNode",4,2,3,{x: 49.24958619143382, y:-123.00236754406244}//6
+      ],
+
+      [
+        "Stairs Bottom Inside", 5,4,1, {x: 49.250058580920445, y:-123.00255809566634}
+      ],
+
+      [
+        "Sw05 1840", 4, 0, 4, {x: 49.24975437222892, y:-123.00254803738308}
       ]
     ]
   ));
 }
+
+
+/**TODO
+ * 1) Event listener for User Click on Suggestion box INSIDE MAIN
+ * 1a) On click, query the database for the document with a matching **name** 
+ * 1b) get the **code** from the document
+ * 1c) pass the **code** to A* as the end location.
+ */
 
 document.addEventListener("DOMContentLoaded", setupMainPage);
 

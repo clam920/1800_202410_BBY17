@@ -64,10 +64,10 @@ function convertGeoToPercent(position) {
   let retval = {x: -1, y: -1};
 
   // Math.abs((usePos - Min)/(Min - Max)) * 100
-  if ( isGeoOnCampus(position) ) {
+  if ( isGeoOnCampus(userLong, userLat) ) {
     // console.log("User is inside campus");
-    let userLongPercent = Math.abs((userLong - maxX) / (minX - maxX));
-    let userLatPercent = Math.abs((userLat - maxY) / (minY - maxY));
+    let userLongPercent = Math.abs((userLong - geoBoundaries.maxX) / (geoBoundaries.minX - geoBoundaries.maxX));
+    let userLatPercent = Math.abs((userLat - geoBoundaries.maxY) / (geoBoundaries.minY - geoBoundaries.maxY));
     retval =  { x: userLongPercent, y: userLatPercent };
   } else {
     console.warn("User is outside campus!", position);
@@ -97,9 +97,9 @@ class UserPosition {
    * Private function to calculate the pixel position when the geoposition us updated.
    */
   static #calculatePixel(geolocation) {
-    console.log(geolocation);
+    // console.log(geolocation);
     let percents = convertGeoToPercent(geolocation);
-    console.log(percents);
+    // console.log(percents);
     //TODO: Change this to SVG height and width.
     let pixelLocation = new ScreenPixelPosition(
       actualMapSize.x * percents.x,
@@ -115,7 +115,7 @@ class UserPosition {
    */
   constructor(location) {
     if (location instanceof GeolocationPosition) {
-      console.log("Geolocation given");
+      // console.log("Geolocation given");
       this.geolocation = location;
       this.pixelLocation = UserPosition.#calculatePixel(location);
     } else if (location instanceof ScreenPixelPosition) {
@@ -155,12 +155,12 @@ function setupLocation() {
   //uses navigator to get the geolocation
   //Watch position does it constantly instead of just once
   navigator.geolocation.watchPosition(position => {
-    console.log("Updating location");
+    // console.log("Updating location");
     //logs current position to the console
     //console.log(position);
     userPosition = position;
     userPos = new UserPosition(position);
-    console.log(userPos.pixelLocation.x);
+    // console.log(userPos.pixelLocation.x);
   }, null, positionOptions);
 }
 

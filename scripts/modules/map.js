@@ -1,4 +1,16 @@
 
+/**
+ * Represents the position of an item on the screen.
+ * @param {Number} x The x-coordinate of the item
+ * @param {Number} y the y-coordinate of the item
+ */
+class ScreenPixelPosition {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+};
+
 /**@type {HTMLElement} */
 var mapArea;
 /**@type {SVGGraphicsElement} */
@@ -14,18 +26,6 @@ var mapMatrix = [1, 0, 0, 1, 0, 0];
 
 /** @type {ScreenPixelPosition} */
 const actualMapSize = new ScreenPixelPosition(0, 0);
-
-/**
- * Represents the position of an item on the screen.
- * @param {Number} x The x-coordinate of the item
- * @param {Number} y the y-coordinate of the item
- */
-class ScreenPixelPosition {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
-  }
-};
 
 /**
  * Planning to use this to control the map panning; we'll see how it turns out.
@@ -97,7 +97,7 @@ function zoom(e){
   mapMatrix[4] += (1 - scale) * center.x;
   mapMatrix[5] += (1 - scale) * center.y;
   updateMatrix();
-  setActualMapSize
+  setActualMapSize();
 }
 
 function updateMatrix(){
@@ -147,12 +147,13 @@ async function setupMap() {
   mapArea.addEventListener("pointerdown", startDrag);
   mapArea.addEventListener("wheel", zoom);
   mapSVG = document.getElementById('Layer_2');
-
+  
+  setActualMapSize();
   offset = new ScreenPixelPosition(0, 0);
-  var viewbox = mapSVG.getAttributeNS(null, "viewBox").split(" ");
+  //var viewbox = mapSVG.getAttributeNS(null, "viewBox").split(" ");
   center = new ScreenPixelPosition(
-    parseFloat(viewbox[2]) / 2,
-    parseFloat(viewbox[3]) / 2
+    actualMapSize.x / 2,
+    actualMapSize.y / 2
   );
 };
 
@@ -188,4 +189,4 @@ function setBoundaries(){
 //   boundaries.maxY = boundaryY2 - bbox.y - bbox.height;
 }
 
-export { ScreenPixelPosition, mapSVG, mapArea, setupMap };
+export { ScreenPixelPosition, mapSVG, mapArea, actualMapSize, setupMap };
