@@ -24,18 +24,17 @@ function setupSearchBar() {
 
       let recentSearches = []; // Declare recentSearches variable outside conditional block
 
-      if (searchTerm.length == 0) {
-        // Fetch recent searches only if the search term is empty
-        recentSearches = await fetchRecentSearches();
-        // Display recent searches
-        displaySuggestions(recentSearches, 'search-history');
-      } else {
-        // Fetch recent searches only if the search term is not empty
-        recentSearches = await fetchRecentSearches();
+      // Fetch recent searches only if the search term is not empty
+      recentSearches = await fetchRecentSearches();
+
+      // Display recent searches
+      displaySuggestions(recentSearches, 'search-history');
+
+      if (searchTerm.length > 0) {
+
         // Filter out suggestions that are already in the recent search history
         recentSearches = recentSearches.filter(suggestion => suggestion.toUpperCase().includes(searchTerm));
-        // Display recent searches
-        displaySuggestions(recentSearches, 'search-history');
+
       }
 
       const querySnapshot = await db.collection('classrooms')
@@ -61,25 +60,22 @@ function setupSearchBar() {
 
       suggestionsList.style.display = 'block';
 
-      // Counter to track the number of displayed suggestions
-      let counter = 0;
-
       // Populate the suggestions list with the retrieved suggestions
-      querySnapshot.forEach((doc) => {
-        if (counter >= 5) {
+      querySnapshot.forEach((doc, index) => {
+        if (index >= 5) {
           return; // Break out of the loop if maximum suggestions reached
-        }
-        const suggestion = doc.data().name;
-        // Check if the suggestion is not already in recent searches
-        if (!recentSearches.includes(suggestion)) {
-          const suggestionType = isSearchHistory(suggestion, recentSearches) ? 'search-history' : 'database-suggestions';
-          displaySuggestion(suggestion, suggestionType);
-          counter++; // Increment counter for each displayed suggestion
+        } else {
+          const suggestion = doc.data().name;
+          // Check if the suggestion is not already in recent searches
+          if (!recentSearches.includes(suggestion)) {
+            const suggestionType = isSearchHistory(suggestion, recentSearches) ? 'search-history' : 'database-suggestions';
+            displaySuggestion(suggestion, suggestionType);
+          }
         }
       });
 
       // Hide suggestions if no results found
-      if (counter == 0) {
+      if (querySnapshot.size == 0) {
         suggestionsList.style.display = 'none';
       }
 
