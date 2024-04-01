@@ -241,7 +241,8 @@ var astar = {
 
       maplocal.push(convertGeoToMap(fakeGeo));
       var newNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      newNode.setAttribute('fill', "black")
+      newNode.setAttribute('fill', "black");
+      newNode.setAttribute("class", "pathfindingNode");
       newNode.setAttribute('cx', maplocal[i].x);
       newNode.setAttribute('cy', maplocal[i].y);
       newNode.setAttribute('r', 1);
@@ -254,6 +255,7 @@ var astar = {
         newLine.setAttribute('x2',maplocal[i].x);
         newLine.setAttribute('y2',maplocal[i].y);
         newLine.setAttribute('style',"stroke:red;stroke-width:1");
+        newLine.setAttrubute("class", "pathfindingLine");
         console.log(i);
         newGroup.append(newLine);
       }
