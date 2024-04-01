@@ -77,6 +77,7 @@ firebase.auth().onAuthStateChanged(user => {
     //set up "Enter" key as another trigger to search function.
     searchInput.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') {
+        event.preventDefault();
         startSearch(userId);
       }
     });

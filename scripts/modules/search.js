@@ -4,6 +4,8 @@ const searchBar = document.querySelector('#inputclick');
 function setupSearchBar() {
   const searchInput = document.querySelector('.search-input');;
   const searchButton = document.querySelector('.search-button');;
+  const suggestionsList = document.getElementById('suggestionsList');
+
   // Add an event listener to the search input element
   searchInput.addEventListener('input', async (event) => {
 
@@ -16,15 +18,26 @@ function setupSearchBar() {
     // Replace hyphens with spacesm, in case user put hypens between building and room number.
     searchTerm = searchTerm.replace(/-/g, ' ');
 
-    const suggestionsList = document.getElementById('suggestionsList');
     suggestionsList.innerHTML = ''; // Clear previous suggestions
 
-    if (searchTerm.length == 0) {
-      suggestionsList.style.display = 'none'; // Hide suggestions if search term is empty
-      return; // No suggestions for empty input
-    }
-
     try {
+
+      let recentSearches = []; // Declare recentSearches variable outside conditional block
+
+      if (searchTerm.length == 0) {
+        // Fetch recent searches only if the search term is empty
+        recentSearches = await fetchRecentSearches();
+        // Display recent searches
+        displaySuggestions(recentSearches, 'search-history');
+      } else {
+        // Fetch recent searches only if the search term is not empty
+        recentSearches = await fetchRecentSearches();
+        // Filter out suggestions that are already in the recent search history
+        recentSearches = recentSearches.filter(suggestion => suggestion.toUpperCase().includes(searchTerm));
+        // Display recent searches
+        displaySuggestions(recentSearches, 'search-history');
+      }
+
       const querySnapshot = await db.collection('classrooms')
         .where('name', '>=', searchTerm)
         .where('name', '<=', searchTerm + '\uf8ff')
@@ -32,7 +45,8 @@ function setupSearchBar() {
         .limit(5)
         .get();
       if (querySnapshot.size == 0) {
-        suggestionsList.style.display = 'none'; // Hide suggestions if no results found
+        // Hide suggestions if no results found
+        suggestionsList.style.display = 'none';
         return;
       }
 
@@ -45,32 +59,105 @@ function setupSearchBar() {
       // fix the suggestion box width to the wide of input box and search button.
       suggestionsList.style.width = `${inputGroupWidth}px`;
 
+      suggestionsList.style.display = 'block';
+
+      // Counter to track the number of displayed suggestions
+      let counter = 0;
 
       // Populate the suggestions list with the retrieved suggestions
-      // console.log("Snapshot is " + querySnapshot.size);
       querySnapshot.forEach((doc) => {
-        // console.log(doc.data());
-        const suggestion = doc.data().name;
-        if (suggestionsList.innerHTML.includes(suggestion)) {
-          return;
+        if (counter >= 5) {
+          return; // Break out of the loop if maximum suggestions reached
         }
-        const suggestionItem = document.createElement('li');
-        suggestionItem.classList.add('dropdown-item');
-        suggestionItem.textContent = suggestion;
-        suggestionItem.addEventListener('click', () => {
-          searchInput.value = suggestion;
-          suggestionsList.style.display = 'none'; // Hide suggestions after selection
-          // Perform additional actions (e.g., fetching data based on the selected suggestion)
-        });
-        suggestionsList.appendChild(suggestionItem);
+        const suggestion = doc.data().name;
+        // Check if the suggestion is not already in recent searches
+        if (!recentSearches.includes(suggestion)) {
+          const suggestionType = isSearchHistory(suggestion, recentSearches) ? 'search-history' : 'database-suggestions';
+          displaySuggestion(suggestion, suggestionType);
+          counter++; // Increment counter for each displayed suggestion
+        }
       });
-      // console.log(suggestionsList.innerHTML);
 
-      // Display the suggestions list
-      suggestionsList.style.display = 'block';
+      // Hide suggestions if no results found
+      if (counter == 0) {
+        suggestionsList.style.display = 'none';
+      }
+
     } catch (error) {
       console.error('Error fetching documents:', error);
     }
+  });
+}
+
+
+// Function to fetch recent searches from Firestore
+async function fetchRecentSearches(limit = 5) {
+  try {
+    // Make a query to fetch recent search history for the current user
+    const user = firebase.auth().currentUser;
+    if (user) {
+      const userId = user.uid;
+      const userDoc = await db.collection('users').doc(userId).get();
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        if (userData.search_history) {
+          // Retrieve only the 5 latest of search history entries
+          return userData.search_history.slice(0, limit).map(entry => entry.term);
+        }
+      }
+    }
+    return [];
+  } catch (error) {
+    console.error('Error fetching recent searches:', error);
+    return [];
+  }
+}
+
+// Check if the suggestion exists in the recent search history
+function isSearchHistory(suggestion, recentSearches) {
+  return recentSearches.includes(suggestion);
+}
+
+// Function to display a single suggestion
+function displaySuggestion(suggestion, suggestionType) {
+  const suggestionItem = document.createElement('li');
+  suggestionItem.classList.add('dropdown-item');
+  // Check if the suggestion type is 'search-history' to determine if it's from recent searches
+  if (suggestionType === 'search-history') {
+    // Create a <span> element for the clock icon
+    const clockIcon = document.createElement('span');
+    // This is the history icon from the Google font family
+    clockIcon.classList.add('material-symbols-outlined');
+    clockIcon.textContent = 'history';
+    clockIcon.style.color = 'grey';
+    clockIcon.style.marginRight = '10px';
+    // Append the clock icon to the suggestion item
+    suggestionItem.appendChild(clockIcon);
+  }
+
+  // Create a text node for the suggestion text
+  const suggestionText = document.createTextNode(suggestion);
+
+  // Append the suggestion text to the suggestion item
+  suggestionItem.appendChild(suggestionText);
+
+  // Add appropriate class based on suggestion type
+  suggestionItem.classList.add(suggestionType);
+
+  suggestionItem.addEventListener('click', () => {
+    searchInput.value = suggestion;
+    suggestionsList.style.display = 'none'; // Hide suggestions after selection
+    // Perform additional actions (e.g., fetching data based on the selected suggestion)
+  });
+  suggestionsList.appendChild(suggestionItem);
+}
+
+// Function to display search suggestions
+function displaySuggestions(suggestions, suggestionType) {
+  // Only display the first 5 suggestions
+  const limitedSuggestions = suggestions.slice(0, 5);
+  limitedSuggestions.forEach(suggestion => {
+    displaySuggestion(suggestion, suggestionType);
   });
 }
 
