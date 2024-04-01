@@ -1,5 +1,5 @@
 import { mapSVG } from "/scripts/modules/map.js";
-
+import { userPosition, setupLocation, convertGeoToMap } from "/scripts/modules/location.js";
 
 class pfNode {
 
@@ -70,7 +70,7 @@ var astar = {
     return grid;
   },
   //Search function of the nearby nodes.
-  search: async function (grid) {
+  search: function (grid) {
     this.showNode(grid);
     console.log(grid);
     grid = astar.init(grid);
@@ -190,22 +190,29 @@ var astar = {
     return openList;
 
   },
-  showNode: async function (grid) {
+  showNode: function (grid) {
 
     var newGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 
     newGroup.setAttribute("id" , "nodes");
 
     for(let i = 0 ; i < grid.length ; i++){
-      var x;
-      var y;
+      var x = grid[i][4].x;
+      var y = grid[i][4].y;
+      let fakeGeo = {
+        coords: {
+          longitude: y,
+          latitude: x
+      }}
+      let maplocal = convertGeoToMap(fakeGeo);
       var newNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       newNode.setAttribute('fill', "red")
-      newNode.setAttribute('cx', grid[i][4][0]);
-      newNode.setAttribute('cy', grid[i][4][1]);
-      newNode.setAttribute('r', 10);
+      newNode.setAttribute('cx', maplocal.x);
+      newNode.setAttribute('cy', maplocal.y);
+      newNode.setAttribute('r', 1);
       // console.log(mapSVG);
-      newGroup.prepend(newNode);
+
+      newGroup.append(newNode);
     }
     mapSVG.prepend(newGroup);
   }
