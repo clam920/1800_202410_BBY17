@@ -5,7 +5,7 @@
   https://www.google.com/maps/@49.2425018,-122.998416,17.52z?entry=ttu
 */
 
-import { ScreenPixelPosition } from "./map.js";
+import { ScreenPixelPosition, actualMapSize } from "./map.js";
 
 /**
  * Holds the range of geolocation positions we want to use.
@@ -20,38 +20,57 @@ const geoBoundaries = {
   minY: 49.2425018,
   /**@type {Number} */
   maxY:49.2545877
-}
+};
+
+/** Checks if the given location is on campus
+ * @returns {boolean}
+*/
+function isGeoOnCampus(userLong, userLat) {
+  return (userLat < geoBoundaries.maxY
+      && userLat > geoBoundaries.minY
+      && userLong < geoBoundaries.maxX
+      && userLong > geoBoundaries.minX)
+};
 
 /**
- * Converts from GeoLocation to a percent X/Y of the screen.
+ * 
+ * @param {GeolocationPosition} position 
+ * @returns {ScreenPixelPosition}
+ */
+function convertGeoToMap(position) {
+  let retval = null
+  let percents = convertGeoToPercent(position);
+  if (percents.x < 0 || percents.y < 0){
+    console.error("Given location is not on campus!");
+  } else {
+    retval = new ScreenPixelPosition(
+      actualMapSize.x * percents.x,
+      actualMapSize.y * percents.y
+    );
+  }
+  return retval;
+};
+
+/**
+ * Converts from GeoLocation to a percent X/Y of the map.
  * This will let us position the user based on the percent of the map size.
  * @param {GeolocationPosition} position 
  * @returns {Array<Number, Number>}
  */
-function convertWorldToPercent(position) {
+function convertGeoToPercent(position) {
 
   let userLong = position.coords.longitude;
   let userLat = position.coords.latitude;
-  let retval = {x: 50, y: 50};
-
-  let maxX = geoBoundaries.maxX;
-  let minX = geoBoundaries.minX;
-  let maxY = geoBoundaries.maxY;
-  let minY = geoBoundaries.minY;
+  let retval = {x: -1, y: -1};
 
   // Math.abs((usePos - Min)/(Min - Max)) * 100
-  if (
-      userLat < maxY
-      && userLat > minY
-      && userLong < maxX
-      && userLong > minX
-    ) {
-    console.log("User is inside campus");
-    let userLongPercent = Math.abs((userLong - maxX) / (minX - maxX)) * 100;
-    let userLatPercent = Math.abs((userLat - maxY) / (minY - maxY)) * 100;
+  if ( isGeoOnCampus(position) ) {
+    // console.log("User is inside campus");
+    let userLongPercent = Math.abs((userLong - maxX) / (minX - maxX));
+    let userLatPercent = Math.abs((userLat - maxY) / (minY - maxY));
     retval =  { x: userLongPercent, y: userLatPercent };
   } else {
-    console.warn("User is outside campus!")
+    console.warn("User is outside campus!", position);
   }
   return retval;
 };
@@ -79,12 +98,12 @@ class UserPosition {
    */
   static #calculatePixel(geolocation) {
     console.log(geolocation);
-    let percents = convertWorldToPercent(geolocation);
+    let percents = convertGeoToPercent(geolocation);
     console.log(percents);
     //TODO: Change this to SVG height and width.
     let pixelLocation = new ScreenPixelPosition(
-      screen.width / percents.x,
-      screen.height / percents.y
+      actualMapSize.x * percents.x,
+      actualMapSize.y * percents.y
     );
     return pixelLocation;
   }
@@ -145,4 +164,4 @@ function setupLocation() {
   }, null, positionOptions);
 }
 
-export { userPosition, setupLocation, convertWorldToPercent }
+export { userPosition, setupLocation, convertGeoToMap}
