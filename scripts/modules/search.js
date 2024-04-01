@@ -1,3 +1,10 @@
+
+import { astar, listNode } from "./pfNode.js";
+
+
+
+
+
 /**@type {Element} */
 const searchBar = document.querySelector('#inputclick');
 
@@ -191,11 +198,10 @@ function displaySuggestion(suggestion, suggestionType) {
 
   suggestionsList.appendChild(suggestionItem);
 
-  suggestionItem.addEventListener('click', function (e) {
+  suggestionItem.addEventListener('click', async function (e) {
     searchInput.value = suggestion;
-    const roomId = getRoomId(suggestion);
-    console.log(roomId);
-    // astar.getNode(roomId);
+    const roomId = await getRoomId(suggestion);
+    astar.showNode(astar.search(roomId));
     suggestionsList.style.display = 'none'; // Hide suggestions after selection
     // Perform additional actions (e.g., fetching data based on the selected suggestion)
   });

@@ -102,10 +102,22 @@ var astar = {
     }
     return grid;
   },
+  checkList: function(end){
+    for(var i = 0 ; i < listNode.length; i++){  
+      if(listNode[i][0] == end){
+        return true;
+      }
+    }
+    return false;
+  },
   //Search function of the nearby nodes.
-  search: await function (grid) {
+  search: await function (destination) {
     // console.log(grid);
-    grid = astar.init(grid);
+    
+    var grid = astar.init(listNode);
+    if(!astar.checkList(destination)){
+      return null;
+    }
 
     var start = grid[0][0];
     var end = grid[grid.length - 1][1];
@@ -225,6 +237,12 @@ var astar = {
   },
   showNode: function (grid) { 
     // console.log(grid);
+
+    if(grid == null){
+      alert("Destination does not exist");  
+      return null;
+    }
+
     var newGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 
     newGroup.setAttribute("id" , "nodes");
@@ -256,7 +274,6 @@ var astar = {
         newLine.setAttribute('y2',maplocal[i].y);
         newLine.setAttribute('style',"stroke:red;stroke-width:1");
         newLine.setAttribute("class", "pathfindingLine");
-        console.log(i);
         newGroup.append(newLine);
       }
 

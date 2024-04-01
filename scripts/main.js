@@ -10,7 +10,7 @@ async function setupMainPage() {
 
   
   // console.log(astar.search(listNode));
-  astar.showNode(astar.search(listNode));
+  // astar.showNode(astar.search(listNode));
 }
 
 /**TODO
