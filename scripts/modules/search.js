@@ -65,10 +65,9 @@ function setupSearchBar() {
       let counter = 0;
 
       // Populate the suggestions list with the retrieved suggestions
-      querySnapshot.forEach((doc) => {
-        if (counter >= 5) {
-          return; // Break out of the loop if maximum suggestions reached
-        }
+      while (suggestionsList.childNodes.length < 5 
+          && counter < querySnapshot.size) {
+        let doc = querySnapshot.index(counter);
         const suggestion = doc.data().name;
         // Check if the suggestion is not already in recent searches
         if (!recentSearches.includes(suggestion)) {
@@ -76,7 +75,7 @@ function setupSearchBar() {
           displaySuggestion(suggestion, suggestionType);
           counter++; // Increment counter for each displayed suggestion
         }
-      });
+      }
 
       // Hide suggestions if no results found
       if (counter == 0) {
