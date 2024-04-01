@@ -33,14 +33,14 @@ function isGeoOnCampus(userLong, userLat) {
 };
 
 /**
- * 
+ * Takes a given geolocation and converts it to a pixel location within the map.
  * @param {GeolocationPosition} position 
  * @returns {ScreenPixelPosition}
  */
 function convertGeoToMap(position) {
-  let retval = null
+  let retval = null;
   let percents = convertGeoToPercent(position);
-  if (percents.x < 0 || percents.y < 0){
+  if (percents.x < 0 || percents.y < 0) {
     console.error("Given location is not on campus!");
   } else {
     retval = new ScreenPixelPosition(
