@@ -1,3 +1,6 @@
+import { mapSVG } from "/scripts/modules/map.js";
+
+
 class pfNode {
 
   /**
@@ -45,7 +48,8 @@ var astar = {
     let grid = [
       [1, 2],
       [3, 4],
-      [5, 6]
+      [5, 6],
+      [7, 8]
     ];
     let counter = 0;
     for (var x = 0; x < grid.length; x++) {
@@ -67,6 +71,7 @@ var astar = {
   },
   //Search function of the nearby nodes.
   search: async function (grid) {
+    this.showNode(grid);
     console.log(grid);
     grid = astar.init(grid);
 
@@ -185,8 +190,24 @@ var astar = {
     return openList;
 
   },
-  showNode: function (x, y) {
+  showNode: async function (grid) {
 
+    var newGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+    newGroup.setAttribute("id" , "nodes");
+
+    for(let i = 0 ; i < grid.length ; i++){
+      var x;
+      var y;
+      var newNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      newNode.setAttribute('fill', "red")
+      newNode.setAttribute('cx', grid[i][4][0]);
+      newNode.setAttribute('cy', grid[i][4][1]);
+      newNode.setAttribute('r', 10);
+      // console.log(mapSVG);
+      newGroup.prepend(newNode);
+    }
+    mapSVG.prepend(newGroup);
   }
 };
 
