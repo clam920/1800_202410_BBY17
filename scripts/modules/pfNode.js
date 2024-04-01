@@ -1,7 +1,46 @@
 import { mapSVG } from "/scripts/modules/map.js";
 import { userPosition, setupLocation, convertGeoToMap } from "/scripts/modules/location.js";
 
+const listNode = [
+  [
+    "SE12 320", 4, 0, 4, { x: 49.249874, y: -123.0016506}//1
+  ],
+
+  [
+    "Stairs Top", 4, 1, 3, {x:49.249642420429126, y:-123.0017891595678}//2
+  ],
+
+  [
+    "Bridge", 5, 2, 3, {x: 49.25005376612112, y:-123.00173465751207}//3
+  ],
+
+  [
+    "Stairs Bottom", 4, 2, 2, {x:49.249642420429126, y:-123.0017891595678}//4
+  ],
+
+  [
+    "Stairs Top Inside", 5, 3, 2, {x: 49.250058580920445, y:-123.00255809566634}//5
+  ],
+
+  [
+    "OutsideNode",4,2,3,{x: 49.24958619143382, y:-123.00236754406244}//6
+  ],
+
+  [
+    "Stairs Bottom Inside", 5,4,1, {x: 49.250058580920445, y:-123.00255809566634}
+  ],
+
+  [
+    "Sw05 1840", 4, 0, 4, {x: 49.24975437222892, y:-123.00254803738308}
+  ]
+];
+
+
+
+
+
 class pfNode {
+
 
   /**
    *
@@ -30,17 +69,11 @@ class pfNode {
     /**@type {Boolean} */
     this.closed = false;
 
-    /**@type {Boolean} */
-    this.right = null;
-
-    /**@type {Boolean} */
-    this.left = null;
-
     /**@type {pfNode} */
     this.parent = null;
 
     /**@type {Array<Number>} */
-    this.pos = [x, y]
+    this.pos = {x, y}
   }
 }
 var astar = {
@@ -60,8 +93,8 @@ var astar = {
             list[counter][1],
             list[counter][2],
             list[counter][3],
-            list[counter][4][0],
-            list[counter][4][1]
+            list[counter][4].x,
+            list[counter][4].y
           )
         );
         counter++;
@@ -70,9 +103,8 @@ var astar = {
     return grid;
   },
   //Search function of the nearby nodes.
-  search: function (grid) {
-    this.showNode(grid);
-    console.log(grid);
+  search: await function (grid) {
+    // console.log(grid);
     grid = astar.init(grid);
 
     var start = grid[0][0];
@@ -101,13 +133,14 @@ var astar = {
 
       // result has been found, return the traced path
       if (currentNode == end) {
-        console.log("destination reached");
+        // console.log("destination reached");
         var curr = currentNode;
         var ret = [];
         while (curr.parent) {
           ret.push(curr);
           curr = curr.parent;
-        }
+        }x
+        ret.push(start);
         return ret.reverse();
       }
 
@@ -190,34 +223,49 @@ var astar = {
     return openList;
 
   },
-  showNode: function (grid) {
-
+  showNode: function (grid) { 
+    // console.log(grid);
     var newGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 
     newGroup.setAttribute("id" , "nodes");
-
+    var maplocal = [];
     for(let i = 0 ; i < grid.length ; i++){
-      var x = grid[i][4].x;
-      var y = grid[i][4].y;
-      let fakeGeo = {
+      var x = grid[i].pos.x;
+      var y = grid[i].pos.y;
+      var fakeGeo = {
         coords: {
           longitude: y,
           latitude: x
       }}
-      let maplocal = convertGeoToMap(fakeGeo);
-      var newNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      newNode.setAttribute('fill', "red")
-      newNode.setAttribute('cx', maplocal.x);
-      newNode.setAttribute('cy', maplocal.y);
-      newNode.setAttribute('r', 1);
-      // console.log(mapSVG);
 
+
+      maplocal.push(convertGeoToMap(fakeGeo));
+      var newNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      newNode.setAttribute('fill', "black");
+      newNode.setAttribute("class", "pathfindingNode");
+      newNode.setAttribute('cx', maplocal[i].x);
+      newNode.setAttribute('cy', maplocal[i].y);
+      newNode.setAttribute('r', 1);
       newGroup.append(newNode);
+      // console.log(mapSVG);
+      if(i >= 1){
+        var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        newLine.setAttribute('x1',maplocal[i-1].x);
+        newLine.setAttribute('y1',maplocal[i-1].y);
+        newLine.setAttribute('x2',maplocal[i].x);
+        newLine.setAttribute('y2',maplocal[i].y);
+        newLine.setAttribute('style',"stroke:red;stroke-width:1");
+        newLine.setAttribute("class", "pathfindingLine");
+        console.log(i);
+        newGroup.append(newLine);
+      }
+
+
     }
-    mapSVG.prepend(newGroup);
+    mapSVG.append(newGroup);
   }
 };
 
-export { astar }
+export { astar, listNode}
 
 
