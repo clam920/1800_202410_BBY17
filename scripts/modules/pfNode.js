@@ -255,7 +255,7 @@ var astar = {
         newLine.setAttribute('x2',maplocal[i].x);
         newLine.setAttribute('y2',maplocal[i].y);
         newLine.setAttribute('style',"stroke:red;stroke-width:1");
-        newLine.setAttrubute("class", "pathfindingLine");
+        newLine.setAttribute("class", "pathfindingLine");
         console.log(i);
         newGroup.append(newLine);
       }
