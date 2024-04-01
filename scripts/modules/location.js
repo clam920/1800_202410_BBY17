@@ -64,10 +64,10 @@ function convertGeoToPercent(position) {
   let retval = {x: -1, y: -1};
 
   // Math.abs((usePos - Min)/(Min - Max)) * 100
-  if ( isGeoOnCampus(position) ) {
+  if ( isGeoOnCampus(userLong, userLat) ) {
     // console.log("User is inside campus");
-    let userLongPercent = Math.abs((userLong - maxX) / (minX - maxX));
-    let userLatPercent = Math.abs((userLat - maxY) / (minY - maxY));
+    let userLongPercent = Math.abs((userLong - geoBoundaries.maxX) / (geoBoundaries.minX - geoBoundaries.maxX));
+    let userLatPercent = Math.abs((userLat - geoBoundaries.maxY) / (geoBoundaries.minY - geoBoundaries.maxY));
     retval =  { x: userLongPercent, y: userLatPercent };
   } else {
     console.warn("User is outside campus!", position);

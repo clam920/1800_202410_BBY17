@@ -57,7 +57,8 @@ firebase.auth().onAuthStateChanged(user => {
 
     // Function for searching item from db.
     // currently only store user search.
-    function startSearch(userId) {
+    function startSearch(event) {
+      event.preventDefault();
       const searchInput = document.querySelector('.search-input');
       const searchTerm = searchInput.value.trim();
 
@@ -69,10 +70,7 @@ firebase.auth().onAuthStateChanged(user => {
 
 
     // click the search button as an event to trigger search function.
-    searchButton.addEventListener('click', (event) => {
-      event.preventDefault();
-      startSearch(userId);
-    });
+    searchButton.addEventListener('click', startSearch);
 
     //set up "Enter" key as another trigger to search function.
     searchInput.addEventListener('keydown', (event) => {
