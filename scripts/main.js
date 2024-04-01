@@ -10,9 +10,8 @@ async function setupMainPage() {
 
   
   // console.log(astar.search(listNode));
-  astar.showNode(astar.search(listNode));
+  // astar.showNode(astar.search(listNode));
 }
-
 
 /**TODO
  * 1) Event listener for User Click on Suggestion box INSIDE MAIN
@@ -22,8 +21,6 @@ async function setupMainPage() {
  */
 
 document.addEventListener("DOMContentLoaded", setupMainPage);
-
-
 
 
 //we need to have an export to use an import, so this satisfies that requirement
