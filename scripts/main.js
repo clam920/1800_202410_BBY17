@@ -1,5 +1,5 @@
 import { ScreenPixelPosition, setupMap } from "./modules/map.js";
-import { userPosition, setupLocation, convertWorldToPercent } from "./modules/location.js";
+import { userPosition, setupLocation, convertGeoToMap } from "./modules/location.js";
 import { astar } from "./modules/pfNode.js";
 
 var aStar;

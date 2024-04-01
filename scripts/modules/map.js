@@ -12,6 +12,8 @@ var center;
 /**@type {DOMMatrix} */
 var mapMatrix = [1, 0, 0, 1, 0, 0];
 
+/** @type {ScreenPixelPosition} */
+const actualMapSize = new ScreenPixelPosition(0, 0);
 
 /**
  * Represents the position of an item on the screen.
@@ -95,11 +97,18 @@ function zoom(e){
   mapMatrix[4] += (1 - scale) * center.x;
   mapMatrix[5] += (1 - scale) * center.y;
   updateMatrix();
+  setActualMapSize
 }
 
 function updateMatrix(){
   var newMatrix = "matrix(" + mapMatrix.join(' ') + ")";
   mapSVG.setAttributeNS(null, "transform", newMatrix);
+}
+
+function setActualMapSize() {
+  let bBox = mapSVG.getBBox();
+  actualMapSize.x = bBox.width * mapMatrix[0];
+  actualMapSize.y = bBox.height * mapMatrix[3];
 }
 
 /**
@@ -168,7 +177,6 @@ function cleanMapSVG(mapData) {
 
 function setBoundaries(){
   let bbox = mapSVG.getBBox();
-  //console.log(bbox);
 //   boundaries.minX = 0 - bbox.x;
 //   boundaries.maxX = boundaryX2 - bbox.x - bbox.width;
 //   boundaries.minY = boundaryY1 - bbox.y;
