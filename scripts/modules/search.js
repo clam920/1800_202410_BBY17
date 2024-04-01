@@ -6,88 +6,127 @@ function setupSearchBar() {
   const searchButton = document.querySelector('.search-button');;
   const suggestionsList = document.getElementById('suggestionsList');
 
+  let typingTimer; // Timer identifier
+  const doneTypingInterval = 300; // Delay in milliseconds
+
   // Add an event listener to the search input element
   searchInput.addEventListener('input', async (event) => {
 
-    // define user input as searchTerm.
-    let searchTerm = event.target.value.trim();
+    // Clear the previous timer
+    clearTimeout(typingTimer);
 
-    // Convert all lowercase letters to uppercase, in case user types lower case.
-    searchTerm = searchTerm.toUpperCase();
+    //function will only be called after user stop typing for 300ms.
+    typingTimer = setTimeout(async () => {
+      // define user input as searchTerm.
+      let searchTerm = event.target.value.trim();
 
-    // Replace hyphens with spacesm, in case user put hypens between building and room number.
-    searchTerm = searchTerm.replace(/-/g, ' ');
+      // Convert all lowercase letters to uppercase, in case user types lower case.
+      searchTerm = searchTerm.toUpperCase();
 
-    suggestionsList.innerHTML = ''; // Clear previous suggestions
+      // In case user put hypens between building and room number.
+      searchTerm = searchTerm.replace(/-/g, ' ');
 
-    try {
+      suggestionsList.innerHTML = ''; // Clear previous suggestions
 
-      let recentSearches = []; // Declare recentSearches variable outside conditional block
+      try {
 
-      if (searchTerm.length == 0) {
-        // Fetch recent searches only if the search term is empty
-        recentSearches = await fetchRecentSearches();
-        // Display recent searches
-        displaySuggestions(recentSearches, 'search-history');
-      } else {
+        // Declare recentSearches variable outside conditional block
+        let recentSearches = []; 
+
         // Fetch recent searches only if the search term is not empty
         recentSearches = await fetchRecentSearches();
-        // Filter out suggestions that are already in the recent search history
-        recentSearches = recentSearches.filter(suggestion => suggestion.toUpperCase().includes(searchTerm));
+
         // Display recent searches
         displaySuggestions(recentSearches, 'search-history');
-      }
 
-      const querySnapshot = await db.collection('classrooms')
-        .where('name', '>=', searchTerm)
-        .where('name', '<=', searchTerm + '\uf8ff')
-        .orderBy('name')
-        .limit(5)
-        .get();
-      if (querySnapshot.size == 0) {
-        // Hide suggestions if no results found
-        suggestionsList.style.display = 'none';
-        return;
-      }
+        if (searchTerm.length > 0) {
 
-      // Position the suggestions list under the search input field
-      const inputRect = searchInput.getBoundingClientRect();
-      const inputGroupWidth = searchInput.offsetWidth + searchButton.offsetWidth;
-      suggestionsList.style.position = 'absolute';
-      suggestionsList.style.top = `${inputRect.bottom}px`;
-      suggestionsList.style.left = `${inputRect.left}px`;
-      // fix the suggestion box width to the wide of input box and search button.
-      suggestionsList.style.width = `${inputGroupWidth}px`;
+          // Filter out suggestions that are already in the recent search history
+          recentSearches = recentSearches.filter(suggestion => suggestion.toUpperCase().includes(searchTerm));
 
-      suggestionsList.style.display = 'block';
-
-      // Counter to track the number of displayed suggestions
-      let counter = 0;
-
-      // Populate the suggestions list with the retrieved suggestions
-      while (suggestionsList.childNodes.length < 5 
-          && counter < querySnapshot.size) {
-        let doc = querySnapshot.index(counter);
-        const suggestion = doc.data().name;
-        // Check if the suggestion is not already in recent searches
-        if (!recentSearches.includes(suggestion)) {
-          const suggestionType = isSearchHistory(suggestion, recentSearches) ? 'search-history' : 'database-suggestions';
-          displaySuggestion(suggestion, suggestionType);
-          counter++; // Increment counter for each displayed suggestion
         }
-      }
 
-      // Hide suggestions if no results found
-      if (counter == 0) {
-        suggestionsList.style.display = 'none';
-      }
+        const querySnapshot = await db.collection('classrooms')
+          .where('name', '>=', searchTerm)
+          .where('name', '<=', searchTerm + '\uf8ff')
+          .orderBy('name')
+          .limit(5)
+          .get();
+        if (querySnapshot.size == 0) {
+          // Hide suggestions if no results found
+          suggestionsList.style.display = 'none';
+          return;
+        }
 
-    } catch (error) {
-      console.error('Error fetching documents:', error);
-    }
+        // Position the suggestions list under the search input field
+        const inputRect = searchInput.getBoundingClientRect();
+        const inputGroupWidth = searchInput.offsetWidth + searchButton.offsetWidth;
+        suggestionsList.style.position = 'absolute';
+        suggestionsList.style.top = `${inputRect.bottom}px`;
+        suggestionsList.style.left = `${inputRect.left}px`;
+        // fix the suggestion box width to the wide of input box and search button.
+        suggestionsList.style.width = `${inputGroupWidth}px`;
+
+        suggestionsList.style.display = 'block';
+
+        // //initial suggestion counter as 0.
+        // let counter = 0;
+        // // Populate the suggestions list with the retrieved suggestions
+        // while (suggestionsList.childNodes.length < 5
+        //   && counter < querySnapshot.docs.size) {
+        //   let doc = querySnapshot.docs[counter];
+        //   console.log(querySnapshot);
+        //   console.log(counter, doc);
+        //   const suggestion = doc.data().name;
+        //   // Check if the suggestion is not already in recent searches
+        //   if (!recentSearches.includes(suggestion)) {
+        //     const suggestionType = isSearchHistory(suggestion, recentSearches) ? 'search-history' : 'database-suggestions';
+        //     displaySuggestion(suggestion, suggestionType);
+        //     counter++; // Increment counter for each displayed suggestion
+        //   }
+        // }
+
+        // Counter to track the number of displayed suggestions
+        let counter = 0;
+        let displayedSuggestions = [];
+
+        // Populate the suggestions list with the retrieved suggestions from the database
+        querySnapshot.forEach((doc) => {
+          const suggestion = doc.data().name;
+          // Check if the suggestion is not already displayed and not in recent searches
+          if (!displayedSuggestions.includes(suggestion) && !recentSearches.includes(suggestion)) {
+            const suggestionType = 'database-suggestions';
+            displaySuggestion(suggestion, suggestionType);
+            displayedSuggestions.push(suggestion); // Add displayed suggestion to the list
+            counter++; // Increment counter for each displayed suggestion
+          }
+        });
+
+        // Add recent search suggestions if needed
+        if (counter < 5) {
+          recentSearches.slice(0, 5 - counter).forEach(suggestion => {
+            if (!displayedSuggestions.includes(suggestion)) {
+              displaySuggestion(suggestion, 'search-history');
+              displayedSuggestions.push(suggestion); // Add displayed suggestion to the list
+            }
+          });
+        }
+
+        // Hide suggestions if no results found
+        if (counter == 0) {
+          suggestionsList.style.display = 'none';
+        }
+        // // Hide suggestions if no results found
+        // if (querySnapshot.size == 0) {
+        //   suggestionsList.style.display = 'none';
+        // }
+
+      } catch (error) {
+        console.error('Error fetching documents:', error);
+      }
+    }, doneTypingInterval);
   });
 }
-
 
 // Function to fetch recent searches from Firestore
 async function fetchRecentSearches(limit = 5) {
@@ -101,7 +140,8 @@ async function fetchRecentSearches(limit = 5) {
         const userData = userDoc.data();
         if (userData.search_history) {
           // Retrieve only the 5 latest of search history entries
-          return userData.search_history.slice(0, limit).map(entry => entry.term);
+          const recentSearches = userData.search_history.slice(0, limit).map(entry => entry.term);
+          return recentSearches;
         }
       }
     }
