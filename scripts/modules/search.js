@@ -60,19 +60,22 @@ function setupSearchBar() {
 
       suggestionsList.style.display = 'block';
 
+      //initial suggestion counter as 0.
+      let counter = 0;
       // Populate the suggestions list with the retrieved suggestions
-      querySnapshot.forEach((doc, index) => {
-        if (index >= 5) {
-          return; // Break out of the loop if maximum suggestions reached
-        } else {
-          const suggestion = doc.data().name;
-          // Check if the suggestion is not already in recent searches
-          if (!recentSearches.includes(suggestion)) {
-            const suggestionType = isSearchHistory(suggestion, recentSearches) ? 'search-history' : 'database-suggestions';
-            displaySuggestion(suggestion, suggestionType);
-          }
+      while (suggestionsList.childNodes.length < 5
+        && counter < querySnapshot.docs.size) {
+        let doc = querySnapshot.docs[counter];
+        console.log(querySnapshot);
+        console.log(counter, doc);
+        const suggestion = doc.data().name;
+        // Check if the suggestion is not already in recent searches
+        if (!recentSearches.includes(suggestion)) {
+          const suggestionType = isSearchHistory(suggestion, recentSearches) ? 'search-history' : 'database-suggestions';
+          displaySuggestion(suggestion, suggestionType);
+          counter++; // Increment counter for each displayed suggestion
         }
-      });
+      }
 
       // Hide suggestions if no results found
       if (querySnapshot.size == 0) {
