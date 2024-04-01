@@ -13,7 +13,6 @@ async function setupMainPage() {
   astar.showNode(astar.search(listNode));
 }
 
-
 /**TODO
  * 1) Event listener for User Click on Suggestion box INSIDE MAIN
  * 1a) On click, query the database for the document with a matching **name** 
@@ -22,8 +21,6 @@ async function setupMainPage() {
  */
 
 document.addEventListener("DOMContentLoaded", setupMainPage);
-
-
 
 
 //we need to have an export to use an import, so this satisfies that requirement

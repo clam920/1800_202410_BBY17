@@ -1,6 +1,16 @@
 /**@type {Element} */
 const searchBar = document.querySelector('#inputclick');
 
+const onClickOutside = (element, callback) => {
+  document.addEventListener('click', e => {
+    if (!element.contains(e.target)) { callback(); }
+  });
+}
+
+function hideSuggestionList() {
+  suggestionsList.style.display = 'none';
+}
+
 function setupSearchBar() {
   const searchInput = document.querySelector('.search-input');;
   const searchButton = document.querySelector('.search-button');;
@@ -54,7 +64,7 @@ function setupSearchBar() {
           .get();
         if (querySnapshot.size == 0) {
           // Hide suggestions if no results found
-          suggestionsList.style.display = 'none';
+          hideSuggestionList();
           return;
         }
 
@@ -85,7 +95,7 @@ function setupSearchBar() {
 
         // Hide suggestions if no results found
         if (querySnapshot.size == 0) {
-          suggestionsList.style.display = 'none';
+          hideSuggestionList();
         }
 
       } catch (error) {
@@ -97,9 +107,10 @@ function setupSearchBar() {
 
 
   // Add an event listener to the search input element for focus events
-  searchInput.addEventListener('focus', async (event) => {
+  searchInput.addEventListener('focus', async () => {
     // Clear the search input
     searchInput.value = '';
+
     suggestionsList.innerHTML = ''; // Clear previous suggestions
     // Fetch and display recent searches
     const recentSearches = await fetchRecentSearches('');
@@ -116,13 +127,8 @@ function setupSearchBar() {
     suggestionsList.style.display = 'block';
   });
 
-  // Add an event listener to the search input element for blur events
-  searchInput.addEventListener('blur', async (event) => {
-    // Hide suggestions list when search input loses focus
-    suggestionsList.style.display = 'none';
-  });
+  onClickOutside(suggestionsList, hideSuggestionList);
 }
-
 
 // Function to fetch recent searches from Firestore
 async function fetchRecentSearches(searchTerm, limit = 5) {
@@ -183,12 +189,33 @@ function displaySuggestion(suggestion, suggestionType) {
   // Add appropriate class based on suggestion type
   suggestionItem.classList.add(suggestionType);
 
-  suggestionItem.addEventListener('click', () => {
+  suggestionsList.appendChild(suggestionItem);
+
+  suggestionItem.addEventListener('click', function (e) {
     searchInput.value = suggestion;
+    const roomId = getRoomId(suggestion);
+    console.log(roomId);
+    // astar.getNode(roomId);
     suggestionsList.style.display = 'none'; // Hide suggestions after selection
     // Perform additional actions (e.g., fetching data based on the selected suggestion)
   });
-  suggestionsList.appendChild(suggestionItem);
+}
+
+
+async function getRoomId(roomName) {
+  try {
+    const querySnapshot = await db.collection('classrooms').where('name', '==', roomName).get();
+    if (!querySnapshot.empty) {
+      // Assuming there's only one document returned, get the first one
+      const doc = querySnapshot.docs[0];
+      const roomId = doc.data().code; // Get the code field from the Firestore document
+      return roomId;
+    } else {
+      throw new Error('Room not found');
+    }
+  } catch (error) {
+    throw new Error('Error getting room ID: ' + error.message);
+  }
 }
 
 // Function to display search suggestions
