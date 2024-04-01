@@ -34,11 +34,18 @@ function convertWorldToPercent(position) {
   let userLat = position.coords.latitude;
   let retval = {x: 50, y: 50};
 
+  let maxX = geoBoundaries.maxX;
+  let minX = geoBoundaries.minX;
+  let maxY = geoBoundaries.maxY;
+  let minY = geoBoundaries.minY;
+
   // Math.abs((usePos - Min)/(Min - Max)) * 100
-  if (position.coords.latitude < geoBoundaries.maxY
-    && position.coords.latitude > geoBoundaries.minY
-    && position.coords.longitude < geoBoundaries.maxX
-    && position.coords.longitude > geoBoundaries.minX) {
+  if (
+      userLat < maxY
+      && userLat > minY
+      && userLong < maxX
+      && userLong > minX
+    ) {
     console.log("User is inside campus");
     let userLongPercent = Math.abs((userLong - maxX) / (minX - maxX)) * 100;
     let userLatPercent = Math.abs((userLat - maxY) / (minY - maxY)) * 100;
