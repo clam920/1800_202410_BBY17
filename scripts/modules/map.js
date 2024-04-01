@@ -188,4 +188,4 @@ function setBoundaries(){
 //   boundaries.maxY = boundaryY2 - bbox.y - bbox.height;
 }
 
-export { ScreenPixelPosition, mapSVG, mapArea, setupMap };
+export { ScreenPixelPosition, mapSVG, mapArea, actualMapSize, setupMap };
