@@ -139,7 +139,8 @@ var astar = {
         while (curr.parent) {
           ret.push(curr);
           curr = curr.parent;
-        }
+        }x
+        ret.push(start);
         return ret.reverse();
       }
 
@@ -223,30 +224,43 @@ var astar = {
 
   },
   showNode: function (grid) { 
-    console.log(grid);
+    // console.log(grid);
     var newGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 
     newGroup.setAttribute("id" , "nodes");
-
+    var maplocal = [];
     for(let i = 0 ; i < grid.length ; i++){
       var x = grid[i].pos.x;
       var y = grid[i].pos.y;
-      let fakeGeo = {
+      var fakeGeo = {
         coords: {
           longitude: y,
           latitude: x
       }}
-      let maplocal = convertGeoToMap(fakeGeo);  
-      var newNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      newNode.setAttribute('fill', "red")
-      newNode.setAttribute('cx', maplocal.x);
-      newNode.setAttribute('cy', maplocal.y);
-      newNode.setAttribute('r', 1);
-      // console.log(mapSVG);
 
+
+      maplocal.push(convertGeoToMap(fakeGeo));
+      var newNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      newNode.setAttribute('fill', "black")
+      newNode.setAttribute('cx', maplocal[i].x);
+      newNode.setAttribute('cy', maplocal[i].y);
+      newNode.setAttribute('r', 1);
       newGroup.append(newNode);
+      // console.log(mapSVG);
+      if(i >= 1){
+        var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        newLine.setAttribute('x1',maplocal[i-1].x);
+        newLine.setAttribute('y1',maplocal[i-1].y);
+        newLine.setAttribute('x2',maplocal[i].x);
+        newLine.setAttribute('y2',maplocal[i].y);
+        newLine.setAttribute('style',"stroke:red;stroke-width:1");
+        console.log(i);
+        newGroup.append(newLine);
+      }
+
+
     }
-    mapSVG.prepend(newGroup);
+    mapSVG.append(newGroup);
   }
 };
 
