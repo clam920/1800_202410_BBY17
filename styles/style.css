@@ -5,6 +5,9 @@
   --accent-turquoise: #00a69d;
   --rollover-blue: #0055ce;
   --link-blue: #0069ff;
+  --header-height: 10vh;
+  --footer-height: 5vh;
+  --map-height: calc(100vh - (var(--header-height) + var(--footer-height)));
 }
 
 ul {
@@ -12,6 +15,13 @@ ul {
 }
 
 /* #region header */
+#headerPlaceholder {
+  height: var(--header-height);
+}
+
+#footerPlaceholder {
+  height: var(--footer-height);
+}
 
 /* #region navbar */
 .navbar-brand {
@@ -114,6 +124,7 @@ ul {
 /* #region map */
 #mapArea {
   background-color: var(--accent-turquoise);
+  height: var(--map-height);
 }
 
 #roadsAndPaths {

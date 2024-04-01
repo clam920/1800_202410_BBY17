@@ -1,11 +1,17 @@
+
 /**@type {HTMLElement} */
 var mapArea;
-/**@type {HTMLElement} */
+/**@type {SVGGraphicsElement} */
 var mapSVG;
-/**@type {ScreenPixelPosition} */
-var startPos;
 
+/**@type {ScreenPixelPosition} */
+var offset;
+/**@type {ScreenPixelPosition} */
+var center;
+
+/**@type {DOMMatrix} */
 var mapMatrix = [1, 0, 0, 1, 0, 0];
+
 
 /**
  * Represents the position of an item on the screen.
@@ -20,58 +26,81 @@ class ScreenPixelPosition {
 };
 
 /**
- * Collects the pointers current position, and enables the listeners for pointer up, leave, and move.
- * @param {PointerEvent} e 
+ * Planning to use this to control the map panning; we'll see how it turns out.
+ * Not really MVP, tbf, but I wanna leave it here just in case.
  */
-function enablePointerTracking(e) {
-  // console.log(e);
-  //Reset the start position
-  startPos = getPointerPosition(e);
-
-  //add the event listener for updating the maps position
-  mapArea.addEventListener("pointermove", calculatePointerMovement);
-
-  //Add the event listeners for stopping the map updates.
-  ["pointerup", "pointerleave"].forEach(e => mapArea.addEventListener(e, disablePointerTracking));
+/**@type {Array[Number]} */
+var boundaries = {
+  "minX": 0,
+  "minY": 0,
+  "maxX": 0,
+  "maxY": 0
 };
 
 /**
- * Calculates how much the pointer has moved since we last checked.
+ * Collects the pointers current position, and enables the listeners for pointer up, leave, and move.
  * @param {PointerEvent} e 
  */
-function calculatePointerMovement(e) {
-  let currentPos = getPointerPosition(e)
-  let offset = new ScreenPixelPosition(
-    currentPos.x - startPos.x,
-    currentPos.y - startPos.y
-  );
-  /*
-  Apparently transforms are stored in 2/3d array.
-  https://zellwk.com/blog/css-translate-values-in-javascript/ was a huge help in figuring this out.
-  */
-  panMap(offset.x, offset.y);
-  startPos = currentPos;
+function startDrag(e) {
+  e.preventDefault();
+  setBoundaries();
+
+  offset = getPointerPosition(e);
+  // Apparently transforms are stored in 2/3d array.
+  // https://zellwk.com/blog/css-translate-values-in-javascript/ was a huge help in figuring this out.
+  offset.x -= mapMatrix[4] / mapMatrix[0];
+  offset.y -= mapMatrix[5] / mapMatrix[3];
+
+  //add the event listener for updating the maps position
+  mapArea.addEventListener("pointermove", drag);
+
+  //Add the event listeners for stopping the map updates.
+  ["pointerup", "pointerleave"].forEach(e => mapArea.addEventListener(e, stopDrag));
+};
+
+
+/**
+ * Pans the map based on how much the user has moved.
+ * @param {PointerEvent} e 
+ */
+function drag(e) {
+  let coords = getPointerPosition(e);
+
+  mapMatrix[4] = (coords.x - offset.x) * mapMatrix[0];
+  mapMatrix[5] = (coords.y - offset.y) * mapMatrix[3];
+  updateMatrix();
 };
 
 /**
  * Removes the event listener for pointer move, leave and up.
  */
-function disablePointerTracking() {
+function stopDrag() {
   ["pointermove", "pointerleave", "pointerup"].forEach(e =>
-    mapArea.removeEventListener(e, calculatePointerMovement));
+    mapArea.removeEventListener(e, drag));
 };
 
-/**
- * Adjusts the maps matrix by the given number of pixels.
- * @param {Number} dx the amount we are panning in the X
- * @param {Number} dy the amount we are panning the in Y
- */
-function panMap(dx, dy) {
-  mapMatrix[4] += dx;
-  mapMatrix[5] += dy;
+function zoom(e){
+  let scale;
+  if ( e.deltaY < 0 ) {
+    scale = 1.1
+  } else {
+    scale = 0.9
+  }
+  for (var i = 0; i < 4; i++){
+    mapMatrix[i] *= scale;
+  }
+
+  //TODO: CB - The center changes based on the scale
+  // so I need to write some logic to check that.
+  mapMatrix[4] += (1 - scale) * center.x;
+  mapMatrix[5] += (1 - scale) * center.y;
+  updateMatrix();
+}
+
+function updateMatrix(){
   var newMatrix = "matrix(" + mapMatrix.join(' ') + ")";
   mapSVG.setAttributeNS(null, "transform", newMatrix);
-};
+}
 
 /**
  * Gets the x/y coordinate of the pointer of the screen.
@@ -79,21 +108,17 @@ function panMap(dx, dy) {
  * @returns {ScreenPixelPosition}
  */
 function getPointerPosition(e) {
-  return new ScreenPixelPosition(e.screenX, e.screenY);
-};
 
-/**
- * Converts the array of a Transform Style, and converts it to an array of Ints.
- * When we get the array from an SVG, its held in strings, so this is useful :)
- * @param {Array<String>} arr 
- * @returns {Array<Number>} The given string array, converted to ints.
- */
-function convertTransformStyleToInt(arr) {
-  let retArr = []
-  arr.forEach(value => {
-    retArr.push(parseInt(value));
-  })
-  return retArr;
+  return new ScreenPixelPosition(e.clientX, e.clientY);
+
+  // CB: Commented this code out because the CTM was causing the drag to be very slow.
+  // It's not too important what these values represent.
+  // In most cases all we need to know is that if an 
+  // element has attributes of (x,y), then it will have coordinates on screen of (ax+e,dy+f)
+  // let CTM = mapSVG.getScreenCTM();
+  // return new ScreenPixelPosition(
+  //   (e.clientX - CTM.e) / CTM.a,
+  //   (e.clientY - CTM.f) / CTM.d);
 };
 
 /**
@@ -101,50 +126,58 @@ function convertTransformStyleToInt(arr) {
  * Should be run in the main.js, or before you intend to display/use the map.
  */
 async function setupMap() {
-  mapArea = document.getElementById("mapArea");
   const file = await fetch("./images/map/SVG/BCITMap.svg");
   const parser = new DOMParser();
+
   let data = await file.text();
   data = parser.parseFromString(data, "text/html").body;
   data = cleanMapSVG(data);
-  mapArea.innerHTML = data.innerHTML;
-  setupMapSVG();
 
-  mapArea.addEventListener("pointerdown", enablePointerTracking);
-  //Testing zoom functionality for later.
-  // mapArea.setAttribute("viewBox", [0, 0, visualViewport.width, visualViewport.height]);
-  // console.log(mapArea.getAttribute("viewBox"));
-  //mapArea.addEventListener("wheel", (e) => { console.log(e) });
-  // let viewBox = mapSVG.getAttributeNS(null, "viewBox").split(" ");
-  // //center will be used for zooming later.
-  // let center = new ScreenPixelPosition(
-  //   parseFloat(viewBox[2]) / 2,
-  //   parseFloat(viewBox[3]) / 2
-  // );
+  mapArea = document.getElementById("mapArea");
+  mapArea.innerHTML = data.outerHTML;
+  mapArea.addEventListener("pointerdown", startDrag);
+  mapArea.addEventListener("wheel", zoom);
+  mapSVG = document.getElementById('Layer_2');
+
+  offset = new ScreenPixelPosition(0, 0);
+  var viewbox = mapSVG.getAttributeNS(null, "viewBox").split(" ");
+  center = new ScreenPixelPosition(
+    parseFloat(viewbox[2]) / 2,
+    parseFloat(viewbox[3]) / 2
+  );
 };
 
 /**
  * Removes the defs from the svg, so we can control it.
  * @param {HTMLElement} mapData 
+ * @return {SVGGraphicsElement}
  */
 function cleanMapSVG(mapData) {
-  mapData.childNodes.forEach(child => {
+  //get the SVG layer from the data
+  let svgLayer = mapData.children[0];
+
+  //Get rid of the defs
+  svgLayer.childNodes.forEach(child => {
     if (child.nodeName == 'defs') {
       child.remove();
     }
   });
+
   return mapData;
 }
 
-/**
- * Sets the initial matrix for the mapSVG, 
- * and sets up the reference to the map DOM
- */
-function setupMapSVG() {
-  mapSVG = document.getElementById('Layer_2');
-  mapSVG.setAttribute('x', '0');
-  mapSVG.setAttribute('y', '0');
-  mapSVG.setAttribute('transform', 'translate(0, 0)');
+function setBoundaries(){
+  let bbox = mapSVG.getBBox();
+  //console.log(bbox);
+//   boundaries.minX = 0 - bbox.x;
+//   boundaries.maxX = boundaryX2 - bbox.x - bbox.width;
+//   boundaries.minY = boundaryY1 - bbox.y;
+//   boundaries.maxY = boundaryY2 - bbox.y - bbox.height;
+
+//   boundaries.minX = boundaryX1 - bbox.x;
+//   boundaries.maxX = boundaryX2 - bbox.x - bbox.width;
+//   boundaries.minY = boundaryY1 - bbox.y;
+//   boundaries.maxY = boundaryY2 - bbox.y - bbox.height;
 }
 
 export { ScreenPixelPosition, mapSVG, mapArea, setupMap };
