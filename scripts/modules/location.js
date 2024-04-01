@@ -97,9 +97,9 @@ class UserPosition {
    * Private function to calculate the pixel position when the geoposition us updated.
    */
   static #calculatePixel(geolocation) {
-    console.log(geolocation);
+    // console.log(geolocation);
     let percents = convertGeoToPercent(geolocation);
-    console.log(percents);
+    // console.log(percents);
     //TODO: Change this to SVG height and width.
     let pixelLocation = new ScreenPixelPosition(
       actualMapSize.x * percents.x,
@@ -115,7 +115,7 @@ class UserPosition {
    */
   constructor(location) {
     if (location instanceof GeolocationPosition) {
-      console.log("Geolocation given");
+      // console.log("Geolocation given");
       this.geolocation = location;
       this.pixelLocation = UserPosition.#calculatePixel(location);
     } else if (location instanceof ScreenPixelPosition) {
@@ -155,12 +155,12 @@ function setupLocation() {
   //uses navigator to get the geolocation
   //Watch position does it constantly instead of just once
   navigator.geolocation.watchPosition(position => {
-    console.log("Updating location");
+    // console.log("Updating location");
     //logs current position to the console
     //console.log(position);
     userPosition = position;
     userPos = new UserPosition(position);
-    console.log(userPos.pixelLocation.x);
+    // console.log(userPos.pixelLocation.x);
   }, null, positionOptions);
 }
 
