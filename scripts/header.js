@@ -5,6 +5,7 @@ function onClickHome() {
   if (app.auth().currentUser == null) {
     location.href = 'index.html';
   } else {
+    
     location.href = 'main.html';
   }
 }

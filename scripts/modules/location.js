@@ -5,7 +5,7 @@
   https://www.google.com/maps/@49.2425018,-122.998416,17.52z?entry=ttu
 */
 
-import { ScreenPixelPosition, actualMapSize } from "./map.js";
+import { ScreenPixelPosition, actualMapSize, moveUserIcon } from "./map.js";
 
 /**
  * Holds the range of geolocation positions we want to use.
@@ -159,7 +159,9 @@ function setupLocation() {
     //logs current position to the console
     //console.log(position);
     userPosition = position;
-    userPos = new UserPosition(position);
+    let mapUserPosition = convertGeoToMap(userPosition);
+    moveUserIcon(mapUserPosition)
+    //userPos = new UserPosition(position);
     // console.log(userPos.pixelLocation.x);
   }, null, positionOptions);
 }

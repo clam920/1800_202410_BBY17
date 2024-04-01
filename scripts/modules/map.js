@@ -15,6 +15,8 @@ class ScreenPixelPosition {
 var mapArea;
 /**@type {SVGGraphicsElement} */
 var mapSVG;
+/**@type {SVGGraphicsElement} */
+var userIcon;
 
 /**@type {ScreenPixelPosition} */
 var offset;
@@ -40,12 +42,26 @@ var boundaries = {
 };
 
 /**
+ * 
+ * @param {ScreenPixelPosition} position 
+ */
+function moveUserIcon(position){
+  if (position == null){
+    return;
+  }
+  console.log(position.x, position.y)
+  userIcon.setAttributeNS(null, "transform",
+    `matrix(1 0 0 1 ${position.x} ${position.y})`);
+}
+
+/**
  * Collects the pointers current position, and enables the listeners for pointer up, leave, and move.
  * @param {PointerEvent} e 
  */
 function startDrag(e) {
   e.preventDefault();
   setBoundaries();
+  moveUserIcon();
 
   offset = getPointerPosition(e);
   // Apparently transforms are stored in 2/3d array.
@@ -70,7 +86,7 @@ function drag(e) {
 
   mapMatrix[4] = (coords.x - offset.x) * mapMatrix[0];
   mapMatrix[5] = (coords.y - offset.y) * mapMatrix[3];
-  updateMatrix();
+  updateMapMatrix();
 };
 
 /**
@@ -96,11 +112,11 @@ function zoom(e){
   // so I need to write some logic to check that.
   mapMatrix[4] += (1 - scale) * center.x;
   mapMatrix[5] += (1 - scale) * center.y;
-  updateMatrix();
+  updateMapMatrix();
   setActualMapSize();
 }
 
-function updateMatrix(){
+function updateMapMatrix(){
   var newMatrix = "matrix(" + mapMatrix.join(' ') + ")";
   mapSVG.setAttributeNS(null, "transform", newMatrix);
 }
@@ -155,6 +171,9 @@ async function setupMap() {
     actualMapSize.x / 2,
     actualMapSize.y / 2
   );
+
+  userIcon = await document.getElementById("UserIcon");
+  userIcon.setAttributeNS(null, "transform", "matrix(1 0 0 1 0 0)");
 };
 
 /**
@@ -189,4 +208,4 @@ function setBoundaries(){
 //   boundaries.maxY = boundaryY2 - bbox.y - bbox.height;
 }
 
-export { ScreenPixelPosition, mapSVG, mapArea, actualMapSize, setupMap };
+export { ScreenPixelPosition, mapSVG, mapArea, actualMapSize, setupMap, moveUserIcon };
