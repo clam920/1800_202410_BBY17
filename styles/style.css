@@ -102,6 +102,12 @@ ul {
   background-color: transparent;
 }
 
+
+.nav-item {
+  z-index:8;
+  background-color: #003c71;
+}
+
 .suggestionBox {
   display: none;
   width: 100%;
