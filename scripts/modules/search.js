@@ -238,15 +238,31 @@ function displaySuggestions(suggestions, suggestionType) {
 }
 
 // Function to log user search history into firestore
-function logSearchHistory(userId, searchTerm) {
+async function logSearchHistory(userId, searchTerm) {
   try {
     const userRef = db.collection('users').doc(userId);
 
-    // Update user document as an array with new search history
-    userRef.update({
-      search_history: firebase.firestore.FieldValue.arrayUnion({
-        term: searchTerm
-      })
+    await db.runTransaction(async (transaction) => {
+      const userDoc = await transaction.get(userRef);
+      if (!userDoc.exists) {
+        throw new Error('User document does not exist');
+      }
+
+      // Get the current search history array
+      let searchHistory = userDoc.data().search_history || [];
+
+      // Remove the searchTerm if it exists to ensure uniqueness
+      searchHistory = searchHistory.filter(entry => entry.term !== searchTerm);
+
+      // Add the new searchTerm to the beginning of the array
+      searchHistory.unshift({ term: searchTerm });
+
+      // Limit the search history array to a certain length (if desired)
+      const maxLength = 100; // For example, limit to 10 entries
+      searchHistory = searchHistory.slice(0, maxLength);
+
+      // Update the user document with the modified search history
+      transaction.update(userRef, { search_history: searchHistory });
     });
 
     console.log('Search history logged successfully.');
