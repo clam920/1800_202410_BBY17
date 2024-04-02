@@ -1,58 +1,87 @@
 import { mapSVG } from "/scripts/modules/map.js";
-import { userPosition, setupLocation, convertGeoToMap } from "/scripts/modules/location.js";
+import {
+  userPosition,
+  setupLocation,
+  convertGeoToMap,
+} from "/scripts/modules/location.js";
 
 const listNode = [
   [
-    "SE12_320", 4, 0, 4, { x: 49.250200, y: -123.00200}//1
+    "SE12_320", 
+    4, 
+    0, 
+    4, 
+    { x: 49.250200, y: -123.00200}//1
   ],
 
   [
-    "Stairs Top", 4, 1, 3, {x:49.250075, y:-123.002}//2
+    "Stairs Top",
+    4,
+    1,
+    3,
+    { x: 49.250075, y: -123.002 }, //2
   ],
 
   [
-    "Bridge", 5, 2, 3, {x: 49.25005376612112, y:-123.00173465751207}//3
+    "Bridge",
+    5,
+    2,
+    3,
+    { x: 49.25005376612112, y: -123.00173465751207 }, //3
   ],
 
   [
-    "Stairs Bottom", 4, 2, 2, {x:49.250075, y:-123.001900}//4
+    "Stairs Bottom",
+    4,
+    2,
+    2,
+    { x: 49.250075, y: -123.0019 }, //4
   ],
 
   [
-    "Stairs Top Inside", 5, 3, 2, {x: 49.250058580920445, y:-123.00255809566634}//5
+    "Stairs Top Inside",
+    5,
+    3,
+    2,
+    { x: 49.250058580920445, y: -123.00255809566634 }, //5
   ],
 
   [
-    "OutsideNode",4,2,3,{x: 49.249999, y:-123.001200}//6
+    "OutsideNode",
+    4,
+    2,
+    3,
+    { x: 49.249999, y: -123.0012 }, //6
   ],
 
   [
-    "Stairs Bottom Inside", 5,4,1, {x: 49.250058580920445, y:-123.00255809566634}//7
+    "Stairs Bottom Inside",
+    5,
+    4,
+    1,
+    { x: 49.250058580920445, y: -123.00255809566634 }, //7
   ],
 
   [
-    "SW05_1840", 4, 0, 4, {x: 49.25005, y:-123.001100}//8
-  ]
+    "SW05_1840",
+    4,
+    0,
+    4,
+    { x: 49.25005, y: -123.0011 }, //8
+  ],
 ];
 
-
-
-
-
 class pfNode {
-
-
   /**
    *
-   * @param {*} data 
-   * @param {Number} f 
-   * @param {Number} g 
-   * @param {Number} h 
-   * @param {Number} x 
-   * @param {Number} y 
+   * @param {*} data
+   * @param {Number} f
+   * @param {Number} g
+   * @param {Number} h
+   * @param {Number} x
+   * @param {Number} y
    */
   constructor(data, f, g, h, x, y) {
-
     this.data = data;
     /**@type {Number} */
     this.f = f;
@@ -73,7 +102,7 @@ class pfNode {
     this.parent = null;
 
     /**@type {Array<Number>} */
-    this.pos = {x, y}
+    this.pos = { x, y };
   }
 }
 var astar = {
@@ -82,29 +111,27 @@ var astar = {
       [1, 2],
       [3, 4],
       [5, 6],
-      [7, 8]
+      [7, 8],
     ];
     let counter = 0;
     for (var x = 0; x < grid.length; x++) {
       for (var i = 0; i < grid[i].length; i++) {
-        grid[x][i] = (
-          new pfNode(
-            list[counter][0],
-            list[counter][1],
-            list[counter][2],
-            list[counter][3],
-            list[counter][4].x,
-            list[counter][4].y
-          )
+        grid[x][i] = new pfNode(
+          list[counter][0],
+          list[counter][1],
+          list[counter][2],
+          list[counter][3],
+          list[counter][4].x,
+          list[counter][4].y
         );
         counter++;
       }
     }
     return grid;
   },
-  checkList: function(end){
-    for(var i = 0 ; i < listNode.length; i++){  
-      if(listNode[i][0] == end){
+  checkList: function (end) {
+    for (var i = 0; i < listNode.length; i++) {
+      if (listNode[i][0] == end) {
         return true;
       }
     }
@@ -113,9 +140,9 @@ var astar = {
   //Search function of the nearby nodes.
   search: await function (destination) {
     // console.log(grid);
-    
+
     var grid = astar.init(listNode);
-    if(!astar.checkList(destination)){
+    if (!astar.checkList(destination)) {
       return null;
     }
 
@@ -133,7 +160,6 @@ var astar = {
     var test;
 
     while (openList != null) {
-
       // Grab the lowest f(x) to process next
       var lowInd = 0;
       for (var i = 0; i < openList.length; i++) {
@@ -152,7 +178,8 @@ var astar = {
         while (curr.parent) {
           ret.push(curr);
           curr = curr.parent;
-        }x
+        }
+        x;
         ret.push(start);
         return ret.reverse();
       }
@@ -170,7 +197,6 @@ var astar = {
         if (fScore <= neighbor.f) {
           gScoreIsBest = true;
         }
-
 
         if (gScoreIsBest && neighbor.visited == false) {
           neighbor.parent = currentNode;
@@ -234,56 +260,57 @@ var astar = {
       }
     }
     return openList;
-
   },
-  showNode: function (grid) { 
+  showNode: function (grid) {
     // console.log(grid);
 
-    if(grid == null){
-      alert("Destination does not exist");  
+    if (grid == null) {
+      alert("Destination does not exist");
       return null;
     }
 
-    var newGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    var newGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
-    newGroup.setAttribute("id" , "nodes");
+    newGroup.setAttribute("id", "nodes");
     var maplocal = [];
-    for(let i = 0 ; i < grid.length ; i++){
+    for (let i = 0; i < grid.length; i++) {
       var x = grid[i].pos.x;
       var y = grid[i].pos.y;
       var fakeGeo = {
         coords: {
           longitude: y,
-          latitude: x
-      }}
-
+          latitude: x,
+        },
+      };
 
       maplocal.push(convertGeoToMap(fakeGeo));
-      var newNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      newNode.setAttribute('fill', "black");
+      var newNode = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "circle"
+      );
+      newNode.setAttribute("fill", "black");
       newNode.setAttribute("class", "pathfindingNode");
-      newNode.setAttribute('cx', maplocal[i].x);
-      newNode.setAttribute('cy', maplocal[i].y);
-      newNode.setAttribute('r', 1);
+      newNode.setAttribute("cx", maplocal[i].x);
+      newNode.setAttribute("cy", maplocal[i].y);
+      newNode.setAttribute("r", 1);
       newGroup.append(newNode);
       // console.log(mapSVG);
-      if(i >= 1){
-        var newLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        newLine.setAttribute('x1',maplocal[i-1].x);
-        newLine.setAttribute('y1',maplocal[i-1].y);
-        newLine.setAttribute('x2',maplocal[i].x);
-        newLine.setAttribute('y2',maplocal[i].y);
-        newLine.setAttribute('style',"stroke:red;stroke-width:1");
+      if (i >= 1) {
+        var newLine = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "line"
+        );
+        newLine.setAttribute("x1", maplocal[i - 1].x);
+        newLine.setAttribute("y1", maplocal[i - 1].y);
+        newLine.setAttribute("x2", maplocal[i].x);
+        newLine.setAttribute("y2", maplocal[i].y);
+        newLine.setAttribute("style", "stroke:red;stroke-width:1");
         newLine.setAttribute("class", "pathfindingLine");
         newGroup.append(newLine);
       }
-
-
     }
     mapSVG.append(newGroup);
-  }
+  },
 };
 
-export { astar, listNode}
-
-
+export { astar, listNode };
