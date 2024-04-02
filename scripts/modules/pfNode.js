@@ -1,17 +1,13 @@
 import { mapSVG } from "/scripts/modules/map.js";
-import {
-  userPosition,
-  setupLocation,
-  convertGeoToMap,
-} from "/scripts/modules/location.js";
+import { userPosition, convertGeoToMap } from "/scripts/modules/location.js";
 
 const listNode = [
   [
-    "SE12_320", 
-    4, 
-    0, 
-    4, 
-    { x: 49.250200, y: -123.00200}//1
+    "SE12_320",
+    4,
+    0,
+    4,
+    { x: 49.2502, y: -123.002 }, //1
   ],
 
   [

@@ -9,7 +9,7 @@ import {
   ScreenPixelPosition,
   actualMapSize,
   moveUserIcon,
-  mapMatrix,
+  originalMapSize,
 } from "./map.js";
 
 /**
@@ -50,10 +50,13 @@ function convertGeoToMap(position) {
   if (percents.x < 0 || percents.y < 0) {
     console.error("Given location is not on campus!");
   } else {
+    // console.log("Percents:", percents);
+    // console.log("Matrix X Y:", mapMatrix[0], mapMatrix[3]);
     retval = new ScreenPixelPosition(
-      actualMapSize.x * percents.x * mapMatrix[0],
-      actualMapSize.y * percents.y * mapMatrix[3]
+      originalMapSize.x * percents.x,
+      originalMapSize.y * percents.y
     );
+    console.log("Ret:", retval);
   }
   return retval;
 }

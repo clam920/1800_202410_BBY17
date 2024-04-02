@@ -1,4 +1,3 @@
-
 /**
  * Represents the position of an item on the screen.
  * @param {Number} x The x-coordinate of the item
@@ -9,7 +8,7 @@ class ScreenPixelPosition {
     this.x = x;
     this.y = y;
   }
-};
+}
 
 /**@type {HTMLElement} */
 var mapArea;
@@ -29,34 +28,40 @@ var mapMatrix = [1, 0, 0, 1, 0, 0];
 /** @type {ScreenPixelPosition} */
 const actualMapSize = new ScreenPixelPosition(0, 0);
 
+/** @type {ScreenPixelPosition} */
+const originalMapSize = new ScreenPixelPosition(0, 0);
+
 /**
  * Planning to use this to control the map panning; we'll see how it turns out.
  * Not really MVP, tbf, but I wanna leave it here just in case.
  */
 /**@type {Array[Number]} */
 var boundaries = {
-  "minX": 0,
-  "minY": 0,
-  "maxX": 0,
-  "maxY": 0
+  minX: 0,
+  minY: 0,
+  maxX: 0,
+  maxY: 0,
 };
 
 /**
- * 
- * @param {ScreenPixelPosition} position 
+ *
+ * @param {ScreenPixelPosition} position
  */
-function moveUserIcon(position){
-  if (position == null){
+function moveUserIcon(position) {
+  if (position == null) {
     return;
   }
-  console.log(position.x, position.y)
-  userIcon.setAttributeNS(null, "transform",
-    `matrix(1 0 0 1 ${position.x} ${position.y})`);
+  //console.log(position.x, position.y);
+  userIcon.setAttributeNS(
+    null,
+    "transform",
+    `matrix(1 0 0 1 ${position.x} ${position.y})`
+  );
 }
 
 /**
  * Collects the pointers current position, and enables the listeners for pointer up, leave, and move.
- * @param {PointerEvent} e 
+ * @param {PointerEvent} e
  */
 function startDrag(e) {
   e.preventDefault();
@@ -73,13 +78,14 @@ function startDrag(e) {
   mapArea.addEventListener("pointermove", drag);
 
   //Add the event listeners for stopping the map updates.
-  ["pointerup", "pointerleave"].forEach(e => mapArea.addEventListener(e, stopDrag));
-};
-
+  ["pointerup", "pointerleave"].forEach((e) =>
+    mapArea.addEventListener(e, stopDrag)
+  );
+}
 
 /**
  * Pans the map based on how much the user has moved.
- * @param {PointerEvent} e 
+ * @param {PointerEvent} e
  */
 function drag(e) {
   let coords = getPointerPosition(e);
@@ -87,25 +93,26 @@ function drag(e) {
   mapMatrix[4] = (coords.x - offset.x) * mapMatrix[0];
   mapMatrix[5] = (coords.y - offset.y) * mapMatrix[3];
   updateMapMatrix();
-};
+}
 
 /**
  * Removes the event listener for pointer move, leave and up.
  */
 function stopDrag() {
-  ["pointermove", "pointerleave", "pointerup"].forEach(e =>
-    mapArea.removeEventListener(e, drag));
-};
+  ["pointermove", "pointerleave", "pointerup"].forEach((e) =>
+    mapArea.removeEventListener(e, drag)
+  );
+}
 
-function zoom(e){
+function zoom(e) {
   e.preventDefault();
   let scale;
-  if ( e.deltaY < 0 ) {
-    scale = 1.01
+  if (e.deltaY < 0) {
+    scale = 1.01;
   } else {
-    scale = 0.99
+    scale = 0.99;
   }
-  for (var i = 0; i < 4; i++){
+  for (var i = 0; i < 4; i++) {
     mapMatrix[i] *= scale;
   }
 
@@ -117,35 +124,44 @@ function zoom(e){
   setActualMapSize();
 }
 
-function updateMapMatrix(){
-  var newMatrix = "matrix(" + mapMatrix.join(' ') + ")";
+function updateMapMatrix() {
+  var newMatrix = "matrix(" + mapMatrix.join(" ") + ")";
   mapSVG.setAttributeNS(null, "transform", newMatrix);
+}
+
+function getOriginalMapSize() {
+  let arr = mapSVG.getAttribute("viewBox").split(" ");
+  arr.forEach((val, index, fromArr) => {
+    fromArr[index] = parseFloat(val);
+  });
+  console.log("Original:", arr[2], arr[3]);
+  return { x: arr[2], y: arr[3] };
 }
 
 function setActualMapSize() {
   let bBox = mapSVG.getBBox();
   actualMapSize.x = bBox.width * mapMatrix[0];
   actualMapSize.y = bBox.height * mapMatrix[3];
+  console.log("Actual ", actualMapSize);
 }
 
 /**
  * Gets the x/y coordinate of the pointer of the screen.
- * @param {PointerEvent} e a Pointer Event 
+ * @param {PointerEvent} e a Pointer Event
  * @returns {ScreenPixelPosition}
  */
 function getPointerPosition(e) {
-
   return new ScreenPixelPosition(e.clientX, e.clientY);
 
   // CB: Commented this code out because the CTM was causing the drag to be very slow.
   // It's not too important what these values represent.
-  // In most cases all we need to know is that if an 
+  // In most cases all we need to know is that if an
   // element has attributes of (x,y), then it will have coordinates on screen of (ax+e,dy+f)
   // let CTM = mapSVG.getScreenCTM();
   // return new ScreenPixelPosition(
   //   (e.clientX - CTM.e) / CTM.a,
   //   (e.clientY - CTM.f) / CTM.d);
-};
+}
 
 /**
  * Loads the map and enables the panning/zooming.
@@ -163,23 +179,24 @@ async function setupMap() {
   mapArea.innerHTML = data.outerHTML;
   mapArea.addEventListener("pointerdown", startDrag);
   mapArea.addEventListener("wheel", zoom);
-  mapSVG = document.getElementById('Layer_2');
-  
+  mapSVG = document.getElementById("Layer_2");
+
   setActualMapSize();
   offset = new ScreenPixelPosition(0, 0);
   //var viewbox = mapSVG.getAttributeNS(null, "viewBox").split(" ");
-  center = new ScreenPixelPosition(
-    actualMapSize.x / 2,
-    actualMapSize.y / 2
-  );
+  center = new ScreenPixelPosition(actualMapSize.x / 2, actualMapSize.y / 2);
+  let originalSize = getOriginalMapSize();
+
+  originalMapSize.x = originalSize.x;
+  originalMapSize.y = originalSize.y;
 
   userIcon = await document.getElementById("UserIcon");
   userIcon.setAttributeNS(null, "transform", "matrix(1 0 0 1 0 0)");
-};
+}
 
 /**
  * Removes the defs from the svg, so we can control it.
- * @param {HTMLElement} mapData 
+ * @param {HTMLElement} mapData
  * @return {SVGGraphicsElement}
  */
 function cleanMapSVG(mapData) {
@@ -187,8 +204,8 @@ function cleanMapSVG(mapData) {
   let svgLayer = mapData.children[0];
 
   //Get rid of the defs
-  svgLayer.childNodes.forEach(child => {
-    if (child.nodeName == 'defs') {
+  svgLayer.childNodes.forEach((child) => {
+    if (child.nodeName == "defs") {
       child.remove();
     }
   });
@@ -196,17 +213,26 @@ function cleanMapSVG(mapData) {
   return mapData;
 }
 
-function setBoundaries(){
+function setBoundaries() {
   let bbox = mapSVG.getBBox();
-//   boundaries.minX = 0 - bbox.x;
-//   boundaries.maxX = boundaryX2 - bbox.x - bbox.width;
-//   boundaries.minY = boundaryY1 - bbox.y;
-//   boundaries.maxY = boundaryY2 - bbox.y - bbox.height;
+  //   boundaries.minX = 0 - bbox.x;
+  //   boundaries.maxX = boundaryX2 - bbox.x - bbox.width;
+  //   boundaries.minY = boundaryY1 - bbox.y;
+  //   boundaries.maxY = boundaryY2 - bbox.y - bbox.height;
 
-//   boundaries.minX = boundaryX1 - bbox.x;
-//   boundaries.maxX = boundaryX2 - bbox.x - bbox.width;
-//   boundaries.minY = boundaryY1 - bbox.y;
-//   boundaries.maxY = boundaryY2 - bbox.y - bbox.height;
+  //   boundaries.minX = boundaryX1 - bbox.x;
+  //   boundaries.maxX = boundaryX2 - bbox.x - bbox.width;
+  //   boundaries.minY = boundaryY1 - bbox.y;
+  //   boundaries.maxY = boundaryY2 - bbox.y - bbox.height;
 }
 
-export { ScreenPixelPosition, mapSVG, mapArea, actualMapSize, mapMatrix, setupMap, moveUserIcon };
+export {
+  ScreenPixelPosition,
+  mapSVG,
+  mapArea,
+  actualMapSize,
+  originalMapSize,
+  mapMatrix,
+  setupMap,
+  moveUserIcon,
+};
