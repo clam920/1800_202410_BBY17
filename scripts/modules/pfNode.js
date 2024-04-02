@@ -141,6 +141,7 @@ var astar = {
           lowInd = i;
         }
       }
+      
       var currentNode = openList[lowInd];
 
       // result has been found, return the traced path
