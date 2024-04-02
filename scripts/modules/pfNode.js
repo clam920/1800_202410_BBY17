@@ -163,7 +163,7 @@ var astar = {
           lowInd = i;
         }
       }
-      
+
       var currentNode = openList[lowInd];
 
       // result has been found, return the traced path
@@ -284,7 +284,6 @@ var astar = {
         "http://www.w3.org/2000/svg",
         "circle"
       );
-      newNode.setAttribute("fill", "black");
       newNode.setAttribute("class", "pathfindingNode");
       newNode.setAttribute("cx", maplocal[i].x);
       newNode.setAttribute("cy", maplocal[i].y);
@@ -300,7 +299,6 @@ var astar = {
         newLine.setAttribute("y1", maplocal[i - 1].y);
         newLine.setAttribute("x2", maplocal[i].x);
         newLine.setAttribute("y2", maplocal[i].y);
-        newLine.setAttribute("style", "stroke:red;stroke-width:1");
         newLine.setAttribute("class", "pathfindingLine");
         newGroup.append(newLine);
       }

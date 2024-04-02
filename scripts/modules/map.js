@@ -207,7 +207,7 @@ async function setupMap() {
   setActualMapSize();
   setOriginalMapSize();
   //Sets the starting position of the map on the screen to be more in-campus
-  mapMatrix[5] = -originalMapSize.y / 8;
+  mapMatrix[5] = -originalMapSize.y / 4;
   updateMapMatrix();
   offset = new ScreenPixelPosition(0, 0);
   //var viewbox = mapSVG.getAttributeNS(null, "viewBox").split(" ");
