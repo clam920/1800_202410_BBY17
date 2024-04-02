@@ -199,8 +199,12 @@ function displaySuggestion(suggestion, suggestionType) {
   suggestionsList.appendChild(suggestionItem);
 
   suggestionItem.addEventListener('click', async function (e) {
+    const user = firebase.auth().currentUser;
+    const userId = user.uid;
     searchInput.value = suggestion;
     const roomId = await getRoomId(suggestion);
+    //log user search on click.
+    logSearchHistory(userId, suggestion);
     astar.showPath(astar.search(roomId));
     suggestionsList.style.display = 'none'; // Hide suggestions after selection
     // Perform additional actions (e.g., fetching data based on the selected suggestion)

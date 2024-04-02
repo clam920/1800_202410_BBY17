@@ -56,7 +56,6 @@ function convertGeoToMap(position) {
       originalMapSize.x * percents.x,
       originalMapSize.y * percents.y
     );
-    console.log("Ret:", retval);
   }
   return retval;
 }
@@ -171,14 +170,9 @@ function setupLocation() {
   //Watch position does it constantly instead of just once
   navigator.geolocation.watchPosition(
     (position) => {
-      // console.log("Updating location");
-      //logs current position to the console
-      //console.log(position);
       userPosition = position;
       let mapUserPosition = convertGeoToMap(userPosition);
       moveUserIcon(mapUserPosition);
-      //userPos = new UserPosition(position);
-      // console.log(userPos.pixelLocation.x);
     },
     null,
     positionOptions

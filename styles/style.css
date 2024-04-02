@@ -102,6 +102,12 @@ ul {
   background-color: transparent;
 }
 
+
+.nav-item {
+  z-index:8;
+  background-color: #003c71;
+}
+
 .suggestionBox {
   display: none;
   width: 100%;
@@ -137,9 +143,10 @@ ul {
   stroke: var(--bcit-yellow);
 }
 
-#UserIcon {
-  fill: var(--rollover-blue);
-  stroke-width: 10px;
+#userIcon {
+  stroke: var(--rollover-blue);
+  stroke-width: 0.1rem;
+  fill: none;
 }
 
 /* #endregion map*/
