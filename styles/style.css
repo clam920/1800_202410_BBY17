@@ -137,9 +137,10 @@ ul {
   stroke: var(--bcit-yellow);
 }
 
-#UserIcon {
-  fill: var(--rollover-blue);
-  stroke-width: 10px;
+#userIcon {
+  stroke: var(--rollover-blue);
+  stroke-width: 0.1rem;
+  fill: none;
 }
 
 /* #endregion map*/

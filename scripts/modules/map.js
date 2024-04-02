@@ -44,19 +44,17 @@ var boundaries = {
 };
 
 /**
- *
+ * Moves the user icon to the given position
  * @param {ScreenPixelPosition} position
  */
 function moveUserIcon(position) {
   if (position == null) {
     return;
   }
+
   //console.log(position.x, position.y);
-  userIcon.setAttributeNS(
-    null,
-    "transform",
-    `matrix(1 0 0 1 ${position.x} ${position.y})`
-  );
+  userIcon.setAttributeNS(null, "cx", position.x);
+  userIcon.setAttributeNS(null, "cy", position.y);
 }
 
 /**
@@ -66,7 +64,6 @@ function moveUserIcon(position) {
 function startDrag(e) {
   e.preventDefault();
   setBoundaries();
-  moveUserIcon();
 
   offset = getPointerPosition(e);
   // Apparently transforms are stored in 2/3d array.
@@ -104,6 +101,10 @@ function stopDrag() {
   );
 }
 
+/**
+ * Adjusts the scale in the map matrix when we recieve a zoom command
+ * @param {PointerEvent} e
+ */
 function zoom(e) {
   e.preventDefault();
   let scale;
@@ -134,7 +135,6 @@ function getOriginalMapSize() {
   arr.forEach((val, index, fromArr) => {
     fromArr[index] = parseFloat(val);
   });
-  console.log("Original:", arr[2], arr[3]);
   return { x: arr[2], y: arr[3] };
 }
 
@@ -142,7 +142,6 @@ function setActualMapSize() {
   let bBox = mapSVG.getBBox();
   actualMapSize.x = bBox.width * mapMatrix[0];
   actualMapSize.y = bBox.height * mapMatrix[3];
-  console.log("Actual ", actualMapSize);
 }
 
 /**
@@ -161,6 +160,22 @@ function getPointerPosition(e) {
   // return new ScreenPixelPosition(
   //   (e.clientX - CTM.e) / CTM.a,
   //   (e.clientY - CTM.f) / CTM.d);
+}
+
+function makeUserIcon() {
+  var newGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  var newNode = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "circle"
+  );
+  newNode.id = "userIcon";
+  newNode.setAttribute("id", "userIcon");
+  newNode.setAttribute("cx", "-100");
+  newNode.setAttribute("cy", "-100");
+  newNode.setAttribute("r", 2);
+  newGroup.append(newNode);
+  mapSVG.append(newGroup);
+  userIcon = document.getElementById("userIcon");
 }
 
 /**
@@ -190,8 +205,7 @@ async function setupMap() {
   originalMapSize.x = originalSize.x;
   originalMapSize.y = originalSize.y;
 
-  userIcon = await document.getElementById("UserIcon");
-  userIcon.setAttributeNS(null, "transform", "matrix(1 0 0 1 0 0)");
+  makeUserIcon();
 }
 
 /**
