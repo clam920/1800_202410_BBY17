@@ -3,7 +3,7 @@ import { userPosition, setupLocation, convertGeoToMap } from "/scripts/modules/l
 
 const listNode = [
   [
-    "SE12 320", 4, 0, 4, { x: 49.250200, y: -123.00200}//1
+    "SE12_320", 4, 0, 4, { x: 49.250200, y: -123.00200}//1
   ],
 
   [
