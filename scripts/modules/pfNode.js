@@ -163,7 +163,7 @@ var astar = {
           lowInd = i;
         }
       }
-      
+
       var currentNode = openList[lowInd];
 
       // result has been found, return the traced path
@@ -343,7 +343,6 @@ var astar = {
         newLine.setAttribute("y1", maplocal[i - 1].y);
         newLine.setAttribute("x2", maplocal[i].x);
         newLine.setAttribute("y2", maplocal[i].y);
-        newLine.setAttribute("style", "stroke:red;stroke-width:1");
         newLine.setAttribute("class", "pathfindingLine");
         newGroup.append(newLine);
       }

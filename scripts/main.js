@@ -3,13 +3,11 @@ import { setupLocation } from "./modules/location.js";
 import { astar, listNode } from "./modules/pfNode.js";
 
 var aStar;
+
 async function setupMainPage() {
   await setupMap();
   setupLocation();
   aStar = astar;
-
-  // console.log(astar.search(listNode));
-  // astar.showNode(astar.search(listNode));
 }
 
 document.addEventListener("DOMContentLoaded", setupMainPage);

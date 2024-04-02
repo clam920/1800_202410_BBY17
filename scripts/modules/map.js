@@ -31,6 +31,9 @@ const actualMapSize = new ScreenPixelPosition(0, 0);
 /** @type {ScreenPixelPosition} */
 const originalMapSize = new ScreenPixelPosition(0, 0);
 
+/** @type {boolean} */
+var followUser = false;
+
 /**
  * Planning to use this to control the map panning; we'll see how it turns out.
  * Not really MVP, tbf, but I wanna leave it here just in case.
@@ -42,20 +45,6 @@ var boundaries = {
   maxX: 0,
   maxY: 0,
 };
-
-/**
- * Moves the user icon to the given position
- * @param {ScreenPixelPosition} position
- */
-function moveUserIcon(position) {
-  if (position == null) {
-    return;
-  }
-
-  //console.log(position.x, position.y);
-  userIcon.setAttributeNS(null, "cx", position.x);
-  userIcon.setAttributeNS(null, "cy", position.y);
-}
 
 /**
  * Collects the pointers current position, and enables the listeners for pointer up, leave, and move.
@@ -130,12 +119,13 @@ function updateMapMatrix() {
   mapSVG.setAttributeNS(null, "transform", newMatrix);
 }
 
-function getOriginalMapSize() {
+function setOriginalMapSize() {
   let arr = mapSVG.getAttribute("viewBox").split(" ");
   arr.forEach((val, index, fromArr) => {
     fromArr[index] = parseFloat(val);
   });
-  return { x: arr[2], y: arr[3] };
+  originalMapSize.x = arr[2];
+  originalMapSize.y = arr[3];
 }
 
 function setActualMapSize() {
@@ -151,15 +141,6 @@ function setActualMapSize() {
  */
 function getPointerPosition(e) {
   return new ScreenPixelPosition(e.clientX, e.clientY);
-
-  // CB: Commented this code out because the CTM was causing the drag to be very slow.
-  // It's not too important what these values represent.
-  // In most cases all we need to know is that if an
-  // element has attributes of (x,y), then it will have coordinates on screen of (ax+e,dy+f)
-  // let CTM = mapSVG.getScreenCTM();
-  // return new ScreenPixelPosition(
-  //   (e.clientX - CTM.e) / CTM.a,
-  //   (e.clientY - CTM.f) / CTM.d);
 }
 
 function makeUserIcon() {
@@ -176,6 +157,35 @@ function makeUserIcon() {
   newGroup.append(newNode);
   mapSVG.append(newGroup);
   userIcon = document.getElementById("userIcon");
+}
+
+/**
+ * Moves the user icon to the given position
+ * @param {ScreenPixelPosition} position
+ */
+function moveUserIcon(position) {
+  if (position == null) {
+    return;
+  }
+
+  //console.log(position.x, position.y);
+  userIcon.setAttributeNS(null, "cx", position.x);
+  userIcon.setAttributeNS(null, "cy", position.y);
+  if (followUser) {
+    snapToUser();
+  }
+}
+
+function snapToLocation(x, y) {
+  mapMatrix[4] = -x / 2;
+  mapMatrix[5] = -y / 2;
+  updateMapMatrix();
+}
+
+function snapToUser() {
+  let x = parseFloat(userIcon.getAttribute("cx"));
+  let y = parseFloat(userIcon.getAttribute("cy"));
+  snapToLocation(x, y);
 }
 
 /**
@@ -197,13 +207,16 @@ async function setupMap() {
   mapSVG = document.getElementById("Layer_2");
 
   setActualMapSize();
+  setOriginalMapSize();
+  //Sets the starting position of the map on the screen to be more in-campus
+  mapMatrix[5] = -originalMapSize.y / 4;
+  updateMapMatrix();
   offset = new ScreenPixelPosition(0, 0);
   //var viewbox = mapSVG.getAttributeNS(null, "viewBox").split(" ");
-  center = new ScreenPixelPosition(actualMapSize.x / 2, actualMapSize.y / 2);
-  let originalSize = getOriginalMapSize();
-
-  originalMapSize.x = originalSize.x;
-  originalMapSize.y = originalSize.y;
+  center = new ScreenPixelPosition(
+    originalMapSize.x / 2,
+    originalMapSize.y / 2
+  );
 
   makeUserIcon();
 }
@@ -247,6 +260,7 @@ export {
   actualMapSize,
   originalMapSize,
   mapMatrix,
+  snapToLocation,
   setupMap,
   moveUserIcon,
 };

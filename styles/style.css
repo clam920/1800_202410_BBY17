@@ -149,4 +149,13 @@ ul {
   fill: none;
 }
 
+.pathfindingNode {
+  fill: black;
+}
+
+.pathfindingLine {
+  stroke:red;
+  stroke-width: 1;
+}
+
 /* #endregion map*/
