@@ -98,11 +98,12 @@ function stopDrag() {
 };
 
 function zoom(e){
+  e.preventDefault();
   let scale;
   if ( e.deltaY < 0 ) {
-    scale = 1.1
+    scale = 1.01
   } else {
-    scale = 0.9
+    scale = 0.99
   }
   for (var i = 0; i < 4; i++){
     mapMatrix[i] *= scale;
@@ -208,4 +209,4 @@ function setBoundaries(){
 //   boundaries.maxY = boundaryY2 - bbox.y - bbox.height;
 }
 
-export { ScreenPixelPosition, mapSVG, mapArea, actualMapSize, setupMap, moveUserIcon };
+export { ScreenPixelPosition, mapSVG, mapArea, actualMapSize, mapMatrix, setupMap, moveUserIcon };

@@ -11,15 +11,14 @@
     "editor.tabSize": 2,
     "editor.wordWrap": "wordWrapColumn",
     "editor.wordWrapColumn": 80,
-    "editor.rulers": [
-      80
-    ],
+    "editor.rulers": [80],
     "editor.autoClosingBrackets": "always",
     "editor.autoClosingComments": "always",
     "editor.autoClosingOvertype": "auto",
     "editor.autoClosingQuotes": "always",
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true,
+    "liveServer.settings.port": 5501
   },
   "extensions": {
     "recommendations": [
