@@ -23,7 +23,7 @@ const listNode = [
     5,
     2,
     3,
-    { x: 49.25005376612112, y: -123.00173465751207 }, //3
+    { x: 49.2503, y: -123.002}, //3
   ],
 
   [
@@ -39,7 +39,7 @@ const listNode = [
     5,
     3,
     2,
-    { x: 49.250058580920445, y: -123.00255809566634 }, //5
+    { x: 49.2503, y: -123.0011 }, //5
   ],
 
   [
@@ -55,7 +55,7 @@ const listNode = [
     5,
     4,
     1,
-    { x: 49.250058580920445, y: -123.00255809566634 }, //7
+    { x: 49.25025, y: -123.0011 }, //7
   ],
 
   [
@@ -257,7 +257,51 @@ var astar = {
     }
     return openList;
   },
-  showNode: function (grid) {
+  showNode: function(grid){
+    if (grid == null) {
+      alert("Destination does not exist");
+      return null;
+    }
+
+    var newGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
+    newGroup.setAttribute("id", "nodes");
+    var maplocal = [];
+    for (let i = 0; i < grid.length; i++) {
+      var x = grid[i][4].x;
+      var y = grid[i][4].y;
+      var fakeGeo = {
+        coords: {
+          longitude: y,
+          latitude: x,
+        },
+      };
+
+      maplocal.push(convertGeoToMap(fakeGeo));
+      var newNode = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "circle"
+      );
+      if(i == 0){
+        newNode.setAttribute("fill", "green");
+        
+      }else if(i == 7){
+        newNode.setAttribute("fill", "red");
+
+      }
+      else{
+        newNode.setAttribute("fill", "black");
+        
+      }
+      newNode.setAttribute("class", "pathfindingNode");
+      newNode.setAttribute("cx", maplocal[i].x);
+      newNode.setAttribute("cy", maplocal[i].y);
+      newNode.setAttribute("r", 1);
+      newGroup.append(newNode);
+    }
+    mapSVG.append(newGroup);
+  },
+  showPath: function (grid) {
     // console.log(grid);
 
     if (grid == null) {
@@ -284,7 +328,6 @@ var astar = {
         "http://www.w3.org/2000/svg",
         "circle"
       );
-      newNode.setAttribute("fill", "black");
       newNode.setAttribute("class", "pathfindingNode");
       newNode.setAttribute("cx", maplocal[i].x);
       newNode.setAttribute("cy", maplocal[i].y);

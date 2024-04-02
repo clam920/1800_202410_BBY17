@@ -201,7 +201,7 @@ function displaySuggestion(suggestion, suggestionType) {
   suggestionItem.addEventListener('click', async function (e) {
     searchInput.value = suggestion;
     const roomId = await getRoomId(suggestion);
-    astar.showNode(astar.search(roomId));
+    astar.showPath(astar.search(roomId));
     suggestionsList.style.display = 'none'; // Hide suggestions after selection
     // Perform additional actions (e.g., fetching data based on the selected suggestion)
   });
