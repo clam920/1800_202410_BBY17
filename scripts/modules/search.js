@@ -205,9 +205,9 @@ function displaySuggestion(suggestion, suggestionType) {
     const roomId = await getRoomId(suggestion);
     //log user search on click.
     logSearchHistory(userId, suggestion);
+    //show the route.
     astar.showNode(astar.search(roomId));
     suggestionsList.style.display = 'none'; // Hide suggestions after selection
-    // Perform additional actions (e.g., fetching data based on the selected suggestion)
   });
 }
 
@@ -257,8 +257,8 @@ async function logSearchHistory(userId, searchTerm) {
       // Add the new searchTerm to the beginning of the array
       searchHistory.unshift({ term: searchTerm });
 
-      // Limit the search history array to a certain length (if desired)
-      const maxLength = 100; // For example, limit to 10 entries
+      // Limit the search history array to 100.
+      const maxLength = 100; 
       searchHistory = searchHistory.slice(0, maxLength);
 
       // Update the user document with the modified search history
