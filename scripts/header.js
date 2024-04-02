@@ -56,7 +56,6 @@ firebase.auth().onAuthStateChanged(user => {
     const userId = user.uid;
 
     // Function for searching item from db.
-    // currently only store user search.
     function startSearch(event) {
       event.preventDefault();
       const searchInput = document.querySelector('.search-input');
