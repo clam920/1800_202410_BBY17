@@ -176,14 +176,16 @@ function moveUserIcon(position) {
   }
 }
 
-function snapToUser() {
-  let x = parseFloat(userIcon.getAttribute("cx"));
-  let y = parseFloat(userIcon.getAttribute("cy"));
-  console.log(x, y);
-
+function snapToLocation(x, y) {
   mapMatrix[4] = -x / 2;
   mapMatrix[5] = -y / 2;
   updateMapMatrix();
+}
+
+function snapToUser() {
+  let x = parseFloat(userIcon.getAttribute("cx"));
+  let y = parseFloat(userIcon.getAttribute("cy"));
+  snapToLocation(x, y);
 }
 
 /**
@@ -258,6 +260,7 @@ export {
   actualMapSize,
   originalMapSize,
   mapMatrix,
+  snapToLocation,
   setupMap,
   moveUserIcon,
 };
