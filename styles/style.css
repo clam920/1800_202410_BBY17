@@ -108,6 +108,10 @@ ul {
   background-color: #003c71;
 }
 
+.search-bar {
+  z-index:9;
+}
+
 .suggestionBox {
   display: none;
   width: 100%;
