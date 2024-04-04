@@ -52,9 +52,8 @@ var boundaries = {
  */
 function startPointer(e) {
   e.preventDefault();
-  setBoundaries();
 
-  offset = getPointerPosition(originalTouch);
+  offset = getPointerPosition(e);
   processStartMapMove();
 }
 
@@ -68,7 +67,7 @@ function startTouch(e) {
   }
   e.preventDefault();
   let originalTouch = e.touches[1];
-  console.log(e);
+  // console.log(e);
   setBoundaries();
 
   offset = getPointerPosition(originalTouch);
@@ -138,11 +137,17 @@ function zoom(e) {
   setActualMapSize();
 }
 
+/**
+ * Updates the in the SVG with the matrix in this file
+ */
 function updateMapMatrix() {
   var newMatrix = "matrix(" + mapMatrix.join(" ") + ")";
   mapSVG.setAttributeNS(null, "transform", newMatrix);
 }
 
+/**
+ * Saves the original size, for use later.
+ */
 function setOriginalMapSize() {
   let arr = mapSVG.getAttribute("viewBox").split(" ");
   arr.forEach((val, index, fromArr) => {
@@ -152,6 +157,9 @@ function setOriginalMapSize() {
   originalMapSize.y = arr[3];
 }
 
+/**
+ * Updates the actual map size, given the scale of the map.
+ */
 function setActualMapSize() {
   let bBox = mapSVG.getBBox();
   actualMapSize.x = bBox.width * mapMatrix[0];
@@ -167,6 +175,9 @@ function getPointerPosition(e) {
   return new ScreenPixelPosition(e.clientX, e.clientY);
 }
 
+/**
+ * Creates the user icon for us to show on the map.
+ */
 function makeUserIcon() {
   var newGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
   var newNode = document.createElementNS(
@@ -200,16 +211,59 @@ function moveUserIcon(position) {
   }
 }
 
-function snapToLocation(x, y) {
-  mapMatrix[4] = -x / 2;
-  mapMatrix[5] = -y / 2;
+/**
+ * Snaps the center of the map to the given location.
+ * @param {ScreenPixelPosition} pos
+ */
+function snapToLocation(pos) {
+  //CB: We divide by 2 so its in the center of the screen
+  mapMatrix[4] = -pos.x / 2;
+  mapMatrix[5] = -pos.y / 2;
+  // console.log("snapping to ", mapMatrix[4], mapMatrix[5]);
   updateMapMatrix();
 }
 
+/**
+ * Centers the user on the screen
+ */
 function snapToUser() {
-  let x = parseFloat(userIcon.getAttribute("cx"));
-  let y = parseFloat(userIcon.getAttribute("cy"));
-  snapToLocation(x, y);
+  let pos = new ScreenPixelPosition(
+    parseFloat(userIcon.getAttribute("cx")),
+    parseFloat(userIcon.getAttribute("cy"))
+  );
+  // console.log("user position:", pos);
+  snapToLocation(pos);
+}
+
+/**
+ * loads the SVG from the server at the given location
+ * @param {String} path the file path
+ * @returns {HTMLElement} the SVG
+ */
+async function loadSVG(path) {
+  const file = await fetch(path);
+  const parser = new DOMParser();
+
+  let data = await file.text();
+  data = parser.parseFromString(data, "text/html").body;
+  return data;
+}
+
+/**
+ * loads the follow icon for display on the screen.
+ */
+function loadFollowIcon() {
+  var newNode = document.createElement("span");
+  newNode.setAttribute("id", "followUserIcon");
+  newNode.setAttribute(
+    "class",
+    "material-symbols-outlined position-absolute bottom-10 end-0"
+  );
+  newNode.innerText = "mode_standby";
+  mapArea.append(newNode);
+  document
+    .getElementById("followUserIcon")
+    .addEventListener("click", snapToUser);
 }
 
 /**
@@ -217,11 +271,7 @@ function snapToUser() {
  * Should be run in the main.js, or before you intend to display/use the map.
  */
 async function setupMap() {
-  const file = await fetch("./images/map/SVG/BCITMap.svg");
-  const parser = new DOMParser();
-
-  let data = await file.text();
-  data = parser.parseFromString(data, "text/html").body;
+  let data = await loadSVG("./images/map/SVG/BCITMap.svg");
   data = cleanMapSVG(data);
 
   mapArea = document.getElementById("mapArea");
@@ -229,28 +279,32 @@ async function setupMap() {
   mapArea.addEventListener("wheel", zoom);
   mapSVG = document.getElementById("Layer_2");
 
+  offset = new ScreenPixelPosition(0, 0);
+
   setActualMapSize();
   setOriginalMapSize();
+
   //Sets the starting position of the map on the screen to be more in-campus
   mapMatrix[5] = -originalMapSize.y / 4;
   updateMapMatrix();
-  offset = new ScreenPixelPosition(0, 0);
+
   //var viewbox = mapSVG.getAttributeNS(null, "viewBox").split(" ");
   center = new ScreenPixelPosition(
     originalMapSize.x / 2,
     originalMapSize.y / 2
   );
-
+  loadFollowIcon();
   makeUserIcon();
   let deviceType = navigator.userAgent;
-  console.log(navigator);
-  console.log("touchpoints: ", navigator.maxTouchPoints);
-  let rootTouch;
+
   //If we detect a mobile device
-  if (deviceType.match(/Android|Mobile|iPhone/gm) != null) {
+  if (
+    deviceType.match(/Android|Mobile|iPhone/gm) != null
+    //  && navigator.maxTouchPoints > 0
+  ) {
     console.warn("Mobile device detected!");
     mapArea.addEventListener("touchstart", startTouch);
-
+    // let rootTouch;
     // mapArea.addEventListener("touchmove", function (e) {
     //   console.warn("Touch move!");
     //   console.log(e);
@@ -260,7 +314,7 @@ async function setupMap() {
     //   );
     // });
   } else {
-    mapArea.addEventListener("pointerdown", startDrag);
+    mapArea.addEventListener("pointerdown", startPointer);
   }
 }
 
@@ -281,19 +335,6 @@ function cleanMapSVG(mapData) {
   });
 
   return mapData;
-}
-
-function setBoundaries() {
-  let bbox = mapSVG.getBBox();
-  //   boundaries.minX = 0 - bbox.x;
-  //   boundaries.maxX = boundaryX2 - bbox.x - bbox.width;
-  //   boundaries.minY = boundaryY1 - bbox.y;
-  //   boundaries.maxY = boundaryY2 - bbox.y - bbox.height;
-
-  //   boundaries.minX = boundaryX1 - bbox.x;
-  //   boundaries.maxX = boundaryX2 - bbox.x - bbox.width;
-  //   boundaries.minY = boundaryY1 - bbox.y;
-  //   boundaries.maxY = boundaryY2 - bbox.y - bbox.height;
 }
 
 export {

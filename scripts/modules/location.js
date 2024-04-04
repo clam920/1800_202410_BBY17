@@ -56,6 +56,7 @@ function convertGeoToMap(position) {
       originalMapSize.x * percents.x,
       originalMapSize.y * percents.y
     );
+    // console.warn("user geo on map:", retval);
   }
   return retval;
 }
@@ -87,69 +88,6 @@ function convertGeoToPercent(position) {
   }
   return retval;
 }
-
-/**
- * Currently not used; will update later with more useful attributes for tracking user location.
- * All constructor overloads will calculate the other types of user positions (approximate geolocation, Screen position, screen percent) given one type.
- */
-class UserPosition {
-  /**
-   * The users current geoposition.
-   * @type {GeolocationPosition}
-   */
-  geolocation;
-
-  /**
-   * The users location on screen in pixels.
-   * @type {ScreenPixelPosition}
-   */
-  pixelLocation;
-
-  /**
-   * Private function to calculate the pixel position when the geoposition us updated.
-   */
-  static #calculatePixel(geolocation) {
-    // console.log(geolocation);
-    let percents = convertGeoToPercent(geolocation);
-    // console.log(percents);
-    //TODO: Change this to SVG height and width.
-    let pixelLocation = new ScreenPixelPosition(
-      actualMapSize.x * percents.x,
-      actualMapSize.y * percents.y
-    );
-    return pixelLocation;
-  }
-
-  /**
-   * Constructs based on the given information.
-   * If given an array with 2 numbers, it will assign those to x and y for pixelLocation.
-   * @param {GeolocationPosition | ScreenPixelPosition | Array<Number>} location the users current location.
-   */
-  constructor(location) {
-    if (location instanceof GeolocationPosition) {
-      // console.log("Geolocation given");
-      this.geolocation = location;
-      this.pixelLocation = UserPosition.#calculatePixel(location);
-    } else if (location instanceof ScreenPixelPosition) {
-      this.pixelLocation = location;
-    } else if (location instanceof Array) {
-      if (location.length < 2) {
-        this.pixelLocation = new ScreenPixelPosition(location[0], location[1]);
-      } else {
-        console.warn("Given location array was shorter than 2!" + location);
-        this.pixelLocation = new ScreenPixelPosition(0, 0);
-      }
-    } else {
-      console.error(
-        "Invalid constructor given for location! \n" + typeof location
-      );
-    }
-    return this;
-  }
-}
-
-/** @type {UserPosition} */
-var userPos;
 
 /**@type {GeolocationPosition} */
 var userPosition;
