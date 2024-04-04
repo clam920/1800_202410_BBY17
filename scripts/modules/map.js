@@ -47,14 +47,38 @@ var boundaries = {
 };
 
 /**
- * Collects the pointers current position, and enables the listeners for pointer up, leave, and move.
+ * Handles extracting the pointers location and passing it off to the StartMapMove process.
  * @param {PointerEvent} e
  */
-function startDrag(e) {
+function startPointer(e) {
   e.preventDefault();
   setBoundaries();
 
-  offset = getPointerPosition(e);
+  offset = getPointerPosition(originalTouch);
+  processStartMapMove();
+}
+
+/**
+ * Handles extracting the touch information from the device and passing it off to the StartMapMove process.
+ * @param {TouchEvent} e
+ */
+function startTouch(e) {
+  if (e.touches.length < 2) {
+    return;
+  }
+  e.preventDefault();
+  let originalTouch = e.touches[1];
+  console.log(e);
+  setBoundaries();
+
+  offset = getPointerPosition(originalTouch);
+  processStartMapMove();
+}
+
+/**
+ * Handles starting the pointer tracking and calculating the offset for the movements
+ */
+function processStartMapMove() {
   // Apparently transforms are stored in 2/3d array.
   // https://zellwk.com/blog/css-translate-values-in-javascript/ was a huge help in figuring this out.
   offset.x -= mapMatrix[4] / mapMatrix[0];
@@ -202,7 +226,6 @@ async function setupMap() {
 
   mapArea = document.getElementById("mapArea");
   mapArea.innerHTML = data.outerHTML;
-  mapArea.addEventListener("pointerdown", startDrag);
   mapArea.addEventListener("wheel", zoom);
   mapSVG = document.getElementById("Layer_2");
 
@@ -219,6 +242,26 @@ async function setupMap() {
   );
 
   makeUserIcon();
+  let deviceType = navigator.userAgent;
+  console.log(navigator);
+  console.log("touchpoints: ", navigator.maxTouchPoints);
+  let rootTouch;
+  //If we detect a mobile device
+  if (deviceType.match(/Android|Mobile|iPhone/gm) != null) {
+    console.warn("Mobile device detected!");
+    mapArea.addEventListener("touchstart", startTouch);
+
+    // mapArea.addEventListener("touchmove", function (e) {
+    //   console.warn("Touch move!");
+    //   console.log(e);
+    //   console.warn(
+    //     e.touches[0].clientX - rootTouch.x,
+    //     e.touches[0].clientY - rootTouch.y
+    //   );
+    // });
+  } else {
+    mapArea.addEventListener("pointerdown", startDrag);
+  }
 }
 
 /**
