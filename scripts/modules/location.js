@@ -39,6 +39,17 @@ function isGeoOnCampus(userLong, userLat) {
   );
 }
 
+/** Checks if the user is on campus
+ * @returns {boolean}
+ */
+function isUserOnCampus() {
+  if (userPosition == undefined) {
+    console.log("User location not initialized");
+    return false;
+  }
+  return isGeoOnCampus(userPosition.x, userPosition.y);
+}
+
 /**
  * Takes a given geolocation and converts it to a pixel location within the map.
  * @param {GeolocationPosition} position
@@ -117,4 +128,4 @@ function setupLocation() {
   );
 }
 
-export { userPosition, setupLocation, convertGeoToMap };
+export { userPosition, isUserOnCampus, setupLocation, convertGeoToMap };

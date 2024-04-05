@@ -1,3 +1,4 @@
+import { isUserOnCampus } from "./location.js";
 /**
  * Represents the position of an item on the screen.
  * @param {Number} x The x-coordinate of the item
@@ -217,9 +218,21 @@ function moveUserIcon(position) {
  */
 function snapToLocation(pos) {
   //CB: We divide by 2 so its in the center of the screen
-  mapMatrix[4] = -pos.x / 2;
-  mapMatrix[5] = -pos.y / 2;
-  // console.log("snapping to ", mapMatrix[4], mapMatrix[5]);
+  /* CB: I needed logic for if the user if on the left or right side of the map.
+  if theyre on the left, we want a positive pan,
+  if they're on the right we need a negative pan.
+  */
+  if (!isUserOnCampus()) {
+    return;
+  }
+  if (pos.x <= center.x) {
+    mapMatrix[4] = pos.x / 2;
+  } else {
+    mapMatrix[4] = -pos.x / 2;
+  }
+  mapMatrix[5] = -pos.y / mapMatrix[3];
+
+  console.log("snapping to ", mapMatrix[4], mapMatrix[5]);
   updateMapMatrix();
 }
 
