@@ -207,6 +207,7 @@ function displaySuggestion(suggestion, suggestionType) {
     logSearchHistory(userId, suggestion);
     //show the route.
     astar.showPath(astar.search(roomId));
+
     suggestionsList.style.display = 'none'; // Hide suggestions after selection
   });
 }

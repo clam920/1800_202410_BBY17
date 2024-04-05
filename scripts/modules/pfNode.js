@@ -102,7 +102,9 @@ class pfNode {
   }
 }
 var astar = {
+  //this function intializes the list into a 2d array
   init: function (list) {
+    //this is what the 2d array should look like on a grid
     let grid = [
       [1, 2],
       [3, 4],
@@ -110,8 +112,10 @@ var astar = {
       [7, 8],
     ];
     let counter = 0;
+    //loops through the grid so it can be initalized to each index of the list
     for (var x = 0; x < grid.length; x++) {
       for (var i = 0; i < grid[i].length; i++) {
+        //we make a list of pf nodes because it can hold all the important information that we need to calculate the best route
         grid[x][i] = new pfNode(
           list[counter][0],
           list[counter][1],
@@ -125,6 +129,7 @@ var astar = {
     }
     return grid;
   },
+  //checks if the destination is within our system of nodes.
   checkList: function (end) {
     for (var i = 0; i < listNode.length; i++) {
       if (listNode[i][0] == end) {
@@ -155,8 +160,8 @@ var astar = {
     }
     var test;
 
+    //loops through untill openList is empty
     while (openList != null) {
-      // Grab the lowest f(x) to process next
       var lowInd = 0;
       for (var i = 0; i < openList.length; i++) {
         if (openList[i].f < openList[lowInd].f) {
@@ -171,11 +176,11 @@ var astar = {
         // console.log("destination reached");
         var curr = currentNode;
         var ret = [];
+        //this loops backwards from the destination getting its parent node that we determined is the best route
         while (curr.parent) {
           ret.push(curr);
           curr = curr.parent;
         }
-        x;
         ret.push(start);
         return ret.reverse();
       }
@@ -186,6 +191,7 @@ var astar = {
 
       var neighbors = astar.neighbors(grid, currentNode);
 
+      //loops through the neighbour nodes and gives them a f value so we can see if which neighbour is the best node to go to
       for (var i = 0; i < neighbors.length; i++) {
         var neighbor = neighbors[i];
         var fScore = currentNode.f;
@@ -193,7 +199,7 @@ var astar = {
         if (fScore <= neighbor.f) {
           gScoreIsBest = true;
         }
-
+        //sets the current node to as the parent to the neighbor with the best f value so we can reverse the node in the future
         if (gScoreIsBest && neighbor.visited == false) {
           neighbor.parent = currentNode;
         }
@@ -210,11 +216,15 @@ var astar = {
   //   var d2 = Math.abs(pos1[1] - pos0[1]);
   //   return d1 + d2;
   // },
+
+
+  //this one gives returns a list of the nodes that are a neighbour of the current node
   neighbors: function (grid, node) {
     var ret = [];
     var x = 1;
     var y = 1;
 
+    //sets the x and y values to the correct i and j value since i am using a 2d array
     for (let i = 0; i < grid.length; i++) {
       for (let j = 0; j < grid[i].length; j++) {
         if (grid[i][j] == node) {
@@ -223,21 +233,29 @@ var astar = {
         }
       }
     }
+
+    //this all checks which ones are the nighbour of the current node
+    //this one checks for if its to the left of the node
     if (grid[x - 1] && grid[x - 1][y]) {
       ret.push(grid[x - 1][y]);
     }
+    //it checks all the surrounding nodes around it and only appends to the back if its not null
+    //this one checks to the right of the node
     if (grid[x + 1] && grid[x + 1][y]) {
       ret.push(grid[x + 1][y]);
     }
+    //this one checks above
     if (grid[x][y - 1] && grid[x][y - 1]) {
       ret.push(grid[x][y - 1]);
     }
+    //this one checks below
     if (grid[x][y + 1] && grid[x][y + 1]) {
       ret.push(grid[x][y + 1]);
     }
     return ret;
   },
 
+  //checks if the given node exists in the given list
   findGraphNode: function (neighbour, list) {
     for (let i = 0; i < list.length; i++) {
       if (neighbour == list[i]) {
@@ -247,8 +265,11 @@ var astar = {
     return false;
   },
 
+  //removes the current node from open list
   removeGraphNode: function (currentNode, openList) {
+    //loops through the openList 
     for (let i = 0; i < openList.length; i++) {
+      //if the any node equals openList we splice it aka delete it fromt he list
       if (openList[i] == currentNode) {
         currentNode.visited = true;
         openList.splice(i, 1);
@@ -257,6 +278,8 @@ var astar = {
     }
     return openList;
   },
+
+  //shows all the nodes in the system
   showNode: function(grid){
     if (grid == null) {
       alert("Destination does not exist");
@@ -302,17 +325,26 @@ var astar = {
     mapSVG.append(newGroup);
   },
   showPath: function (grid) {
-    // console.log(grid);
+    console.log(grid);
 
+    //Checks if the room asked for is within the current node ssytem.
     if (grid == null) {
       alert("Destination does not exist");
       return null;
     }
 
-    var newGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    //Displays the destination popup.
+    astar.destinationPopup()
+
+
+    document.getElementById("pathButton").addEventListener("click", function(){
+
+      //Creatses the group element so lines can be drawn
+      var newGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
     newGroup.setAttribute("id", "nodes");
     var maplocal = [];
+    //loops through the given nodes 
     for (let i = 0; i < grid.length; i++) {
       var x = grid[i].pos.x;
       var y = grid[i].pos.y;
@@ -322,23 +354,30 @@ var astar = {
           latitude: x,
         },
       };
-
+      
+      //creates the svg element circle
       maplocal.push(convertGeoToMap(fakeGeo));
       var newNode = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "circle"
       );
+      //sets attributes to the circle svg and sets them to the correct relative map location
       newNode.setAttribute("class", "pathfindingNode");
       newNode.setAttribute("cx", maplocal[i].x);
       newNode.setAttribute("cy", maplocal[i].y);
       newNode.setAttribute("r", 1);
       newGroup.append(newNode);
       // console.log(mapSVG);
+
+      //this draws the lines so they
+      //we do greater than one because we need to connect the dots 
+      //so the total ammount of lines are less than total ammount of dots
       if (i >= 1) {
         var newLine = document.createElementNS(
           "http://www.w3.org/2000/svg",
           "line"
         );
+        //sets the line attributes so it can be connected properly
         newLine.setAttribute("x1", maplocal[i - 1].x);
         newLine.setAttribute("y1", maplocal[i - 1].y);
         newLine.setAttribute("x2", maplocal[i].x);
@@ -348,6 +387,14 @@ var astar = {
       }
     }
     mapSVG.append(newGroup);
+    document.getElementById("destinationPopup").remove();
+  });
+  },
+  destinationPopup: function(){
+    //Const of the html that im inserting after selecting the room we are navigating to
+    const html =  "<div id = 'destinationPopup'><p>Is this your destination?<button type='button' id = 'pathButton'>Path to</p></div>";
+    
+    document.querySelector("#mapArea").insertAdjacentHTML("afterend",html);
   },
 };
 
