@@ -270,7 +270,7 @@ function loadFollowIcon() {
   newNode.setAttribute("id", "followUserIcon");
   newNode.setAttribute(
     "class",
-    "material-symbols-outlined position-absolute bottom-10 end-0"
+    "material-symbols-outlined position-absolute end-0 translate-middle-x"
   );
   newNode.innerText = "mode_standby";
   mapArea.append(newNode);

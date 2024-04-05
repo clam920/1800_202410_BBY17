@@ -16,11 +16,11 @@ ul {
 
 /* #region header */
 #headerPlaceholder {
-  height: var(--header-height);
+  /* max-height: var(--header-height); */
 }
 
 #footerPlaceholder {
-  height: var(--footer-height);
+  /* max-height: var(--footer-height); */
 }
 
 /* #region navbar */
@@ -134,7 +134,7 @@ ul {
 /* #region map */
 #mapArea {
   background-color: var(--accent-turquoise);
-  height: var(--map-height);
+  /* max-height: var(--map-height); */
 }
 
 #roadsAndPaths {
@@ -145,6 +145,11 @@ ul {
 #buildings {
   fill: var(--accent-purple);
   stroke: var(--bcit-yellow);
+}
+
+#followUserIcon {
+  color: var(--bcit-blue);
+  font-size: calc(3rem + 3vh) !important;
 }
 
 #userIcon {
