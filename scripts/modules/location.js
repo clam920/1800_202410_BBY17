@@ -27,27 +27,18 @@ const geoBoundaries = {
   maxY: 49.2545877,
 };
 
+/** @type {boolean} */
+var userOnCampus = false;
 /** Checks if the given location is on campus
  * @returns {boolean}
  */
-function isGeoOnCampus(userLong, userLat) {
+function isGeoOnCampus(long, lat) {
   return (
-    userLat < geoBoundaries.maxY &&
-    userLat > geoBoundaries.minY &&
-    userLong < geoBoundaries.maxX &&
-    userLong > geoBoundaries.minX
+    lat < geoBoundaries.maxY &&
+    lat > geoBoundaries.minY &&
+    long < geoBoundaries.maxX &&
+    long > geoBoundaries.minX
   );
-}
-
-/** Checks if the user is on campus
- * @returns {boolean}
- */
-function isUserOnCampus() {
-  if (userPosition == undefined) {
-    console.log("User location not initialized");
-    return false;
-  }
-  return isGeoOnCampus(userPosition.x, userPosition.y);
 }
 
 /**
@@ -120,6 +111,10 @@ function setupLocation() {
   navigator.geolocation.watchPosition(
     (position) => {
       userPosition = position;
+      userOnCampus = isGeoOnCampus(
+        userPosition.coords.longitude,
+        userPosition.coords.latitude
+      );
       let mapUserPosition = convertGeoToMap(userPosition);
       moveUserIcon(mapUserPosition);
     },
@@ -128,4 +123,4 @@ function setupLocation() {
   );
 }
 
-export { userPosition, isUserOnCampus, setupLocation, convertGeoToMap };
+export { userPosition, userOnCampus, setupLocation, convertGeoToMap };
