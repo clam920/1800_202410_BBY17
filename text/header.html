@@ -1,12 +1,12 @@
-  <a class="navbar-brand" href="../index.html">
-    <img src="" height="36"> <!-- TODO: Add an icon -->
-    Better Map App
-  </a>
+<div class="container-fluid">
+  <a class="navbar-brand fs-2 me-4 justify-self-start" href="../index.html">
+    <span>Better Map App</span></a>
+
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
       <li class="nav-item" id="homeButton">
         <a class="nav-link active" aria-current="page" href="../main.html">Home</a>
@@ -21,8 +21,8 @@
 
   </div>
 
-  <form class="d-flex mx-auto search-bar">
-    <div class="input-group" id = "inputclick">
+  <form class="d-inline-flex align-self-end ms-auto rounded-pill search-bar">
+    <div class="input-group" id="inputclick">
       <input type="text" class="form-control search-input me-2 " placeholder="Search for places...">
       <button class="btn search-button" type="submit">
         <span class="material-symbols-outlined search-button">
@@ -30,7 +30,8 @@
         </span>
       </button>
     </div>
-    <ul class="suggestionBox" id="suggestionsList"></ul>      
+    <ul class="suggestionBox" id="suggestionsList"></ul>
   </form>
+</div>
 
 <script type="module" src="../scripts/header.js"></script>

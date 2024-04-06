@@ -14,13 +14,13 @@ ul {
   list-style-type: none;
 }
 
-/* #region header */
-#headerPlaceholder {
-  /* max-height: var(--header-height); */
-}
+#region header
+/* #headerPlaceholder {
+  max-height: var(--header-height);
+} */
 
-#footerPlaceholder {
-  /* max-height: var(--footer-height); */
+.text-muted {
+  color: var(--bcit-yellow) !important;
 }
 
 /* #region navbar */
@@ -60,14 +60,15 @@ ul {
   visibility: visible;
 }
 
+.navbar-toggler-icon {
+  font-size: 1.8rem;
+}
+
 /* #endregion buttons */
 
 /* #region searchBar */
 .search-bar {
-  display: flex;
   align-items: center;
-  flex: 1;
-  border-radius: 24px;
   background-color: #FFF;
 }
 
