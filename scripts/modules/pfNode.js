@@ -1,5 +1,6 @@
 import { mapSVG } from "/scripts/modules/map.js";
 import { userPosition, convertGeoToMap } from "/scripts/modules/location.js";
+import { snapToLocation } from "./map.js";
 
 const listNode = [
   [
@@ -7,7 +8,7 @@ const listNode = [
     4,
     0,
     4,
-    { x: 49.2502, y: -123.002 }, //1
+    { x: 49.250150, y: -123.00195 }, //1
   ],
 
   [
@@ -15,7 +16,7 @@ const listNode = [
     4,
     1,
     3,
-    { x: 49.250075, y: -123.002 }, //2
+    { x: 49.250075, y: -123.00194 }, //2
   ],
 
   [
@@ -59,7 +60,7 @@ const listNode = [
   ],
 
   [
-    "SW05_1840",
+    "SW05_1850",
     4,
     0,
     4,
@@ -332,6 +333,19 @@ var astar = {
       return null;
     }
 
+    //snaps map to destination
+    console.log(listNode[7][4]);
+
+    //create fake location with logitude and latitude so that convert function can read it
+    var fakelocation = {
+      coords: {
+        longitude: listNode[7][4].y - 0.0015,
+        latitude: listNode[7][4].x - 0.003,
+      },
+    };
+    snapToLocation(convertGeoToMap(fakelocation));  
+
+
     //Displays the destination popup.
     astar.destinationPopup();
 
@@ -344,32 +358,34 @@ var astar = {
           "g"
         );
 
-        newGroup.setAttribute("id", "nodes");
-        var maplocal = [];
-        //loops through the given nodes
-        for (let i = 0; i < grid.length; i++) {
-          var x = grid[i].pos.x;
-          var y = grid[i].pos.y;
-          var fakeGeo = {
-            coords: {
-              longitude: y,
-              latitude: x,
-            },
-          };
-
-          //creates the svg element circle
-          maplocal.push(convertGeoToMap(fakeGeo));
-          var newNode = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "circle"
-          );
-          //sets attributes to the circle svg and sets them to the correct relative map location
-          newNode.setAttribute("class", "pathfindingNode");
-          newNode.setAttribute("cx", maplocal[i].x);
-          newNode.setAttribute("cy", maplocal[i].y);
-          newNode.setAttribute("r", 1);
-          newGroup.append(newNode);
-          // console.log(mapSVG);
+    newGroup.setAttribute("id", "nodes");
+    var maplocal = [];
+    //loops through the given nodes 
+    for (let i = 0; i < grid.length; i++) {
+      var x = grid[i].pos.x;
+      var y = grid[i].pos.y;
+      var fakeGeo = {
+        coords: {
+          longitude: y,
+          latitude: x,
+        },
+      };
+      console.log(convertGeoToMap(fakeGeo));
+      
+      //creates the svg element circle
+      maplocal.push(convertGeoToMap(fakeGeo));
+      var newNode = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "circle"
+      );
+      //sets attributes to the circle svg and sets them to the correct relative map location
+      newNode.setAttribute("class", "pathfindingNode");
+      newNode.setAttribute("cx", maplocal[i].x);
+      newNode.setAttribute("cy", maplocal[i].y);
+      newNode.setAttribute("r", 1);
+      newGroup.append(newNode);
+      // console.log(mapSVG);
+      console.log(maplocal);
 
           //this draws the lines so they
           //we do greater than one because we need to connect the dots
@@ -394,10 +410,23 @@ var astar = {
   },
   destinationPopup: function () {
     //Const of the html that im inserting after selecting the room we are navigating to
-    const html =
-      "<div id = 'destinationPopup'><p>Is this your destination?<button type='button' id = 'pathButton'>Path to</p></div>";
+    const html =  "<div id = 'destinationPopup'><p>Is this your destination?<button type='button' id = 'pathButton' class = 'btn'>Path to</p></div>";
+    
+    var newNode = document.createElementNS("http://www.w3.org/2000/svg","circle");
+    newNode.textContent = "Pin_Drop";
+    newNode.setAttribute("class", '"material-symbols-outlined');
+    newNode.setAttribute("cx" ,'130.47231095083774' );
+    newNode.setAttribute("cy" ,'413.7203173945852' );
+    newNode.setAttribute("id", "destinationPin");
+    newNode.setAttribute("r", "3");
+    newNode.setAttribute("fill", "red");
+    
+    console.log(newNode);
 
-    document.querySelector("#mapArea").insertAdjacentHTML("afterend", html);
+    document.getElementById("Layer_2").append(newNode);
+
+    
+    document.querySelector("#mapArea").insertAdjacentHTML("afterend",html);
   },
 };
 
