@@ -167,4 +167,18 @@ ul {
   stroke-width: 1;
 }
 
+#destinationPin{
+  font-size: large;
+}
+#destinationPopup{
+  background-color: rgb(48, 48, 56,50%);
+  color: var(--rollover-blue);
+  min-height: 10vh;
+  text-align: center;
+}
+#pathButton{
+  color: white; 
+  max-height: 40px;
+}
+
 /* #endregion map*/

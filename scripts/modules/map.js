@@ -217,14 +217,12 @@ function moveUserIcon(position) {
  * @param {ScreenPixelPosition} pos
  */
 function snapToLocation(pos) {
+  // console.log(pos);
   //CB: We divide by 2 so its in the center of the screen
   /* CB: I needed logic for if the user if on the left or right side of the map.
   if theyre on the left, we want a positive pan,
   if they're on the right we need a negative pan.
   */
-  if (!isUserOnCampus()) {
-    return;
-  }
   if (pos.x <= center.x) {
     mapMatrix[4] = pos.x / 2;
   } else {

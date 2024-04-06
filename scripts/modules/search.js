@@ -206,7 +206,7 @@ function displaySuggestion(suggestion, suggestionType) {
     //log user search on click.
     logSearchHistory(userId, suggestion);
     //show the route.
-    astar.showPath(astar.search(roomId));
+    astar.showPath(astar.search(roomId));  
 
     suggestionsList.style.display = 'none'; // Hide suggestions after selection
   });
