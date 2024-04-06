@@ -130,7 +130,11 @@ var astar = {
     }
     return grid;
   },
-  //checks if the destination is within our system of nodes.
+  /**
+   * checks if the destination is within our system of nodes.
+   * @param {pfNode} end
+   * @returns
+   */
   checkList: function (end) {
     for (var i = 0; i < listNode.length; i++) {
       if (listNode[i][0] == end) {
@@ -218,7 +222,6 @@ var astar = {
   //   return d1 + d2;
   // },
 
-
   //this one gives returns a list of the nodes that are a neighbour of the current node
   neighbors: function (grid, node) {
     var ret = [];
@@ -268,7 +271,7 @@ var astar = {
 
   //removes the current node from open list
   removeGraphNode: function (currentNode, openList) {
-    //loops through the openList 
+    //loops through the openList
     for (let i = 0; i < openList.length; i++) {
       //if the any node equals openList we splice it aka delete it fromt he list
       if (openList[i] == currentNode) {
@@ -281,7 +284,7 @@ var astar = {
   },
 
   //shows all the nodes in the system
-  showNode: function(grid){
+  showNode: function (grid) {
     if (grid == null) {
       alert("Destination does not exist");
       return null;
@@ -306,16 +309,12 @@ var astar = {
         "http://www.w3.org/2000/svg",
         "circle"
       );
-      if(i == 0){
+      if (i == 0) {
         newNode.setAttribute("fill", "green");
-        
-      }else if(i == 7){
+      } else if (i == 7) {
         newNode.setAttribute("fill", "red");
-
-      }
-      else{
+      } else {
         newNode.setAttribute("fill", "black");
-        
       }
       newNode.setAttribute("class", "pathfindingNode");
       newNode.setAttribute("cx", maplocal[i].x);
@@ -348,13 +347,16 @@ var astar = {
 
 
     //Displays the destination popup.
-    astar.destinationPopup()
+    astar.destinationPopup();
 
-
-    document.getElementById("pathButton").addEventListener("click", function(){
-
-      //Creatses the group element so lines can be drawn
-      var newGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    document
+      .getElementById("pathButton")
+      .addEventListener("click", function () {
+        //Creatses the group element so lines can be drawn
+        var newGroup = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "g"
+        );
 
     newGroup.setAttribute("id", "nodes");
     var maplocal = [];
@@ -385,29 +387,28 @@ var astar = {
       // console.log(mapSVG);
       console.log(maplocal);
 
-      //this draws the lines so they
-      //we do greater than one because we need to connect the dots 
-      //so the total ammount of lines are less than total ammount of dots
-      if (i >= 1) {
-        var newLine = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "line"
-        );
-        //sets the line attributes so it can be connected properly
-        newLine.setAttribute("x1", maplocal[i - 1].x);
-        newLine.setAttribute("y1", maplocal[i - 1].y);
-        newLine.setAttribute("x2", maplocal[i].x);
-        newLine.setAttribute("y2", maplocal[i].y);
-        newLine.setAttribute("class", "pathfindingLine");
-        newGroup.append(newLine);
-      }
-    }
-    mapSVG.append(newGroup);
-    document.getElementById("destinationPopup").remove();
-  });
+          //this draws the lines so they
+          //we do greater than one because we need to connect the dots
+          //so the total ammount of lines are less than total ammount of dots
+          if (i >= 1) {
+            var newLine = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "line"
+            );
+            //sets the line attributes so it can be connected properly
+            newLine.setAttribute("x1", maplocal[i - 1].x);
+            newLine.setAttribute("y1", maplocal[i - 1].y);
+            newLine.setAttribute("x2", maplocal[i].x);
+            newLine.setAttribute("y2", maplocal[i].y);
+            newLine.setAttribute("class", "pathfindingLine");
+            newGroup.append(newLine);
+          }
+        }
+        mapSVG.append(newGroup);
+        document.getElementById("destinationPopup").remove();
+      });
   },
-  destinationPopup: function(){
-    
+  destinationPopup: function () {
     //Const of the html that im inserting after selecting the room we are navigating to
     const html =  "<div id = 'destinationPopup'><p>Is this your destination?<button type='button' id = 'pathButton' class = 'btn'>Path to</p></div>";
     

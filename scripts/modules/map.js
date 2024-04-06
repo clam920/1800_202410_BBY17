@@ -1,4 +1,4 @@
-import { isUserOnCampus } from "./location.js";
+import { userOnCampus } from "./location.js";
 /**
  * Represents the position of an item on the screen.
  * @param {Number} x The x-coordinate of the item
@@ -238,10 +238,15 @@ function snapToLocation(pos) {
  * Centers the user on the screen
  */
 function snapToUser() {
+  if (!userOnCampus) {
+    console.log("user is not on campus");
+    return;
+  }
   let pos = new ScreenPixelPosition(
     parseFloat(userIcon.getAttribute("cx")),
     parseFloat(userIcon.getAttribute("cy"))
   );
+
   // console.log("user position:", pos);
   snapToLocation(pos);
 }
