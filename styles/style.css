@@ -135,18 +135,42 @@ ul {
 /* #region map */
 #mapArea {
   background-color: var(--accent-turquoise);
-  /* max-height: var(--map-height); */
 }
 
-#roadsAndPaths {
+#Layer_2 {
+  stroke-width: 0.25pt;
   stroke: var(--bcit-yellow);
-  fill: none;
+}
+
+#road {
+  fill:var(--rollover-blue);
+}
+
+#unwalkable{
+  fill: blanchedalmond;
+}
+
+#walkingArea{
+  fill: darkgreen;
+}
+
+#WalkingMask{
+  fill:black;
+}
+
+#parks {
+  fill: var(--accent-turquoise);
 }
 
 #buildings {
   fill: var(--accent-purple);
-  stroke: var(--bcit-yellow);
 }
+
+#roadsAndPaths {
+  fill: none;
+}
+
+
 
 #followUserIcon {
   color: var(--bcit-blue);

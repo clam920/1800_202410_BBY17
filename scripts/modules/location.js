@@ -17,14 +17,24 @@ import {
  * @type {Array<Number>}
  */
 const geoBoundaries = {
+  /*
+  CB: The top left is definitely way more accurate
+    The bottom right i'm less certain of, since its a but tough to tell.
+  */
+  //Top-Left: 49.25483856825791, -123.00474666490439
+  //Bottom-Right: 49.24152068410627, -122.99792396244739
   /**@type {Number} */
-  minX: -123.0068186,
+  minX: -123.00474666490439,
+  //minX: -123.0068186,
   /**@type {Number} */
-  maxX: -122.998416,
+  minY: -122.99792396244739,
+  //maxX: -122.998416,
   /**@type {Number} */
-  minY: 49.2425018,
+  minY: 49.24152068410627,
+  //minY: 49.2425018,
   /**@type {Number} */
-  maxY: 49.2545877,
+  maxY: 49.25483856825791,
+  //maxY: 49.2545877,
 };
 
 /** @type {boolean} */
