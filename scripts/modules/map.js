@@ -63,13 +63,12 @@ function startPointer(e) {
  * @param {TouchEvent} e
  */
 function startTouch(e) {
-  if (e.touches.length < 2) {
+  if (e.touches.length > 2) {
     return;
   }
   e.preventDefault();
   let originalTouch = e.touches[1];
   // console.log(e);
-  setBoundaries();
 
   offset = getPointerPosition(originalTouch);
   processStartMapMove();
@@ -282,6 +281,22 @@ function loadFollowIcon() {
     .addEventListener("click", snapToUser);
 }
 
+function setDefaultVariables() {
+  offset = new ScreenPixelPosition(0, 0);
+  setActualMapSize();
+  setOriginalMapSize();
+  //Sets the starting position of the map on the screen to be more in-campus
+  mapMatrix[4] = originalMapSize.x / 2;
+  mapMatrix[5] = -originalMapSize.y / 8;
+  updateMapMatrix();
+
+  //var viewbox = mapSVG.getAttributeNS(null, "viewBox").split(" ");
+  center = new ScreenPixelPosition(
+    originalMapSize.x / 2,
+    originalMapSize.y / 2
+  );
+}
+
 /**
  * Loads the map and enables the panning/zooming.
  * Should be run in the main.js, or before you intend to display/use the map.
@@ -295,28 +310,17 @@ async function setupMap() {
   mapArea.addEventListener("wheel", zoom);
   mapSVG = document.getElementById("Layer_2");
 
-  offset = new ScreenPixelPosition(0, 0);
+  setDefaultVariables();
 
-  setActualMapSize();
-  setOriginalMapSize();
-
-  //Sets the starting position of the map on the screen to be more in-campus
-  mapMatrix[5] = -originalMapSize.y / 4;
-  updateMapMatrix();
-
-  //var viewbox = mapSVG.getAttributeNS(null, "viewBox").split(" ");
-  center = new ScreenPixelPosition(
-    originalMapSize.x / 2,
-    originalMapSize.y / 2
-  );
   loadFollowIcon();
   makeUserIcon();
+
   let deviceType = navigator.userAgent;
 
   //If we detect a mobile device
   if (
     deviceType.match(/Android|Mobile|iPhone/gm) != null
-    //  && navigator.maxTouchPoints > 0
+    //&& navigator.maxTouchPoints > 0
   ) {
     console.warn("Mobile device detected!");
     mapArea.addEventListener("touchstart", startTouch);
