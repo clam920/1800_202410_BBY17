@@ -343,12 +343,31 @@ function cleanMapSVG(mapData) {
   //get the SVG layer from the data
   let svgLayer = mapData.children[0];
 
-  //Get rid of the defs
-  svgLayer.childNodes.forEach((child) => {
-    if (child.nodeName == "defs") {
-      child.remove();
+  // Search for defs, an svg section that adds styles.
+  // We want to use our styles so we need to get rid of it.
+  for (let i = 0; i < svgLayer.childNodes.length; i++) {
+    let found = false;
+
+    let currentNode = svgLayer.childNodes[i];
+    //console.log(currentNode);
+    if (currentNode.nodeName == "defs") {
+      //console.log(currentNode.childNodes);
+      let currentChildren = currentNode.childNodes;
+      //We do need the clipPath so we can use the layer mask
+      //So we search for it and move it outside the defs.
+      for (let n = 0; n < currentChildren.length; n++) {
+        if (currentChildren[n].nodeName == "clipPath") {
+          currentNode.before(currentChildren[n]);
+          found = true;
+          break;
+        }
+      }
+      if (found) {
+        svgLayer.removeChild(currentNode);
+        break;
+      }
     }
-  });
+  }
 
   return mapData;
 }

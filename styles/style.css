@@ -3,15 +3,18 @@
   --bcit-yellow: #fff400;
   --accent-purple: #602aa9;
   --accent-turquoise: #00a69d;
+  --light-grey: #f8f9fa;
+  --grey: #f2f2f2f2;
+  --alt-grey: #d3dcdc;
+  --neutral-grey: #767676;
+  --dark-grey: #5a5a5a;
   --rollover-blue: #0055ce;
   --link-blue: #0069ff;
+  --overlay: #30303878;
+  --overlay-dark: #00122266;
   --header-height: 10vh;
   --footer-height: 5vh;
   --map-height: calc(100vh - (var(--header-height) + var(--footer-height)));
-}
-
-ul {
-  list-style-type: none;
 }
 
 /* #region header */
@@ -70,6 +73,10 @@ ul {
 .search-bar {
   align-items: center;
   background-color: #FFF;
+}
+
+ul {
+  list-style-type: none;
 }
 
 .input-group {
@@ -133,44 +140,42 @@ ul {
 /* #endregion header*/
 
 /* #region map */
-#mapArea {
-  background-color: var(--accent-turquoise);
-}
 
-#Layer_2 {
+/* Global rules */
+#Layer_2 * {
   stroke-width: 0.25pt;
   stroke: var(--bcit-yellow);
 }
 
+#mapArea {
+  background-color: var(--accent-turquoise);
+}
+
+/*CB: Should be set to match the background */
 #road {
-  fill:var(--rollover-blue);
-}
-
-#unwalkable{
-  fill: blanchedalmond;
-}
-
-#walkingArea{
-  fill: darkgreen;
-}
-
-#WalkingMask{
-  fill:black;
-}
-
-#parks {
+  stroke:none;
   fill: var(--accent-turquoise);
 }
 
+#unwalkableArea > * {
+  clip-path: url(#clippath);
+}
+
+#unwalkable {
+  fill: var(--neutral-grey);
+}
+
+#walkable {
+  fill: var(--rollover-blue);
+}
+
+#parks * {
+  fill: var(--bcit-blue);
+}
+
 #buildings {
-  fill: var(--accent-purple);
+  fill: var(--dark-grey);
 }
-
-#roadsAndPaths {
-  fill: none;
-}
-
-
 
 #followUserIcon {
   color: var(--bcit-blue);
