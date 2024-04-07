@@ -22,6 +22,7 @@ function setupSearchBar() {
   const searchInput = document.querySelector('.search-input');;
   const searchButton = document.querySelector('.search-button');;
   const suggestionsList = document.getElementById('suggestionsList');
+  
 
   let typingTimer; // Timer identifier
   const doneTypingInterval = 300; // Delay in milliseconds
@@ -92,13 +93,16 @@ function setupSearchBar() {
             return; // Break out of the loop if maximum suggestions reached
           } else {
             const suggestion = doc.data().name;
+            const roomDetails = doc.data().details || [];
+            const roomType = roomDetails && roomDetails.includes('Class') ? 'Class' : 'Lecture'; // Check if 'Class' is in the Details array
             // Check if the suggestion is not already in recent searches
             if (!recentSearches.includes(suggestion)) {
               const suggestionType = isSearchHistory(suggestion, recentSearches) ? 'search-history' : 'database-suggestions';
-              displaySuggestion(suggestion, suggestionType);
+              displaySuggestion(suggestion, suggestionType, roomType);
             }
           }
         });
+        
 
         // Hide suggestions if no results found
         if (querySnapshot.size == 0) {
@@ -113,26 +117,26 @@ function setupSearchBar() {
   });
 
 
-  // Add an event listener to the search input element for focus events
-  searchInput.addEventListener('focus', async () => {
-    // Clear the search input
-    searchInput.value = '';
+// Add an event listener to the search input element for focus events
+searchInput.addEventListener('focus', async () => {
+  // Clear the search input
+  searchInput.value = '';
 
-    suggestionsList.innerHTML = ''; // Clear previous suggestions
-    // Fetch and display recent searches
-    const recentSearches = await fetchRecentSearches('');
-    displaySuggestions(recentSearches, 'search-history');
-    // Position the suggestions list under the search input field
-    const inputRect = searchInput.getBoundingClientRect();
-    const inputGroupWidth = searchInput.offsetWidth + searchButton.offsetWidth;
-    suggestionsList.style.position = 'absolute';
-    suggestionsList.style.top = `${inputRect.bottom}px`;
-    suggestionsList.style.left = `${inputRect.left}px`;
-    // fix the suggestion box width to the wide of input box and search button.
-    suggestionsList.style.width = `${inputGroupWidth}px`;
+  suggestionsList.innerHTML = ''; // Clear previous suggestions
+  // Fetch and display recent searches
+  const recentSearches = await fetchRecentSearches('');
+  displaySuggestions(recentSearches, 'search-history'); 
+  // Position the suggestions list under the search input field
+  const inputRect = searchInput.getBoundingClientRect();
+  const inputGroupWidth = searchInput.offsetWidth + searchButton.offsetWidth;
+  suggestionsList.style.position = 'absolute';
+  suggestionsList.style.top = `${inputRect.bottom}px`;
+  suggestionsList.style.left = `${inputRect.left}px`;
+  // fix the suggestion box width to the wide of input box and search button.
+  suggestionsList.style.width = `${inputGroupWidth}px`;
 
-    suggestionsList.style.display = 'block';
-  });
+  suggestionsList.style.display = 'block';
+});
 
   onClickOutside(suggestionsList, hideSuggestionList);
 }
@@ -170,10 +174,41 @@ function isSearchHistory(suggestion, recentSearches) {
   return recentSearches.includes(suggestion);
 }
 
+// Function to fetch room details from Firestore based on room name
+async function fetchRoomDetails(roomName) {
+  try {
+    const querySnapshot = await db.collection('classrooms').where('name', '==', roomName).get();
+    if (!querySnapshot.empty) {
+      // Assuming there's only one document returned, get the first one
+      const doc = querySnapshot.docs[0];
+      const roomDetails = doc.data().details || []; // Get the Details array or an empty array if not present
+      return roomDetails;
+    } else {
+      return []; // If room details are not found, return an empty array
+    }
+  } catch (error) {
+    throw new Error('Error fetching room details: ' + error.message);
+  }
+}
+
 // Function to display a single suggestion
-function displaySuggestion(suggestion, suggestionType) {
+function displaySuggestion(suggestion, suggestionType, roomType) {
   const suggestionItem = document.createElement('li');
   suggestionItem.classList.add('dropdown-item');
+
+  // Create a span element for the room type icon
+  const roomTypeIcon = document.createElement('span');
+  roomTypeIcon.classList.add('room-type-icon');
+  roomTypeIcon.textContent = roomType === 'Class' ? 'C' : 'L'; // Use 'C' for classroom and 'L' for lecture hall (you can replace with appropriate icons)
+
+  // Apply styles to the room type icon
+  roomTypeIcon.style.color = '#808080'; // Grey color
+  roomTypeIcon.style.fontWeight = 'bold'; // Bold text
+
+  // Create a span element for the suggestion text and room type icon container
+  const suggestionContent = document.createElement('span');
+  suggestionContent.classList.add('suggestion-content');
+
   // Check if the suggestion type is 'search-history' to determine if it's from recent searches
   if (suggestionType === 'search-history') {
     // Create a <span> element for the clock icon
@@ -184,17 +219,26 @@ function displaySuggestion(suggestion, suggestionType) {
     clockIcon.style.color = 'grey';
     clockIcon.style.marginRight = '10px';
     // Append the clock icon to the suggestion item
-    suggestionItem.appendChild(clockIcon);
+    suggestionContent.appendChild(clockIcon);
   }
 
   // Create a text node for the suggestion text
   const suggestionText = document.createTextNode(suggestion);
 
-  // Append the suggestion text to the suggestion item
-  suggestionItem.appendChild(suggestionText);
+  // Append the suggestion text to the suggestion content container
+  suggestionContent.appendChild(suggestionText);
+
+  // Append the suggestion content and room type icon to the suggestion item
+  suggestionItem.appendChild(suggestionContent);
+  suggestionItem.appendChild(roomTypeIcon);
 
   // Add appropriate class based on suggestion type
   suggestionItem.classList.add(suggestionType);
+
+  // Use flexbox to align items
+  suggestionItem.style.display = 'flex';
+  suggestionItem.style.justifyContent = 'space-between';
+  suggestionItem.style.alignItems = 'center';
 
   suggestionsList.appendChild(suggestionItem);
 
@@ -213,14 +257,16 @@ function displaySuggestion(suggestion, suggestionType) {
 }
 
 
+
 async function getRoomId(roomName) {
   try {
     const querySnapshot = await db.collection('classrooms').where('name', '==', roomName).get();
     if (!querySnapshot.empty) {
       // Assuming there's only one document returned, get the first one
       const doc = querySnapshot.docs[0];
+      const roomDetails = doc.data().Details; // Get the Details field from the Firestore document
       const roomId = doc.data().code; // Get the code field from the Firestore document
-      return roomId;
+      return { roomId, roomDetails };
     } else {
       throw new Error('Room not found');
     }
@@ -228,13 +274,19 @@ async function getRoomId(roomName) {
     throw new Error('Error getting room ID: ' + error.message);
   }
 }
-
 // Function to display search suggestions
 function displaySuggestions(suggestions, suggestionType) {
   // Only display the first 5 suggestions
+  console.log('Finding suggestion from database')
   const limitedSuggestions = suggestions.slice(0, 5);
-  limitedSuggestions.forEach(suggestion => {
-    displaySuggestion(suggestion, suggestionType);
+  limitedSuggestions.forEach(async suggestion => {
+    try {
+      const roomDetails = await fetchRoomDetails(suggestion); // Fetch room details for the suggestion
+      const roomType = roomDetails && roomDetails.includes('Class') ? 'Class' : 'Lecture'; // Determine room type
+      displaySuggestion(suggestion, suggestionType, roomType); // Pass the roomType to displaySuggestion
+    } catch (error) {
+      console.error('Error fetching room details:', error);
+    }
   });
 }
 
