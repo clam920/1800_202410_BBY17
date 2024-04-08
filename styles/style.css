@@ -148,13 +148,13 @@ ul {
 }
 
 #mapArea {
-  background-color: var(--accent-turquoise);
+  background-color: var(--overlay-dark);
 }
 
 /*CB: Should be set to match the background */
 #road {
   stroke:none;
-  fill: var(--accent-turquoise);
+  fill: var(--overlay-dark);
 }
 
 #unwalkableArea > * {
@@ -162,19 +162,19 @@ ul {
 }
 
 #unwalkable {
-  fill: var(--neutral-grey);
+  fill: var(--bcit);
 }
 
 #walkable {
-  fill: var(--rollover-blue);
+  fill: var(--alt-grey);
 }
 
 #parks * {
-  fill: var(--bcit-blue);
+  fill: var(--accent-turquoise);
 }
 
 #buildings {
-  fill: var(--dark-grey);
+  fill: var(--bcit-blue);
 }
 
 #followUserIcon {
