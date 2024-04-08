@@ -109,6 +109,9 @@ function pointermoveHandler(e) {
     // Cache the distance for the next move event
     prevDiff = curDiff;
   } else {
+    if (lastEv == null){
+      return;
+    }
     //pan the map
     mapMatrix[4] += e.clientX - lastEv.clientX;
     mapMatrix[5] += e.clientY - lastEv.clientY;
@@ -132,7 +135,7 @@ function wheelHandler(e) {
       panMap(e.wheelDelta, e.wheelDeltaY != 0 ? true : false);
     }
   } else {
-    console.log(e);
+    // console.log(e);
     let scale;
     if (e.deltaY < 0) {
       scale = 1.01;
@@ -254,7 +257,7 @@ function makeUserIcon() {
   newNode.setAttribute("id", "userIcon");
   newNode.setAttribute("cx", "-100");
   newNode.setAttribute("cy", "-100");
-  newNode.setAttribute("r", 2);
+  newNode.setAttribute("r", 3);
   newGroup.append(newNode);
   mapSVG.append(newGroup);
   userIcon = document.getElementById("userIcon");
@@ -303,6 +306,7 @@ function snapToLocation(pos) {
  * Centers the user on the screen
  */
 function snapToUser() {
+  console.log(userOnCampus);
   if (!userOnCampus) {
     console.log("user is not on campus");
     return;
@@ -311,6 +315,8 @@ function snapToUser() {
     parseFloat(userIcon.getAttribute("cx")),
     parseFloat(userIcon.getAttribute("cy"))
   );
+
+  console.log();
 
   // console.log("user position:", pos);
   snapToLocation(pos);

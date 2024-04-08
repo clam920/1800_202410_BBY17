@@ -185,7 +185,7 @@ ul {
 #userIcon {
   stroke: var(--rollover-blue);
   stroke-width: 0.1rem;
-  fill: none;
+  fill: var(--bcit-yellow);
 }
 
 .pathfindingNode {
