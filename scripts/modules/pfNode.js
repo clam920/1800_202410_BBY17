@@ -8,7 +8,7 @@ const listNode = [
     4,
     0,
     4,
-    { x: 49.25015, y: -123.00195 }, //1
+    { x: 49.24989849865115, y: -123.00172719863869 }, //1
   ],
 
   [
@@ -137,7 +137,9 @@ var astar = {
    */
   checkList: function (end) {
     for (var i = 0; i < listNode.length; i++) {
-      if (listNode[i][0] == end) {
+      // console.log(listNode[i][0]== end.roomId);
+      if (listNode[i][0] == end.roomId) {
+        // console.log("Equals");
         return true;
       }
     }
@@ -145,15 +147,17 @@ var astar = {
   },
   //Search function of the nearby nodes.
   search: await function (destination) {
+    
+    var grid = astar.init(listNode);
     // console.log(grid);
 
-    var grid = astar.init(listNode);
     if (!astar.checkList(destination)) {
       return null;
     }
 
     var start = grid[0][0];
     var end = grid[grid.length - 1][1];
+
     var openList = [];
     var closedList = [];
 
@@ -182,6 +186,7 @@ var astar = {
         var curr = currentNode;
         var ret = [];
         //this loops backwards from the destination getting its parent node that we determined is the best route
+        // console.log(curr);
         while (curr.parent) {
           ret.push(curr);
           curr = curr.parent;
@@ -328,19 +333,18 @@ var astar = {
     console.log(grid);
 
     //Checks if the room asked for is within the current node ssytem.
-    if (grid == null) {
-      alert("Destination does not exist");
-      return null;
-    }
+    // if (grid == null) {
+    //   alert("Destination does not exist");
+    //   return null;  
+    // }
 
     //snaps map to destination
-    console.log(listNode[7][4]);
 
     //create fake location with logitude and latitude so that convert function can read it
     var fakelocation = {
       coords: {
-        longitude: listNode[7][4].y - 0.0015,
-        latitude: listNode[7][4].x - 0.003,
+        x: listNode[7][4].y - 0.0015,
+        y: listNode[7][4].x - 0.003,
       },
     };
     snapToLocation(convertGeoToMap(fakelocation));
