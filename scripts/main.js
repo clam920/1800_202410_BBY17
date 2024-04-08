@@ -8,7 +8,7 @@ async function setupMainPage() {
   await setupMap();
   setupLocation();
   aStar = astar;
-  console.log("Running V0.13");
+  console.log("Running V0.15");
 }
 
 document.addEventListener("DOMContentLoaded", setupMainPage);
