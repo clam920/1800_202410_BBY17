@@ -132,7 +132,7 @@ function wheelHandler(e) {
       panMap(e.wheelDelta, e.wheelDeltaY != 0 ? true : false);
     }
   } else {
-    console.log(e);
+    // console.log(e);
     let scale;
     if (e.deltaY < 0) {
       scale = 1.01;

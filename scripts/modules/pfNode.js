@@ -8,7 +8,7 @@ const listNode = [
     4,
     0,
     4,
-    { x: 49.24989849865115, y: -123.00172719863869 }, //1
+    { x: 270, y: 675 }, //1
   ],
 
   [
@@ -16,7 +16,7 @@ const listNode = [
     4,
     1,
     3,
-    { x: 49.250075, y: -123.00194 }, //2
+    { x: 49.250075, y: 123.00194 }, //2
   ],
 
   [
@@ -24,7 +24,7 @@ const listNode = [
     5,
     2,
     3,
-    { x: 49.2503, y: -123.002 }, //3
+    { x: 49.2503, y: 123.002 }, //3
   ],
 
   [
@@ -32,7 +32,7 @@ const listNode = [
     4,
     2,
     2,
-    { x: 49.250075, y: -123.0019 }, //4
+    { x: 49.250075, y: 123.0019 }, //4
   ],
 
   [
@@ -40,7 +40,7 @@ const listNode = [
     5,
     3,
     2,
-    { x: 49.2503, y: -123.0011 }, //5
+    { x: 49.2503, y: 123.0011 }, //5
   ],
 
   [
@@ -48,7 +48,7 @@ const listNode = [
     4,
     2,
     3,
-    { x: 49.249999, y: -123.0012 }, //6
+    { x: 49.249999, y: 123.0012 }, //6
   ],
 
   [
@@ -56,7 +56,7 @@ const listNode = [
     5,
     4,
     1,
-    { x: 49.25025, y: -123.0011 }, //7
+    { x: 49.25025, y: 123.0011 }, //7
   ],
 
   [
@@ -64,7 +64,7 @@ const listNode = [
     4,
     0,
     4,
-    { x: 49.25005, y: -123.0011 }, //8
+    { x: 200, y: 700 }, //8
   ],
 ];
 
@@ -330,7 +330,6 @@ var astar = {
     mapSVG.append(newGroup);
   },
   showPath: function (grid) {
-    console.log(grid);
 
     //Checks if the room asked for is within the current node ssytem.
     // if (grid == null) {
@@ -347,7 +346,7 @@ var astar = {
         y: listNode[7][4].x - 0.003,
       },
     };
-    snapToLocation(convertGeoToMap(fakelocation));
+    // snapToLocation(convertGeoToMap(fakelocation));
 
     //Displays the destination popup.
     astar.destinationPopup();
@@ -362,33 +361,25 @@ var astar = {
         );
 
         newGroup.setAttribute("id", "nodes");
-        var maplocal = [];
         //loops through the given nodes
+        console.log(grid);
         for (let i = 0; i < grid.length; i++) {
           var x = grid[i].pos.x;
           var y = grid[i].pos.y;
-          var fakeGeo = {
-            coords: {
-              longitude: y,
-              latitude: x,
-            },
-          };
-          console.log(convertGeoToMap(fakeGeo));
 
           //creates the svg element circle
-          maplocal.push(convertGeoToMap(fakeGeo));
           var newNode = document.createElementNS(
             "http://www.w3.org/2000/svg",
             "circle"
           );
           //sets attributes to the circle svg and sets them to the correct relative map location
           newNode.setAttribute("class", "pathfindingNode");
-          newNode.setAttribute("cx", maplocal[i].x);
-          newNode.setAttribute("cy", maplocal[i].y);
-          newNode.setAttribute("r", 1);
+          console.log(grid[i]);
+          newNode.setAttribute("cx", grid[i].pos.x);
+          newNode.setAttribute("cy", grid[i].pos.y);
+          newNode.setAttribute("r", 3);
           newGroup.append(newNode);
           // console.log(mapSVG);
-          console.log(maplocal);
 
           //this draws the lines so they
           //we do greater than one because we need to connect the dots
@@ -399,10 +390,10 @@ var astar = {
               "line"
             );
             //sets the line attributes so it can be connected properly
-            newLine.setAttribute("x1", maplocal[i - 1].x);
-            newLine.setAttribute("y1", maplocal[i - 1].y);
-            newLine.setAttribute("x2", maplocal[i].x);
-            newLine.setAttribute("y2", maplocal[i].y);
+            newLine.setAttribute("x1", grid[i - 1].pos.x);
+            newLine.setAttribute("y1", grid[i - 1].pos.y);
+            newLine.setAttribute("x2", grid[i].pos.x);
+            newLine.setAttribute("y2", grid[i].pos.y);
             newLine.setAttribute("class", "pathfindingLine");
             newGroup.append(newLine);
           }
@@ -422,8 +413,8 @@ var astar = {
     );
     newNode.textContent = "Pin_Drop";
     newNode.setAttribute("class", '"material-symbols-outlined');
-    newNode.setAttribute("cx", "130.47231095083774");
-    newNode.setAttribute("cy", "413.7203173945852");
+    newNode.setAttribute("cx", "200");
+    newNode.setAttribute("cy", "700");
     newNode.setAttribute("id", "destinationPin");
     newNode.setAttribute("r", "3");
     newNode.setAttribute("fill", "red");
