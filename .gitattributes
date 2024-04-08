@@ -2,3 +2,5 @@
 *.png linguist-vendored
 *.ai linguist-vendored
 *.psd linguist-vendored
+
+images/* linguist-vendored
