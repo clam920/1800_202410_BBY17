@@ -5,12 +5,8 @@
   https://www.google.com/maps/@49.2425018,-122.998416,17.52z?entry=ttu
 */
 
-import {
-  ScreenPixelPosition,
-  actualMapSize,
-  moveUserIcon,
-  originalMapSize,
-} from "./map.js";
+import { moveUserIcon, originalMapSize } from "./map.js";
+import { ScreenPixelPosition } from "./map.js";
 
 /**
  * Holds the range of geolocation positions we want to use.

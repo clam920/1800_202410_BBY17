@@ -1,15 +1,6 @@
 import { userOnCampus } from "./location.js";
-/**
- * Represents the position of an item on the screen.
- * @param {Number} x The x-coordinate of the item
- * @param {Number} y the y-coordinate of the item
- */
-class ScreenPixelPosition {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
-  }
-}
+import { log } from "./logging.js";
+import { ScreenPixelPosition } from "./classes.js";
 
 /**@type {HTMLElement} */
 var mapArea;
@@ -47,87 +38,156 @@ var boundaries = {
   maxY: 0,
 };
 
+const evCache = [];
+let prevDiff = -1;
+
 /**
- * Handles extracting the pointers location and passing it off to the StartMapMove process.
- * @param {PointerEvent} e
+ * Gets the x/y coordinate of the pointer of the screen.
+ * @param {PointerEvent} e a Pointer Event
+ * @returns {ScreenPixelPosition}
  */
-function startPointer(e) {
+function getPointerPosition(e) {
+  return new ScreenPixelPosition(e.clientX, e.clientY);
+}
+
+function pointerdownHandler(e) {
+  e.preventDefault();
+  evCache.push(e);
+  log("pointerDown", e);
+}
+
+function pointermoveHandler(e) {
+  // This function implements a 2-pointer horizontal pinch/zoom gesture.
+  //
+  // If the distance between the two pointers has increased (zoom in),
+  // the target element's background is changed to "pink" and if the
+  // distance is decreasing (zoom out), the color is changed to "lightblue".
+  //
+  // This function sets the target element's border to "dashed" to visually
+  // indicate the pointer's target received a move event.
+  log("pointerMove", e);
+  e.preventDefault();
+  e.target.style.border = "dashed";
+
+  // Find this event in the cache and update its record with this event
+  const index = evCache.findIndex(
+    (cachedEv) => cachedEv.pointerId === e.pointerId
+  );
+  evCache[index] = e;
+
+  // If two pointers are down, check for pinch gestures
+  if (evCache.length === 2) {
+    // Calculate the distance between the two pointers
+    const curDiff = Math.abs(evCache[0].clientX - evCache[1].clientX);
+    const diffDiff = Math.abs(curDiff - prevDiff);
+    if (
+      (evCache[0].movementX > 0 && evCache[1].movementX > 0) ||
+      (evCache[0].movementY > 0 && evCache[1].movementY > 0)
+    ) {
+      console.log("Moving in same direction");
+    } else if (prevDiff > 0.5) {
+      if (curDiff > prevDiff) {
+        zoomMap(0.01);
+        // The distance between the two pointers has increased
+        console.log("Pinch moving OUT -> Zoom in", e);
+        e.target.style.background = "pink";
+      }
+      if (curDiff < prevDiff) {
+        zoomMap(-0.01);
+        // The distance between the two pointers has decreased
+        console.log("Pinch moving IN -> Zoom out", e);
+        e.target.style.background = "lightblue";
+      }
+    }
+
+    // Cache the distance for the next move event
+    prevDiff = curDiff;
+  }
+}
+
+/**
+ *
+ * @param {WheelEvent} e
+ */
+function wheelHandler(e) {
   e.preventDefault();
 
   offset = getPointerPosition(e);
-  processStartMapMove();
-}
-
-/**
- * Handles extracting the touch information from the device and passing it off to the StartMapMove process.
- * @param {TouchEvent} e
- */
-function startTouch(e) {
-  if (e.touches.length > 2) {
-    return;
+  setMapOffset();
+  if (Number.isInteger(e.deltaY) && Number.isInteger(e.deltaX)) {
+    if (e.wheelDelta != 0) {
+      panMap(e);
+    }
+  } else {
+    console.log(e);
+    let scale;
+    if (e.deltaY < 0) {
+      scale = 1.01;
+    } else {
+      scale = 0.99;
+    }
+    zoomMap(scale);
   }
-  e.preventDefault();
-  let originalTouch = e.touches[1];
-  // console.log(e);
-
-  offset = getPointerPosition(originalTouch);
-  processStartMapMove();
+  //console.log(e);
 }
 
-/**
- * Handles starting the pointer tracking and calculating the offset for the movements
- */
-function processStartMapMove() {
-  // Apparently transforms are stored in 2/3d array.
-  // https://zellwk.com/blog/css-translate-values-in-javascript/ was a huge help in figuring this out.
-  offset.x -= mapMatrix[4] / mapMatrix[0];
-  offset.y -= mapMatrix[5] / mapMatrix[3];
+function pointerupHandler(e) {
+  log(e.type, e);
+  // Remove this pointer from the cache and reset the target's
+  // background and border
+  removeEvent(e);
+  e.target.style.background = "white";
 
-  //add the event listener for updating the maps position
-  mapArea.addEventListener("pointermove", drag);
+  // If the number of pointers down is less than two then reset diff tracker
+  if (evCache.length < 2) {
+    prevDiff = -1;
+  }
+}
 
-  //Add the event listeners for stopping the map updates.
-  ["pointerup", "pointerleave"].forEach((e) =>
-    mapArea.addEventListener(e, stopDrag)
+function removeEvent(ev) {
+  // Remove this event from the target's cache
+  const index = evCache.findIndex(
+    (cachedEv) => cachedEv.pointerId === ev.pointerId
   );
+  evCache.splice(index, 1);
 }
 
 /**
  * Pans the map based on how much the user has moved.
- * @param {PointerEvent} e
+ * @param {WheelEvent} e
  */
-function drag(e) {
-  let coords = getPointerPosition(e);
+function panMap(e) {
+  //console.log(e);
+  console.log("panning");
+  let delta = e.wheelDelta;
+  if (e.wheelDeltaY != 0) {
+    // if (e.wheelDeltaY > 0) {
+    //   console.log("Panning up");
+    // } else {
+    //   console.log("Panning down");
+    // }
+    mapMatrix[5] += delta * mapMatrix[3];
+  } else {
+    if (e.wheelDeltaX > 0) {
+      console.log("Panning right");
+    } else {
+      console.log("Panning left");
+    }
+    mapMatrix[4] += delta * mapMatrix[0];
+  }
 
-  mapMatrix[4] = (coords.x - offset.x) * mapMatrix[0];
-  mapMatrix[5] = (coords.y - offset.y) * mapMatrix[3];
   updateMapMatrix();
 }
 
 /**
- * Removes the event listener for pointer move, leave and up.
- */
-function stopDrag() {
-  ["pointermove", "pointerleave", "pointerup"].forEach((e) =>
-    mapArea.removeEventListener(e, drag)
-  );
-}
-
-/**
  * Adjusts the scale in the map matrix when we recieve a zoom command
- * @param {PointerEvent} e
+ * @param {Number} scale
  */
-function zoom(e) {
-  e.preventDefault();
-  let scale;
-  if (e.deltaY < 0) {
-    scale = 1.01;
-  } else {
-    scale = 0.99;
-  }
-  for (var i = 0; i < 4; i++) {
+function zoomMap(scale) {
+  console.log("zooming");
+  [0, 3].forEach((i) => {
     mapMatrix[i] *= scale;
-  }
+  });
 
   //TODO: CB - The center changes based on the scale
   // so I need to write some logic to check that.
@@ -135,6 +195,16 @@ function zoom(e) {
   mapMatrix[5] += (1 - scale) * center.y;
   updateMapMatrix();
   setActualMapSize();
+}
+
+/**
+ * Handles starting the pointer tracking and calculating the offset for the movements
+ */
+function setMapOffset() {
+  // Apparently transforms are stored in 2/3d array.
+  // https://zellwk.com/blog/css-translate-values-in-javascript/ was a huge help in figuring this out.
+  offset.x -= mapMatrix[4] / mapMatrix[0];
+  offset.y -= mapMatrix[5] / mapMatrix[3];
 }
 
 /**
@@ -165,16 +235,6 @@ function setActualMapSize() {
   actualMapSize.x = bBox.width * mapMatrix[0];
   actualMapSize.y = bBox.height * mapMatrix[3];
 }
-
-/**
- * Gets the x/y coordinate of the pointer of the screen.
- * @param {PointerEvent} e a Pointer Event
- * @returns {ScreenPixelPosition}
- */
-function getPointerPosition(e) {
-  return new ScreenPixelPosition(e.clientX, e.clientY);
-}
-
 /**
  * Creates the user icon for us to show on the map.
  */
@@ -297,6 +357,25 @@ function setDefaultVariables() {
   );
 }
 
+function initializeListeners() {
+  mapArea.addEventListener("pointerdown", pointerdownHandler);
+  mapArea.addEventListener("pointermove", pointermoveHandler);
+  mapArea.addEventListener("wheel", wheelHandler);
+
+  //these all mean "stop processing", so we can give them the same handler
+  let stops = ["pointerup", "pointercancel", "pointerout", "pointerleave"];
+  stops.forEach((ev) => {
+    mapArea.addEventListener(ev, pointerupHandler);
+  });
+
+  let touches = ["touchstart", "touchmove", "touchend"];
+  touches.forEach((ev) => {
+    mapArea.addEventListener(ev, function (e) {
+      e.preventDefault();
+    });
+  });
+}
+
 /**
  * Loads the map and enables the panning/zooming.
  * Should be run in the main.js, or before you intend to display/use the map.
@@ -307,7 +386,6 @@ async function setupMap() {
 
   mapArea = document.getElementById("mapArea");
   mapArea.innerHTML = data.outerHTML;
-  mapArea.addEventListener("wheel", zoom);
   mapSVG = document.getElementById("Layer_2");
 
   setDefaultVariables();
@@ -315,27 +393,7 @@ async function setupMap() {
   loadFollowIcon();
   makeUserIcon();
 
-  let deviceType = navigator.userAgent;
-
-  //If we detect a mobile device
-  if (
-    deviceType.match(/Android|Mobile|iPhone/gm) != null
-    //&& navigator.maxTouchPoints > 0
-  ) {
-    console.warn("Mobile device detected!");
-    mapArea.addEventListener("touchstart", startTouch);
-    // let rootTouch;
-    // mapArea.addEventListener("touchmove", function (e) {
-    //   console.warn("Touch move!");
-    //   console.log(e);
-    //   console.warn(
-    //     e.touches[0].clientX - rootTouch.x,
-    //     e.touches[0].clientY - rootTouch.y
-    //   );
-    // });
-  } else {
-    mapArea.addEventListener("pointerdown", startPointer);
-  }
+  initializeListeners();
 }
 
 /**
