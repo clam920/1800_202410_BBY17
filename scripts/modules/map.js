@@ -50,63 +50,76 @@ function getPointerPosition(e) {
   return new ScreenPixelPosition(e.clientX, e.clientY);
 }
 
+/**
+ * Adds the new pointer to the cache so other pointer handlers can track it.
+ * @param {PointerEvent} e
+ */
 function pointerdownHandler(e) {
   e.preventDefault();
   evCache.push(e);
   log("pointerDown", e);
 }
 
+/**
+ * This function implements a 2-pointer horizontal pinch/zoom gesture.
+ *
+ * If the distance between the two pointers has increased (zoom in),
+ * the target element's background is changed to "pink" and if the
+ * distance is decreasing (zoom out), the color is changed to "lightblue".
+ *
+ * This function sets the target element's border to "dashed" to visually
+ * indicate the pointer's target received a move event.
+ * @param {PointerEvent} e
+ * @returns
+ */
 function pointermoveHandler(e) {
-  // This function implements a 2-pointer horizontal pinch/zoom gesture.
-  //
-  // If the distance between the two pointers has increased (zoom in),
-  // the target element's background is changed to "pink" and if the
-  // distance is decreasing (zoom out), the color is changed to "lightblue".
-  //
-  // This function sets the target element's border to "dashed" to visually
-  // indicate the pointer's target received a move event.
   log("pointerMove", e);
   e.preventDefault();
-  e.target.style.border = "dashed";
 
   // Find this event in the cache and update its record with this event
   const index = evCache.findIndex(
     (cachedEv) => cachedEv.pointerId === e.pointerId
   );
+  let lastEv = evCache[index];
   evCache[index] = e;
 
   // If two pointers are down, check for pinch gestures
   if (evCache.length === 2) {
     // Calculate the distance between the two pointers
     const curDiff = Math.abs(evCache[0].clientX - evCache[1].clientX);
-    const diffDiff = Math.abs(curDiff - prevDiff);
     if (
       (evCache[0].movementX > 0 && evCache[1].movementX > 0) ||
       (evCache[0].movementY > 0 && evCache[1].movementY > 0)
     ) {
-      console.log("Moving in same direction");
+      return;
+      //console.log("Moving in same direction");
     } else if (prevDiff > 0.5) {
       if (curDiff > prevDiff) {
-        zoomMap(0.01);
+        zoomMap(1.01);
         // The distance between the two pointers has increased
-        console.log("Pinch moving OUT -> Zoom in", e);
-        e.target.style.background = "pink";
+        log("Pinch moving OUT -> Zoom in", e);
       }
       if (curDiff < prevDiff) {
-        zoomMap(-0.01);
+        zoomMap(0.99);
         // The distance between the two pointers has decreased
-        console.log("Pinch moving IN -> Zoom out", e);
-        e.target.style.background = "lightblue";
+        log("Pinch moving IN -> Zoom out", e);
       }
     }
 
     // Cache the distance for the next move event
     prevDiff = curDiff;
+  } else {
+    //pan the map
+    mapMatrix[4] += e.clientX - lastEv.clientX;
+    mapMatrix[5] += e.clientY - lastEv.clientY;
+    updateMapMatrix();
   }
 }
 
 /**
- *
+ * Wheel events are when 2 pointers are moved at the same time on a laptop
+ * or a mouse wheel is used.
+ * Checks if its a zoom or pan movement and acts accordingly.
  * @param {WheelEvent} e
  */
 function wheelHandler(e) {
@@ -116,7 +129,7 @@ function wheelHandler(e) {
   setMapOffset();
   if (Number.isInteger(e.deltaY) && Number.isInteger(e.deltaX)) {
     if (e.wheelDelta != 0) {
-      panMap(e);
+      panMap(e.wheelDelta, e.wheelDeltaY != 0 ? true : false);
     }
   } else {
     console.log(e);
@@ -131,12 +144,14 @@ function wheelHandler(e) {
   //console.log(e);
 }
 
+/**
+ * Removes a pointer from the cache and checks if it needs to reset the diff tracker
+ * @param {PointerEvent} e
+ */
 function pointerupHandler(e) {
   log(e.type, e);
-  // Remove this pointer from the cache and reset the target's
-  // background and border
+  // Remove this pointer from the cache
   removeEvent(e);
-  e.target.style.background = "white";
 
   // If the number of pointers down is less than two then reset diff tracker
   if (evCache.length < 2) {
@@ -144,35 +159,27 @@ function pointerupHandler(e) {
   }
 }
 
-function removeEvent(ev) {
+/**
+ * Removes an event from the cache since we dont need to track it
+ * @param {PointerEvent} e
+ */
+function removeEvent(e) {
   // Remove this event from the target's cache
   const index = evCache.findIndex(
-    (cachedEv) => cachedEv.pointerId === ev.pointerId
+    (cachedEv) => cachedEv.pointerId === e.pointerId
   );
   evCache.splice(index, 1);
 }
 
 /**
- * Pans the map based on how much the user has moved.
- * @param {WheelEvent} e
+ * Moves the map based on the given information
+ * @param {Number} delta the amount to move
+ * @param {Boolean} y If we're moving in the Y, set to true. Otherwise moves in X
  */
-function panMap(e) {
-  //console.log(e);
-  console.log("panning");
-  let delta = e.wheelDelta;
-  if (e.wheelDeltaY != 0) {
-    // if (e.wheelDeltaY > 0) {
-    //   console.log("Panning up");
-    // } else {
-    //   console.log("Panning down");
-    // }
+function panMap(delta, y) {
+  if (y) {
     mapMatrix[5] += delta * mapMatrix[3];
   } else {
-    if (e.wheelDeltaX > 0) {
-      console.log("Panning right");
-    } else {
-      console.log("Panning left");
-    }
     mapMatrix[4] += delta * mapMatrix[0];
   }
 
@@ -184,7 +191,6 @@ function panMap(e) {
  * @param {Number} scale
  */
 function zoomMap(scale) {
-  console.log("zooming");
   [0, 3].forEach((i) => {
     mapMatrix[i] *= scale;
   });
