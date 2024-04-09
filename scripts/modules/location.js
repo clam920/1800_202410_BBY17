@@ -19,18 +19,16 @@ const geoBoundaries = {
   */
   //Top-Left: 49.25483856825791, -123.00474666490439
   //Bottom-Right: 49.24152068410627, -122.99792396244739
+
   /**@type {Number} */
-  minX: -123.00474666490439,
+  minX: -123.00353594360816,
   //minX: -123.0068186,
   /**@type {Number} */
-  maxX: -122.99792396244739,
-  //maxX: -122.998416,
+  maxX: -122.99793923302757,
   /**@type {Number} */
-  minY: 49.24152068410627,
-  //minY: 49.2425018,
+  minY: 49.24165,
   /**@type {Number} */
   maxY: 49.25483856825791,
-  //maxY: 49.2545877,
 };
 
 /** @type {boolean} */
@@ -83,6 +81,7 @@ function convertGeoToPercent(position) {
   // Math.abs((usePos - Min)/(Min - Max)) * 100
   if (isGeoOnCampus(userLong, userLat)) {
     // console.log("User is inside campus");
+    console.log("User location:", userLong, userLat);
     let userLongPercent = Math.abs(
       (userLong - geoBoundaries.maxX) /
         (geoBoundaries.minX - geoBoundaries.maxX)

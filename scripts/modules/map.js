@@ -383,7 +383,7 @@ function initializeListeners() {
   mapArea.addEventListener("wheel", wheelHandler);
 
   //these all mean "stop processing", so we can give them the same handler
-  let stops = ["pointerup", "pointercancel", "pointerout", "pointerleave"];
+  let stops = ["pointerup", "pointercancel", "pointerleave"];
   stops.forEach((ev) => {
     mapArea.addEventListener(ev, pointerupHandler);
   });
