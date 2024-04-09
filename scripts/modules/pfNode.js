@@ -16,7 +16,7 @@ const listNode = [
     4,
     1,
     3,
-    { x: 49.250075, y: 123.00194 }, //2
+    { x: 270, y: 695 }, //2
   ],
 
   [
@@ -32,7 +32,7 @@ const listNode = [
     4,
     2,
     2,
-    { x: 49.250075, y: 123.0019 }, //4
+    { x: 265, y: 695 }, //4
   ],
 
   [
@@ -48,7 +48,7 @@ const listNode = [
     4,
     2,
     3,
-    { x: 49.249999, y: 123.0012 }, //6
+    { x: 220, y: 732 }, //6
   ],
 
   [
@@ -377,7 +377,7 @@ var astar = {
           console.log(grid[i]);
           newNode.setAttribute("cx", grid[i].pos.x);
           newNode.setAttribute("cy", grid[i].pos.y);
-          newNode.setAttribute("r", 3);
+          newNode.setAttribute("class", "pfcircle");
           newGroup.append(newNode);
           // console.log(mapSVG);
 
@@ -394,6 +394,7 @@ var astar = {
             newLine.setAttribute("y1", grid[i - 1].pos.y);
             newLine.setAttribute("x2", grid[i].pos.x);
             newLine.setAttribute("y2", grid[i].pos.y);
+            newLine.setAttribute("class", "pfline");
             newLine.setAttribute("class", "pathfindingLine");
             newGroup.append(newLine);
           }
