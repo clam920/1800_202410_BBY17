@@ -47,7 +47,11 @@ let prevDiff = -1;
  * @returns {ScreenPixelPosition}
  */
 function getPointerPosition(e) {
-  return new ScreenPixelPosition(e.clientX, e.clientY);
+  //console.log(e);
+  return new ScreenPixelPosition(
+    e.clientX * mapMatrix[0],
+    e.clientY * mapMatrix[3]
+  );
 }
 
 /**
@@ -56,6 +60,11 @@ function getPointerPosition(e) {
  */
 function pointerdownHandler(e) {
   e.preventDefault();
+  if (evCache.length == 0) {
+    offset = getPointerPosition(e);
+    offset.x -= mapMatrix[4] / mapMatrix[0];
+    offset.y -= mapMatrix[5] / mapMatrix[3];
+  }
   evCache.push(e);
   log("pointerDown", e);
 }
@@ -75,6 +84,10 @@ function pointerdownHandler(e) {
 function pointermoveHandler(e) {
   log("pointerMove", e);
   e.preventDefault();
+  // Check if pointerdown has been fired already or not.
+  if (evCache.length == 0) {
+    return;
+  }
 
   // Find this event in the cache and update its record with this event
   const index = evCache.findIndex(
@@ -109,10 +122,15 @@ function pointermoveHandler(e) {
     // Cache the distance for the next move event
     prevDiff = curDiff;
   } else {
+    if (lastEv == null) {
+      return;
+    }
     //pan the map
-    mapMatrix[4] += e.clientX - lastEv.clientX;
-    mapMatrix[5] += e.clientY - lastEv.clientY;
-    updateMapMatrix();
+    let delta = new ScreenPixelPosition(
+      e.clientX - lastEv.clientX,
+      e.clientY - lastEv.clientY
+    );
+    panMap(delta);
   }
 }
 
@@ -128,9 +146,8 @@ function wheelHandler(e) {
   offset = getPointerPosition(e);
   setMapOffset();
   if (Number.isInteger(e.deltaY) && Number.isInteger(e.deltaX)) {
-    if (e.wheelDelta != 0) {
-      panMap(e.wheelDelta, e.wheelDeltaY != 0 ? true : false);
-    }
+    let delta = new ScreenPixelPosition(e.wheelDeltaX, e.wheelDeltaY);
+    panMap(delta);
   } else {
     // console.log(e);
     let scale;
@@ -173,15 +190,11 @@ function removeEvent(e) {
 
 /**
  * Moves the map based on the given information
- * @param {Number} delta the amount to move
- * @param {Boolean} y If we're moving in the Y, set to true. Otherwise moves in X
+ * @param {ScreenPixelPosition} delta the amount to move
  */
-function panMap(delta, y) {
-  if (y) {
-    mapMatrix[5] += delta * mapMatrix[3];
-  } else {
-    mapMatrix[4] += delta * mapMatrix[0];
-  }
+function panMap(delta) {
+  mapMatrix[4] += delta.x * mapMatrix[0];
+  mapMatrix[5] += delta.y * mapMatrix[3];
 
   updateMapMatrix();
 }
@@ -254,7 +267,7 @@ function makeUserIcon() {
   newNode.setAttribute("id", "userIcon");
   newNode.setAttribute("cx", "-100");
   newNode.setAttribute("cy", "-100");
-  newNode.setAttribute("r", 2);
+  newNode.setAttribute("r", 3);
   newGroup.append(newNode);
   mapSVG.append(newGroup);
   userIcon = document.getElementById("userIcon");
@@ -303,6 +316,7 @@ function snapToLocation(pos) {
  * Centers the user on the screen
  */
 function snapToUser() {
+  //console.log(userOnCampus);
   if (!userOnCampus) {
     console.log("user is not on campus");
     return;
