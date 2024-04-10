@@ -178,7 +178,7 @@ ul {
 }
 
 #followUserIcon {
-  color: var(--bcit-blue);
+  color: var(--bcit-yellow);
   font-size: calc(3rem + 3vh) !important;
 }
 
@@ -188,14 +188,20 @@ ul {
   fill: var(--bcit-yellow);
 }
 
-.pathfindingNode {
-  fill: black;
+#destinationPin {
+  fill: green;
 }
 
-.pathfindingLine {
-  stroke:red;
-  stroke-width: 1;
+.pfline  {
+  
+  stroke:red !important;
+  stroke-width: 3 !important;
 }
+.pfcircle{
+  fill: red;
+  r: 3
+}
+
 
 #destinationPin{
   font-size: large;

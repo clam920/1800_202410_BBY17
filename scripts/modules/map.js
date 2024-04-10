@@ -302,11 +302,12 @@ function snapToLocation(pos) {
   if they're on the right we need a negative pan.
   */
   if (pos.x <= center.x) {
-    mapMatrix[4] = pos.x / 2;
-  } else {
     mapMatrix[4] = -pos.x / 2;
+  } else {
+    mapMatrix[4] = pos.x / 2;
   }
   mapMatrix[5] = -pos.y / mapMatrix[3];
+  console.log(center.x);
 
   console.log("snapping to ", mapMatrix[4], mapMatrix[5]);
   updateMapMatrix();
@@ -464,4 +465,5 @@ export {
   snapToLocation,
   setupMap,
   moveUserIcon,
+  zoomMap,
 };
