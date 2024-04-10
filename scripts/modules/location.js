@@ -19,12 +19,16 @@ const geoBoundaries = {
   */
   //Top-Left: 49.25483856825791, -123.00474666490439
   //Bottom-Right: 49.24152068410627, -122.99792396244739
+  //49.254849523821335, -123.00480142555578
+  //49.241552240505605, -122.99787155786976
 
   /**@type {Number} */
-  minX: -123.00353594360816,
+  maxX: -123.00480142555578,
+  //maxX: -123.00353594360816,
   //minX: -123.0068186,
   /**@type {Number} */
-  maxX: -122.99793923302757,
+  minX: -122.99787155786976,
+  //minX: -122.99793923302757,
   /**@type {Number} */
   minY: 49.24165,
   /**@type {Number} */
@@ -40,8 +44,8 @@ function isGeoOnCampus(long, lat) {
   return (
     lat < geoBoundaries.maxY &&
     lat > geoBoundaries.minY &&
-    long < geoBoundaries.maxX &&
-    long > geoBoundaries.minX
+    long > geoBoundaries.maxX &&
+    long < geoBoundaries.minX
   );
 }
 
