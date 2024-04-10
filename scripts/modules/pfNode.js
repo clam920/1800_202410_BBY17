@@ -1,6 +1,6 @@
 import { mapSVG } from "/scripts/modules/map.js";
 import { convertGeoToMap } from "/scripts/modules/location.js";
-import { snapToLocation } from "./map.js";
+import { snapToLocation, zoomMap } from "./map.js";
 
 const listNode = [
   [
@@ -16,7 +16,7 @@ const listNode = [
     4,
     1,
     3,
-    { x: 270, y: 695 }, //2
+    { x: 270, y: 715 }, //2
   ],
 
   [
@@ -32,7 +32,7 @@ const listNode = [
     4,
     2,
     2,
-    { x: 265, y: 695 }, //4
+    { x: 255, y: 714 }, //4
   ],
 
   [
@@ -48,7 +48,7 @@ const listNode = [
     4,
     2,
     3,
-    { x: 220, y: 732 }, //6
+    { x: 218, y: 732 }, //6
   ],
 
   [
@@ -395,7 +395,6 @@ var astar = {
             newLine.setAttribute("x2", grid[i].pos.x);
             newLine.setAttribute("y2", grid[i].pos.y);
             newLine.setAttribute("class", "pfline");
-            newLine.setAttribute("class", "pathfindingLine");
             newGroup.append(newLine);
           }
         }
@@ -404,6 +403,11 @@ var astar = {
       });
   },
   destinationPopup: function () {
+    zoomMap(5); 
+    snapToLocation({
+      y: -3830, 
+      x: -1200
+    });
     //Const of the html that im inserting after selecting the room we are navigating to
     const html =
       "<div id = 'destinationPopup'><p>Is this your destination?<button type='button' id = 'pathButton' class = 'btn'>Path to</p></div>";
@@ -417,8 +421,7 @@ var astar = {
     newNode.setAttribute("cx", "200");
     newNode.setAttribute("cy", "700");
     newNode.setAttribute("id", "destinationPin");
-    newNode.setAttribute("r", "3");
-    newNode.setAttribute("fill", "red");
+    newNode.setAttribute("r", "5");
 
     console.log(newNode);
 
