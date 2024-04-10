@@ -1,6 +1,11 @@
 import { mapSVG } from "/scripts/modules/map.js";
 import { convertGeoToMap } from "/scripts/modules/location.js";
-import { snapToLocation, zoomMap } from "./map.js";
+import {
+  ScreenPixelPosition,
+  snapToLocation,
+  zoomMap,
+  setZoom,
+} from "./map.js";
 
 const listNode = [
   [
@@ -147,7 +152,6 @@ var astar = {
   },
   //Search function of the nearby nodes.
   search: await function (destination) {
-    
     var grid = astar.init(listNode);
     // console.log(grid);
 
@@ -330,11 +334,10 @@ var astar = {
     mapSVG.append(newGroup);
   },
   showPath: function (grid) {
-
     //Checks if the room asked for is within the current node ssytem.
     // if (grid == null) {
     //   alert("Destination does not exist");
-    //   return null;  
+    //   return null;
     // }
 
     //snaps map to destination
@@ -403,11 +406,9 @@ var astar = {
       });
   },
   destinationPopup: function () {
-    zoomMap(5); 
-    snapToLocation({
-      y: -3830, 
-      x: -1200
-    });
+    setZoom(5);
+    let pinPosition = new ScreenPixelPosition(200, 700);
+    snapToLocation(pinPosition);
     //Const of the html that im inserting after selecting the room we are navigating to
     const html =
       "<div id = 'destinationPopup'><p>Is this your destination?<button type='button' id = 'pathButton' class = 'btn'>Path to</p></div>";
@@ -418,8 +419,8 @@ var astar = {
     );
     newNode.textContent = "Pin_Drop";
     newNode.setAttribute("class", '"material-symbols-outlined');
-    newNode.setAttribute("cx", "200");
-    newNode.setAttribute("cy", "700");
+    newNode.setAttribute("cx", pinPosition.x);
+    newNode.setAttribute("cy", pinPosition.y);
     newNode.setAttribute("id", "destinationPin");
     newNode.setAttribute("r", "5");
 

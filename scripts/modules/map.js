@@ -216,6 +216,19 @@ function zoomMap(scale) {
   setActualMapSize();
 }
 
+export function setZoom(num) {
+  [0, 3].forEach((i) => {
+    mapMatrix[i] = num;
+  });
+
+  //TODO: CB - The center changes based on the scale
+  // so I need to write some logic to check that.
+  mapMatrix[4] += (1 - num) * center.x;
+  mapMatrix[5] += (1 - num) * center.y;
+  updateMapMatrix();
+  setActualMapSize();
+}
+
 /**
  * Handles starting the pointer tracking and calculating the offset for the movements
  */
@@ -301,13 +314,22 @@ function snapToLocation(pos) {
   if theyre on the left, we want a positive pan,
   if they're on the right we need a negative pan.
   */
+  console.warn("Snapping to", pos);
+
+  console.warn("Possible choices:", {
+    x1: mapArea.clientWidth / 2 - pos.x,
+    x2: mapArea.clientWidth / 2 + pos.x,
+    y1: -pos.y + mapArea.clientHeight / 2,
+  });
   if (pos.x <= center.x) {
-    mapMatrix[4] = -pos.x / 2;
+    mapMatrix[4] = mapArea.clientWidth - pos.x;
   } else {
-    mapMatrix[4] = pos.x / 2;
+    mapMatrix[4] = mapArea.clientWidth + pos.x;
   }
-  mapMatrix[5] = -pos.y / mapMatrix[3];
+  mapMatrix[5] = pos.y - mapArea.clientHeight / 2;
   console.log(center.x);
+  // mapMatrix[4] = -pos.x / mapArea[0] + window.innerWidth / 2;
+  // mapMatrix[5] = -pos.y / mapMatrix[3] + window.innerHeight / 2;
 
   console.log("snapping to ", mapMatrix[4], mapMatrix[5]);
   updateMapMatrix();
@@ -359,7 +381,7 @@ function loadFollowIcon() {
   mapArea.append(newNode);
   document
     .getElementById("followUserIcon")
-    .addEventListener("click", snapToUser);
+    .addEventListener("pointerdown", snapToUser);
 }
 
 function setDefaultVariables() {
