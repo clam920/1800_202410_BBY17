@@ -1,4 +1,4 @@
-# Project Title
+# BetterMap
 
 ## 1. Project Description
 This browser based web application to make a better map for BCIT Burnaby Campus. It has a complete color-coded map of the BBY Campus and accurate user location so you can see where you are.
