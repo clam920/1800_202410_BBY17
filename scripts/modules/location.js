@@ -85,7 +85,7 @@ function convertGeoToPercent(position) {
   // Math.abs((usePos - Min)/(Min - Max)) * 100
   if (isGeoOnCampus(userLong, userLat)) {
     // console.log("User is inside campus");
-    console.log("User location:", userLong, userLat);
+    // console.log("User location:", userLong, userLat);
     let userLongPercent = Math.abs(
       (userLong - geoBoundaries.maxX) /
         (geoBoundaries.minX - geoBoundaries.maxX)

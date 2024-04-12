@@ -316,17 +316,12 @@ function snapToLocation(pos) {
   */
   console.warn("Snapping to", pos);
 
-  console.warn("Possible choices:", {
-    x1: mapArea.clientWidth / 2 - pos.x,
-    x2: mapArea.clientWidth / 2 + pos.x,
-    y1: -pos.y + mapArea.clientHeight / 2,
-  });
   if (pos.x <= center.x) {
-    mapMatrix[4] = mapArea.clientWidth - pos.x;
+    mapMatrix[4] = mapArea.clientWidth - pos.x * 2;
   } else {
     mapMatrix[4] = mapArea.clientWidth + pos.x;
   }
-  mapMatrix[5] = pos.y - mapArea.clientHeight / 2;
+  mapMatrix[5] = mapArea.clientHeight - pos.y;
   console.log(center.x);
   // mapMatrix[4] = -pos.x / mapArea[0] + window.innerWidth / 2;
   // mapMatrix[5] = -pos.y / mapMatrix[3] + window.innerHeight / 2;
@@ -339,6 +334,7 @@ function snapToLocation(pos) {
  * Centers the user on the screen
  */
 function snapToUser() {
+  setZoom(5);
   //console.log(userOnCampus);
   if (!userOnCampus) {
     console.log("user is not on campus");
