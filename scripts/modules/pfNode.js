@@ -410,6 +410,10 @@ var astar = {
     let pinPosition = new ScreenPixelPosition(200, 700);
     snapToLocation(pinPosition);
     //Const of the html that im inserting after selecting the room we are navigating to
+    let popup = document.getElementById("destinationPopup");
+    if (popup != null) {
+      popup.remove();
+    }
     const html =
       "<div id = 'destinationPopup'><p>Is this your destination?<button type='button' id = 'pathButton' class = 'btn'>Path to</p></div>";
 
