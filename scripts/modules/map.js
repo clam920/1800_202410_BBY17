@@ -420,7 +420,7 @@ function initializeListeners() {
  * Should be run in the main.js, or before you intend to display/use the map.
  */
 async function setupMap() {
-  let data = await loadSVG("./images/map/SVG/BCITMap.svg");
+  let data = await loadSVG("./images/map/BCITMap.svg");
   data = cleanMapSVG(data);
 
   mapArea = document.getElementById("mapArea");
