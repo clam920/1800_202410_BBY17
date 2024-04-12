@@ -2,19 +2,22 @@
 
 ## 1. Project Description
 State your app in a nutshell, or one-sentence pitch. Give some elaboration on what the core features are.  
-This browser based web application to ... 
+This browser based web application to make a better map for BCIT Burnaby Campus.
+It enables navigation inside buildings and gives efficient route suggestions.
+It is connected to a database so that classrooms on Burnaby campus can be searched.
 
 ## 2. Names of Contributors
 List team members and/or short bio's here... 
 * Hi, Im Alex im excited about this because I constantly think would have been nice to have this already when navigating around.
 * Corey Buchan - 5 years of QA experience, strongly desires to automate everything in his life.
-* Hi, my name is Chun Ki! 
+* Hi, my name is Chun Ki! First Term CST Student at BCIT.
 	
 ## 3. Technologies and Resources Used
 List technologies (with version numbers), API's, icons, fonts, images, media or data sources, and other resources that were used.
 * HTML, CSS, JavaScript
 * Bootstrap 5.0 (Frontend library)
 * Firebase 8.0 (BAAS - Backend as a Service)
+* Google icon
 * ...
 
 ## 4. Complete setup/installion/usage
@@ -26,7 +29,7 @@ Here are the steps ...
 
 ## 5. Known Bugs and Limitations
 Here are some known bugs:
-* ...
+* SVG currently not showing on iOS device
 * ...
 * ...
 
