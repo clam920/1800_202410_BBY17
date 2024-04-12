@@ -9,9 +9,15 @@ function enableLog(ev) {
   logEvents = !logEvents;
 }
 
+/**
+ * Standard logger for pointer events.
+ * @param {*} prefix Can be used to track the type of event or the calling
+ * function.
+ * @param {*} ev the event that caused this to be triggered.
+ * @returns
+ */
 function log(prefix, ev) {
   if (!logEvents) return;
-  const o = document.getElementById("output");
   const s =
     `${prefix}:<br>` +
     `  pointerID   = ${ev.pointerId}\n` +
@@ -20,6 +26,10 @@ function log(prefix, ev) {
   console.log(`${s}`);
 }
 
+/**
+ * Logs all events that happen.
+ * Useful for discovering what events happen when doing certain actions.
+ */
 function logAllEvents() {
   if (!logAll) return;
   //CB: Some fun code to track **all** events happening in the window.
