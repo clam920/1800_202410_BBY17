@@ -37,7 +37,8 @@ Here are some known bugs:
 What we'd like to build in the future:
 * The ability to view the interior layouts of buildings; SE12_2 and SW5 are complete.
 * Dynamic pathfinding based on user location
-* ...
+* Show the direction that a user is facing.
+* Calculate ETA based on path distance.
 	
 ## 7. Contents of Folder
 Content of the project folder:
