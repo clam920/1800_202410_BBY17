@@ -5,6 +5,7 @@
  */
 class ScreenPixelPosition {
   constructor(x, y) {
+    this.name = "ScreenPixelPosition";
     this.x = x;
     this.y = y;
   }
