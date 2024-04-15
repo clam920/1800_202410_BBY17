@@ -57,9 +57,10 @@ function isGeoOnCampus(long, lat) {
 function convertGeoToMap(position) {
   let retval = null;
   let percents = convertGeoToPercent(position);
-  if (percents.x < 0 || percents.y < 0) {
-    console.error("Given location is not on campus!");
-  } else {
+  if (percents.x >= 0 && percents.y >= 0) {
+    // if (percents.x < 0 || percents.y < 0) {
+    //   console.error("Given location is not on campus!");
+    // } else {
     // console.log("Percents:", percents);
     // console.log("Matrix X Y:", mapMatrix[0], mapMatrix[3]);
     retval = new ScreenPixelPosition(
