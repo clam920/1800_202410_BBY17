@@ -37,6 +37,15 @@ const geoBoundaries = {
 
 /** @type {boolean} */
 var userOnCampus = false;
+
+/**@type {GeolocationPosition} */
+var userPosition;
+
+/** @type {PositionOptions} */
+const positionOptions = {
+  enableHighAccuracy: true,
+};
+
 /** Checks if the given location is on campus
  * @returns {boolean}
  */
@@ -101,13 +110,37 @@ function convertGeoToPercent(position) {
   return retval;
 }
 
-/**@type {GeolocationPosition} */
-var userPosition;
-
-/** @type {PositionOptions} */
-const positionOptions = {
-  enableHighAccuracy: true,
-};
+/**
+ * Calculates the distance between 2 points on the screen.
+ * Will convert Geolocation to Map position if need be.
+ * @param {GeolocationPosition | ScreenPixelPosition} pos1
+ * @param {GeolocationPosition | ScreenPixelPosition} pos2
+ * @throws {TypeError} If either pos1 or pos2 are not of the correct type.
+ * @returns {ScreenPixelPosition}
+ */
+function distanceBetweenPoints(pos1, pos2) {
+  [pos1, pos2].forEach((pos) => {
+    if (
+      !(
+        pos instanceof GeolocationPosition || pos instanceof ScreenPixelPosition
+      )
+    ) {
+      throw TypeError(
+        pos.constructor.name,
+        "is not a GeolocationPosition or a screenPixelPosition!"
+      );
+    }
+  });
+  if (pos1 instanceof GeolocationPosition) {
+    pos1 = convertGeoToMap(pos1);
+  }
+  if (pos2 instanceof GeolocationPosition) {
+    pos2 = convertGeoToMap(pos2);
+  }
+  let xSqrd = (pos2.x - pos1.x) ** 2;
+  let ySqrd = (pos2.y - pos1.y) ** 2;
+  return Math.sqrt(xSqrd + ySqrd);
+}
 
 /**
  * Starts tracking the user location, and sets a watcher for position updates.
